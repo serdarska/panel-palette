@@ -6,6 +6,7 @@ import CatalogSection from './components/CatalogSection.vue'
 import KitchenVisualizer from './components/KitchenVisualizer.vue'
 import GallerySection from './components/GallerySection.vue'
 import AboutSection from './components/AboutSection.vue'
+import ProcessSection from './components/ProcessSection.vue'
 import FooterSection from './components/FooterSection.vue'
 
 onMounted(() => {
@@ -26,5 +27,6 @@ onMounted(() => {
   <KitchenVisualizer />
   <GallerySection />
   <AboutSection />
+  <ProcessSection />
   <FooterSection />
 </template>

@@ -16,7 +16,7 @@ function go(id) {
               <rect x="2" y="15" width="11" height="11" rx="2" fill="#c9a84c" opacity="0.55"/>
               <rect x="15" y="15" width="11" height="11" rx="2" fill="#c9a84c" opacity="0.25"/>
             </svg>
-            <span>PANEL <strong>PALETTE</strong></span>
+            <span>INTERWOOD <strong>DESIGN</strong></span>
           </div>
           <p class="brand-tagline">Premium materials for the kitchen of your dreams. Three categories, hundreds of colors, one perfect result.</p>
         </div>
@@ -27,7 +27,7 @@ function go(id) {
             <a href="#catalog" @click.prevent="go('catalog')">Counter Tops</a>
             <a href="#catalog" @click.prevent="go('catalog')">MDF Fronts</a>
             <a href="#catalog" @click.prevent="go('catalog')">Decorative Boards</a>
-            <a href="#visualizer" @click.prevent="go('visualizer')">All Collections</a>
+            <a href="#visualizer" @click.prevent="go('catalog')">All Collections</a>
           </div>
           <div class="footer-col">
             <span class="col-title">Services</span>
@@ -38,16 +38,16 @@ function go(id) {
           </div>
           <div class="footer-col">
             <span class="col-title">Contact</span>
-            <span class="contact-item">info@panelpalette.com</span>
+            <span class="contact-item">interwoodd@gmail.com</span>
             <span class="contact-item">+381 11 000 0000</span>
             <span class="contact-item">Mon–Fri  08:00–17:00</span>
-            <span class="contact-item">Belgrade, Serbia</span>
+            <span class="contact-item">Shtip, North Macedonia</span>
           </div>
         </div>
       </div>
 
       <div class="footer-bottom">
-        <span>© 2025 Panel Palette. All rights reserved.</span>
+        <span>© 2025 Interwood Design. All rights reserved.</span>
         <div class="footer-links">
           <a href="#">Privacy Policy</a>
           <a href="#">Terms of Service</a>

@@ -49,7 +49,7 @@ const mosaic = [
         </div>
         <div class="hero-stats">
           <div class="stat">
-            <span class="stat-n">300+</span>
+            <span class="stat-n">100+</span>
             <span class="stat-l">Material Colors</span>
           </div>
           <div class="stat-sep"></div>

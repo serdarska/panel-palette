@@ -6,7 +6,7 @@ function goToDesign() {
 const stats = [
   { value: '15+', label: 'Years in business' },
   { value: '500+', label: 'Kitchens completed' },
-  { value: '300+', label: 'Material colors' },
+  { value: '100+', label: 'Material colors' },
   { value: '100%', label: 'Client satisfaction' },
 ]
 </script>
@@ -18,9 +18,9 @@ const stats = [
         <!-- Text column -->
         <div class="about-text reveal">
           <span class="section-label">About Us</span>
-          <h2>Crafting Excellence<br>Since 2008</h2>
+          <h2>Crafting Excellence<br>Since 2012</h2>
           <p>
-            Panel Palette was built on a passion for beautiful, functional kitchens. For over 15 years,
+            Interwood Design was built on a passion for beautiful, functional kitchens. For over 15 years,
             we have been the trusted partner for homeowners and interior designers seeking premium
             materials and expert craftsmanship.
           </p>

@@ -9,9 +9,10 @@ const links = [
   { id: 'visualizer', label: 'Design Studio' },
   { id: 'gallery', label: 'Gallery' },
   { id: 'about', label: 'About' },
+  { id: 'process', label: 'Process' },
 ]
 
-const sections = ['home', 'catalog', 'visualizer', 'gallery', 'about']
+const sections = ['home', 'catalog', 'visualizer', 'gallery', 'about', 'process']
 
 function onScroll() {
   scrolled.value = window.scrollY > 60
@@ -42,7 +43,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
           <rect x="2" y="14" width="10" height="10" rx="2" fill="#c9a84c" opacity="0.55"/>
           <rect x="14" y="14" width="10" height="10" rx="2" fill="#c9a84c" opacity="0.25"/>
         </svg>
-        <span class="logo-text">PANEL <strong>PALETTE</strong></span>
+        <span class="logo-text">INTERWOOD <strong>DESIGN</strong></span>
       </button>
 
       <div class="links">
