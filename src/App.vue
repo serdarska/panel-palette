@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import Navbar from './components/Navbar.vue'
 import HeroSection from './components/HeroSection.vue'
 import CatalogSection from './components/CatalogSection.vue'
+import AccessoriesSection from './components/AccessoriesSection.vue'
 import KitchenVisualizer from './components/KitchenVisualizer.vue'
 import GallerySection from './components/GallerySection.vue'
 import AboutSection from './components/AboutSection.vue'
@@ -24,6 +25,7 @@ onMounted(() => {
   <Navbar />
   <HeroSection />
   <CatalogSection />
+  <AccessoriesSection />
   <KitchenVisualizer />
   <GallerySection />
   <AboutSection />

@@ -248,4 +248,20 @@ const steps = [
   letter-spacing: 0.03em;
 }
 .cta-btn:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,168,76,0.25); }
+
+@media (max-width: 900px) {
+  .timeline {
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 40px;
+  }
+  .timeline-line { display: none; }
+  .step-desc { max-width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .timeline { grid-template-columns: repeat(2, 1fr); }
+  .process-cta { flex-direction: column; text-align: center; gap: 16px; padding: 28px 20px; }
+  .process-cta p { font-size: 16px; }
+  .cta-btn { width: 100%; justify-content: center; }
+}
 </style>

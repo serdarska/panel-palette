@@ -142,4 +142,19 @@ function go(id) {
   text-decoration: none;
 }
 .footer-links a:hover { color: var(--text-secondary); }
+
+@media (max-width: 900px) {
+  .footer-top {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .footer-cols { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+  .brand-tagline { max-width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .footer-cols { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  .footer-links { justify-content: center; }
+}
 </style>

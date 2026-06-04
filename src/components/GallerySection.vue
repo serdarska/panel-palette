@@ -23,7 +23,7 @@ const kitchens = [
     image: '/gallery/kitchen-antrasit.webp',
     palette: ['#4a4a4a', '#c0b8a8', '#a07848'],
     materials: [
-      { category: 'Countertop',  name: '6645 SHINE',         code: '6645 SHINE', image: '/materials/countertop/6645 sjaj.jpg' },
+      { category: 'Countertop',  name: '6645 GLOSS',         code: '6645 GLOSS', image: '/materials/countertop/6645 sjaj.jpg' },
       { category: 'MDF Fronts',  name: 'HG Antrasit',        code: '6022',      image: '/materials/mdf/6022 HG ANTRASIT.webp' },
       { category: 'Chipboard',   name: 'Supermat Beylerbeyi',code: '155',       image: '/materials/chipboard/155 Supermat Beylerbeyi.png' },
     ],
@@ -494,4 +494,24 @@ const kitchens = [
 .modal-enter-active .modal, .modal-leave-active .modal { transition: opacity 0.25s ease, transform 0.25s ease; }
 .modal-enter-from, .modal-leave-to { opacity: 0; }
 .modal-enter-from .modal, .modal-leave-to .modal { opacity: 0; transform: scale(0.95) translateY(16px); }
+
+@media (max-width: 900px) {
+  .kitchen-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+}
+
+@media (max-width: 600px) {
+  .kitchen-grid { grid-template-columns: 1fr; }
+  .kitchen-card.photo .card-image { height: 220px; }
+
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .modal {
+    grid-template-columns: 1fr;
+    grid-template-rows: 240px 1fr;
+    max-height: 92vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .modal-image { min-height: unset; height: 240px; }
+  .modal-info { padding: 24px 20px; }
+  .modal-name { font-size: 22px; }
+}
 </style>

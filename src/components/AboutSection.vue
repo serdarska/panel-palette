@@ -172,4 +172,14 @@ const stats = [
   font-size: 12px;
   color: var(--text-secondary);
 }
+
+@media (max-width: 900px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .about-text p { max-width: 100%; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-val { font-size: 32px; }
+}
 </style>

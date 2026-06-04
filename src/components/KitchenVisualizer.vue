@@ -1,45 +1,433 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
+import * as THREE from 'three'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { store } from '../store.js'
-import { countertops, mdfColors, chipboardColors } from '../data/materials.js'
+import { countertops, mdfColors, chipboardColors, sinks } from '../data/materials.js'
 
+// ── Left panel ──────────────────────────────────────────────────────────────
 const tabs = [
-  { key: 'countertop', label: 'Counter Top', hint: 'Surface slab' },
-  { key: 'mdf', label: 'Cabinet Fronts', hint: 'Doors & drawers' },
-  { key: 'chipboard', label: 'Decorative Board', hint: 'Cabinet boxes' },
+  { key: 'countertop', label: 'Counter Top',     hint: 'Surface slab' },
+  { key: 'mdf',        label: 'Cabinet Fronts',  hint: 'Doors & drawers' },
+  { key: 'chipboard',  label: 'Decorative Board', hint: 'Cabinet boxes' },
+  { key: 'sink',       label: 'Sink',             hint: 'Basin model' },
 ]
+const swatchMap = { countertop: countertops, mdf: mdfColors, chipboard: chipboardColors, sink: sinks }
+const swatches  = computed(() => swatchMap[store.activeMaterial])
+const current   = computed(() => store[store.activeMaterial])
+function selectMaterial(key)   { store.activeMaterial = key }
+function selectColor(swatch)   { store[store.activeMaterial] = swatch }
+function isActive(swatch)      { return current.value?.code === swatch.code }
 
-const swatchMap = { countertop: countertops, mdf: mdfColors, chipboard: chipboardColors }
-const swatches = computed(() => swatchMap[store.activeMaterial])
-const current = computed(() => store[store.activeMaterial])
+// ── Three.js ─────────────────────────────────────────────────────────────────
+const canvasRef = ref(null)
+let renderer, scene, camera, controls, animId, ro
 
-function selectMaterial(key) { store.activeMaterial = key }
-function selectColor(swatch) { store[store.activeMaterial] = swatch }
-function isActive(swatch) { return current.value?.code === swatch.code }
+// Shared kitchen materials (mutated on swatch change)
+let chipMat, mdfMat, ctMat, sinkMat
 
-function darken(hex, amount = 28) {
-  if (!hex || hex[0] !== '#' || hex.length < 7) return hex
-  const r = Math.max(0, parseInt(hex.slice(1, 3), 16) - amount)
-  const g = Math.max(0, parseInt(hex.slice(3, 5), 16) - amount)
-  const b = Math.max(0, parseInt(hex.slice(5, 7), 16) - amount)
-  return `rgb(${r},${g},${b})`
+const loader   = new THREE.TextureLoader()
+const texCache = {}
+
+// Shared clickable mesh arrays
+const chipMeshes = [], mdfMeshes = [], ctMeshes = [], sinkMeshes = []
+
+function loadTex(url) {
+  if (!url) return null
+  if (texCache[url]) return texCache[url]
+  const t = loader.load(url, () => { t.needsUpdate = true })
+  t.colorSpace = THREE.SRGBColorSpace
+  t.wrapS = t.wrapT = THREE.RepeatWrapping
+  t.repeat.set(1, 1)
+  texCache[url] = t
+  return t
 }
 
-const isMdf = computed(() => store.activeMaterial === 'mdf')
-const isCounter = computed(() => store.activeMaterial === 'countertop')
-const isChip = computed(() => store.activeMaterial === 'chipboard')
+function applyToMat(mat, swatch) {
+  if (!mat) return
+  mat.map   = swatch.image ? loadTex(swatch.image) : null
+  mat.color.set(swatch.image ? '#ffffff' : swatch.color)
+  mat.needsUpdate = true
+}
 
-const goldStroke = '#c9a84c'
-const noStroke = 'none'
+// Reactive: update 3-D materials when the user picks a new swatch
+watch(() => store.chipboard,  s => applyToMat(chipMat, s),  { deep: true })
+watch(() => store.mdf,        s => applyToMat(mdfMat, s),   { deep: true })
+watch(() => store.countertop, s => applyToMat(ctMat, s),    { deep: true })
+watch(() => store.sink,       s => applyToMat(sinkMat, s),  { deep: true })
 
-const doorStroke = computed(() => isMdf.value ? goldStroke : noStroke)
-const counterStroke = computed(() => isCounter.value ? goldStroke : noStroke)
-const carcassStroke = computed(() => isChip.value ? goldStroke : noStroke)
+// Highlight the active zone with a warm emissive tint
+watch(() => store.activeMaterial, zone => {
+  if (!chipMat) return
+  chipMat.emissive.set(zone === 'chipboard'  ? 0x1a1000 : 0x000000)
+  mdfMat .emissive.set(zone === 'mdf'        ? 0x1a1000 : 0x000000)
+  ctMat  .emissive.set(zone === 'countertop' ? 0x1a1000 : 0x000000)
+  sinkMat.emissive.set(zone === 'sink'       ? 0x1a1000 : 0x000000)
+})
 
-// Use image pattern URL when image exists, otherwise fall back to flat color
-const mdfFill = computed(() => store.mdf.image ? 'url(#patternMdf)' : store.mdf.color)
-const counterFill = computed(() => store.countertop.image ? 'url(#patternCountertop)' : store.countertop.color)
-const chipFill = computed(() => store.chipboard.image ? 'url(#patternChipboard)' : store.chipboard.color)
+onMounted(initScene)
+onUnmounted(() => {
+  cancelAnimationFrame(animId)
+  ro?.disconnect()
+  renderer?.dispose()
+})
+
+// ── Scene init ───────────────────────────────────────────────────────────────
+function initScene() {
+  const canvas    = canvasRef.value
+  const container = canvas.parentElement
+  const W = container.clientWidth
+  const H = Math.round(W * 0.58)
+
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
+  renderer.setSize(W, H)
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type    = THREE.PCFSoftShadowMap
+  renderer.toneMapping       = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1.05
+  renderer.outputColorSpace  = THREE.SRGBColorSpace
+
+  scene = new THREE.Scene()
+  scene.background = new THREE.Color(0xf5f0e8)
+
+  camera = new THREE.PerspectiveCamera(50, W / H, 0.05, 50)
+  camera.position.set(2.7, 1.9, 3.0)
+  camera.lookAt(0, 1.1, -1.8)
+
+  controls = new OrbitControls(camera, renderer.domElement)
+  controls.target.set(0, 1.1, -1.8)
+  controls.enablePan      = false
+  controls.minPolarAngle  = Math.PI / 5
+  controls.maxPolarAngle  = Math.PI / 2.1
+  controls.minAzimuthAngle = -Math.PI / 10
+  controls.maxAzimuthAngle =  Math.PI / 3.2
+  controls.minDistance    = 2.0
+  controls.maxDistance    = 5.5
+  controls.update()
+
+  buildLighting()
+  buildRoom()
+  buildKitchen()
+  buildRaycaster()
+
+  ro = new ResizeObserver(() => {
+    const nW = container.clientWidth
+    const nH = Math.round(nW * 0.58)
+    renderer.setSize(nW, nH)
+    camera.aspect = nW / nH
+    camera.updateProjectionMatrix()
+  })
+  ro.observe(container)
+
+  ;(function animate() {
+    animId = requestAnimationFrame(animate)
+    controls.update()
+    renderer.render(scene, camera)
+  })()
+}
+
+// ── Lighting ─────────────────────────────────────────────────────────────────
+function buildLighting() {
+  scene.add(new THREE.AmbientLight(0xfff8ee, 1.3))
+
+  const p = (x, y, z, intensity) => {
+    const l = new THREE.PointLight(0xfff0d8, intensity, 10)
+    l.position.set(x, y, z)
+    l.castShadow = true
+    l.shadow.mapSize.set(512, 512)
+    scene.add(l)
+  }
+  p(-0.9, 2.45, 0.5, 2.4)
+  p( 1.4, 2.45, 0.5, 2.0)
+
+  const win = new THREE.DirectionalLight(0xd0e8ff, 0.85)
+  win.position.set(5, 3, 2)
+  win.target.position.set(-1, 1, -2)
+  scene.add(win, win.target)
+}
+
+// ── Room shell ───────────────────────────────────────────────────────────────
+function buildRoom() {
+  const lam = c => new THREE.MeshLambertMaterial({ color: c })
+  const std = (c, r = 0.92) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: 0 })
+  const plane = (w, h, mat, px, py, pz, rx, ry) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat)
+    m.position.set(px, py, pz)
+    if (rx) m.rotation.x = rx
+    if (ry) m.rotation.y = ry
+    m.receiveShadow = true
+    scene.add(m)
+    return m
+  }
+
+  // Floor – light warm wood tone
+  plane(5.4, 5.0, std(0xc4b79e), 0,  0,  -0.2, -Math.PI / 2)
+  // Back wall
+  plane(5.4, 2.8, lam(0xe8e3da), 0, 1.4, -2.0)
+  // Left wall
+  plane(5.0, 2.8, lam(0xe0dbd3), -2.7, 1.4, -0.2, 0, Math.PI / 2)
+  // Right wall
+  plane(5.0, 2.8, lam(0xd8d4cc),  2.7, 1.4, -0.2, 0, -Math.PI / 2)
+  // Ceiling
+  plane(5.4, 5.0, lam(0xf2ede6),  0, 2.7, -0.2, Math.PI / 2)
+
+  // Window (emissive bright panel on right wall)
+  const winMat = new THREE.MeshBasicMaterial({ color: 0xc8e4f8, transparent: true, opacity: 0.82 })
+  const win = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.4), winMat)
+  win.rotation.y = -Math.PI / 2
+  win.position.set(2.68, 1.4, 0.4)
+  scene.add(win)
+
+  // Window frame
+  const frMat = lam(0xd0c8c0)
+  const addBar = (w, h, d, x, y, z, ry) => {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), frMat)
+    b.rotation.y = ry || 0
+    b.position.set(x, y, z)
+    scene.add(b)
+  }
+  addBar(0.06, 1.46, 0.04, 2.68, 1.40, -0.16, -Math.PI/2)
+  addBar(0.06, 1.46, 0.04, 2.68, 1.40,  0.96, -Math.PI/2)
+  addBar(1.16, 0.06, 0.04, 2.68, 2.08,  0.40, -Math.PI/2)
+  addBar(1.16, 0.06, 0.04, 2.68, 0.72,  0.40, -Math.PI/2)
+  addBar(1.16, 0.06, 0.04, 2.68, 1.40,  0.40, -Math.PI/2) // centre divider
+
+  // Baseboards
+  const baseMat = lam(0xd4cec4)
+  const base = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.1, 0.025), baseMat)
+  base.position.set(0, 0.05, -1.99); scene.add(base)
+  const baseL = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.1, 5.0), baseMat)
+  baseL.position.set(-2.69, 0.05, -0.2); scene.add(baseL)
+  const baseR = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.1, 5.0), baseMat)
+  baseR.position.set(2.69, 0.05, -0.2); scene.add(baseR)
+
+  // Crown moulding on back wall
+  const crownMat = lam(0xf0ece6)
+  const crown = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.08, 0.06), crownMat)
+  crown.position.set(0, 2.66, -1.97); scene.add(crown)
+}
+
+// ── Kitchen ──────────────────────────────────────────────────────────────────
+function buildKitchen() {
+  chipMat = new THREE.MeshStandardMaterial({ roughness: 0.75, metalness: 0.0 })
+  mdfMat  = new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.0 })
+  ctMat   = new THREE.MeshStandardMaterial({ roughness: 0.28, metalness: 0.06 })
+  sinkMat = new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0.08 })
+
+  applyToMat(chipMat, store.chipboard)
+  applyToMat(mdfMat,  store.mdf)
+  applyToMat(ctMat,   store.countertop)
+  applyToMat(sinkMat, store.sink)
+
+  // Trigger initial emissive state
+  chipMat.emissive = new THREE.Color(store.activeMaterial === 'chipboard'  ? 0x1a1000 : 0x000000)
+  mdfMat .emissive = new THREE.Color(store.activeMaterial === 'mdf'        ? 0x1a1000 : 0x000000)
+  ctMat  .emissive = new THREE.Color(store.activeMaterial === 'countertop' ? 0x1a1000 : 0x000000)
+  sinkMat.emissive = new THREE.Color(store.activeMaterial === 'sink'       ? 0x1a1000 : 0x000000)
+
+  const handleMat = new THREE.MeshStandardMaterial({ color: 0xd0d0d0, roughness: 0.12, metalness: 0.92 })
+
+  const WZ   = -1.97   // face of back wall (cabinets live between WZ and WZ+depth)
+  const UDEP = 0.34    // upper cabinet depth
+  const LDEP = 0.60    // lower cabinet depth
+  const DOOR = 0.016   // door panel thickness
+
+  // ── Upper cabinets ──
+  makeUpperBank(-2.05, -0.68, WZ, UDEP, DOOR, handleMat)
+  makeUpperBank( 0.68,  2.05, WZ, UDEP, DOOR, handleMat)
+
+  // ── Range hood ──
+  const hoodMat = new THREE.MeshStandardMaterial({ color: 0x1e1c18, roughness: 0.28, metalness: 0.5 })
+  const box = (w, h, d, mat, x, y, z) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat)
+    m.position.set(x, y, z); m.castShadow = true; scene.add(m); return m
+  }
+  box(0.26, 0.58, 0.22, hoodMat, 0, 2.0,  WZ - 0.11)  // chimney
+  box(1.08, 0.38, 0.50, hoodMat, 0, 1.62, WZ - 0.25)  // canopy
+  // Grille slats
+  const grilleMat = new THREE.MeshStandardMaterial({ color: 0x111, roughness: 0.4, metalness: 0.3 })
+  for (let i = 0; i < 3; i++) {
+    box(0.82, 0.04, 0.015, grilleMat, 0, 1.5 - i * 0.055, WZ - 0.47)
+  }
+  // LED strip at hood bottom (emissive)
+  const ledMat = new THREE.MeshStandardMaterial({
+    color: 0xd4a010, emissive: new THREE.Color(0xd4a010), emissiveIntensity: 0.45,
+  })
+  box(0.98, 0.022, 0.04, ledMat, 0, 1.43, WZ - 0.47)
+  // Under-hood warm glow
+  const ledGlowL = new THREE.PointLight(0xd4900a, 1.1, 1.6)
+  ledGlowL.position.set(-1.3, 1.44, -1.72); scene.add(ledGlowL)
+  const ledGlowR = new THREE.PointLight(0xd4900a, 1.1, 1.6)
+  ledGlowR.position.set( 1.3, 1.44, -1.72); scene.add(ledGlowR)
+
+  // ── Backsplash tile panels ──
+  const bsMat = new THREE.MeshStandardMaterial({ color: 0x1e1b18, roughness: 0.65, metalness: 0.05 })
+  const bsH = 0.50, bsY = 1.195
+  const bsL = new THREE.Mesh(new THREE.PlaneGeometry(1.37, bsH), bsMat)
+  bsL.position.set(-1.365, bsY, -1.984); scene.add(bsL)
+  const bsR = new THREE.Mesh(new THREE.PlaneGeometry(1.37, bsH), bsMat)
+  bsR.position.set( 1.365, bsY, -1.984); scene.add(bsR)
+
+  // ── Countertop slab ──
+  const ct = new THREE.Mesh(new THREE.BoxGeometry(4.14, 0.06, 0.67), ctMat)
+  ct.position.set(0, 0.93, WZ + 0.67 / 2 - 0.01)
+  ct.castShadow = true; ct.receiveShadow = true
+  ct.userData.zone = 'countertop'
+  ctMeshes.push(ct); scene.add(ct)
+
+  // ── Sink basin (clickable, uses sinkMat) ──
+  // Outer shell
+  const sinkShell = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.10, 0.48), sinkMat)
+  sinkShell.position.set(0, 0.905, WZ + 0.48 / 2 + 0.05)
+  sinkShell.castShadow = true
+  sinkShell.userData.zone = 'sink'
+  sinkMeshes.push(sinkShell); scene.add(sinkShell)
+  // Inner basin (dark recessed area)
+  const basinMat = new THREE.MeshStandardMaterial({ color: 0x141414, roughness: 0.5, metalness: 0.3 })
+  const basin = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.07, 0.40), basinMat)
+  basin.position.set(0, 0.915, WZ + 0.40 / 2 + 0.07)
+  scene.add(basin)
+  // Drain disc
+  const drainMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.2, metalness: 0.8 })
+  const drain = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.008, 16), drainMat)
+  drain.position.set(0, 0.883, WZ + 0.26)
+  scene.add(drain)
+
+  // ── Faucet (arch tube along a Bezier curve) ──
+  const fMat = new THREE.MeshStandardMaterial({ color: 0xc8c8c8, roughness: 0.12, metalness: 0.90 })
+  const fBase = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.024, 0.06, 12), fMat)
+  fBase.position.set(-0.13, 0.985, WZ + 0.10); scene.add(fBase)
+  const curve = new THREE.QuadraticBezierCurve3(
+    new THREE.Vector3(-0.13, 0.96, WZ + 0.10),
+    new THREE.Vector3(-0.13, 1.22, WZ + 0.22),
+    new THREE.Vector3( 0.05, 0.96, WZ + 0.40)
+  )
+  const arch = new THREE.Mesh(new THREE.TubeGeometry(curve, 24, 0.013, 8, false), fMat)
+  scene.add(arch)
+  const spout = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.04, 8), fMat)
+  spout.position.set(0.05, 0.94, WZ + 0.40); scene.add(spout)
+
+  // ── Lower cabinets ──
+  makeLowerBank(-2.05, -0.68, WZ, LDEP, DOOR, handleMat)
+  makeSinkCab(  -0.68,  0.68, WZ, LDEP, DOOR, handleMat)
+  makeLowerBank( 0.68,  2.05, WZ, LDEP, DOOR, handleMat)
+
+  // ── Kickboard ──
+  const kickMat = new THREE.MeshStandardMaterial({ color: 0x151210, roughness: 0.85 })
+  const kick = new THREE.Mesh(new THREE.BoxGeometry(4.14, 0.12, 0.04), kickMat)
+  kick.position.set(0, 0.06, WZ + 0.01); scene.add(kick)
+}
+
+// ── Cabinet helpers ───────────────────────────────────────────────────────────
+function makeUpperBank(x1, x2, wz, depth, doorThick, handleMat) {
+  const w  = x2 - x1
+  const h  = 0.72
+  const cx = (x1 + x2) / 2
+  const cy = 1.46 + h / 2  // bottom at 1.46, top at ~2.18
+
+  const carc = new THREE.Mesh(new THREE.BoxGeometry(w - 0.005, h - 0.005, depth), chipMat)
+  carc.position.set(cx, cy, wz - depth / 2)
+  carc.castShadow = true
+  carc.userData.zone = 'chipboard'
+  chipMeshes.push(carc); scene.add(carc)
+
+  const n  = 3
+  const dw = (w - 0.024) / n
+  for (let i = 0; i < n; i++) {
+    const dx = x1 + 0.012 + dw * (i + 0.5)
+    const door = new THREE.Mesh(new THREE.BoxGeometry(dw - 0.006, h - 0.018, doorThick), mdfMat)
+    door.position.set(dx, cy, wz + doorThick / 2)
+    door.castShadow = true
+    door.userData.zone = 'mdf'
+    mdfMeshes.push(door); scene.add(door)
+
+    // Vertical bar handle near door bottom
+    const han = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.1, 8), handleMat)
+    han.position.set(dx, cy - h / 2 + 0.15, wz + doorThick + 0.012)
+    scene.add(han)
+  }
+}
+
+function makeLowerBank(x1, x2, wz, depth, doorThick, handleMat) {
+  const w   = x2 - x1
+  const h   = 0.88
+  const cx  = (x1 + x2) / 2
+  const cy  = h / 2
+
+  const carc = new THREE.Mesh(new THREE.BoxGeometry(w - 0.005, h - 0.005, depth), chipMat)
+  carc.position.set(cx, cy, wz - depth / 2)
+  carc.castShadow = true
+  carc.userData.zone = 'chipboard'
+  chipMeshes.push(carc); scene.add(carc)
+
+  // Drawer
+  const drawerH = 0.2
+  const drawer = new THREE.Mesh(new THREE.BoxGeometry(w - 0.016, drawerH - 0.008, doorThick), mdfMat)
+  drawer.position.set(cx, h - drawerH / 2 - 0.006, wz + doorThick / 2)
+  drawer.userData.zone = 'mdf'
+  mdfMeshes.push(drawer); scene.add(drawer)
+  // Horizontal bar handle on drawer
+  const dhan = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, w * 0.45, 8), handleMat)
+  dhan.rotation.z = Math.PI / 2
+  dhan.position.set(cx, h - drawerH / 2 - 0.006, wz + doorThick + 0.013)
+  scene.add(dhan)
+
+  // 2 doors
+  const doorH = h - drawerH - 0.015
+  const dw    = (w - 0.024) / 2
+  for (let i = 0; i < 2; i++) {
+    const dx   = x1 + 0.012 + dw * (i + 0.5)
+    const door = new THREE.Mesh(new THREE.BoxGeometry(dw - 0.006, doorH - 0.006, doorThick), mdfMat)
+    door.position.set(dx, (doorH - 0.006) / 2 + 0.008, wz + doorThick / 2)
+    door.castShadow = true
+    door.userData.zone = 'mdf'
+    mdfMeshes.push(door); scene.add(door)
+    const han = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.1, 8), handleMat)
+    han.position.set(dx, doorH - 0.16, wz + doorThick + 0.013)
+    scene.add(han)
+  }
+}
+
+function makeSinkCab(x1, x2, wz, depth, doorThick, handleMat) {
+  const w  = x2 - x1
+  const h  = 0.88
+  const cx = (x1 + x2) / 2
+
+  const carc = new THREE.Mesh(new THREE.BoxGeometry(w - 0.005, h - 0.005, depth), chipMat)
+  carc.position.set(cx, h / 2, wz - depth / 2)
+  carc.castShadow = true
+  carc.userData.zone = 'chipboard'
+  chipMeshes.push(carc); scene.add(carc)
+
+  const door = new THREE.Mesh(new THREE.BoxGeometry(w - 0.016, h - 0.018, doorThick), mdfMat)
+  door.position.set(cx, h / 2, wz + doorThick / 2)
+  door.userData.zone = 'mdf'
+  mdfMeshes.push(door); scene.add(door)
+
+  const han = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.1, 8), handleMat)
+  han.position.set(cx, h / 2 + 0.14, wz + doorThick + 0.013)
+  scene.add(han)
+}
+
+// ── Raycasting for click-to-select ────────────────────────────────────────────
+function buildRaycaster() {
+  const raycaster = new THREE.Raycaster()
+  const mouse     = new THREE.Vector2()
+  const allClick  = [...chipMeshes, ...mdfMeshes, ...ctMeshes, ...sinkMeshes]
+
+  renderer.domElement.addEventListener('click', e => {
+    const rect = renderer.domElement.getBoundingClientRect()
+    mouse.x = ((e.clientX - rect.left) / rect.width)  * 2 - 1
+    mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1
+    raycaster.setFromCamera(mouse, camera)
+    const hits = raycaster.intersectObjects(allClick)
+    if (hits.length > 0) {
+      const zone = hits[0].object.userData.zone
+      if (zone) store.activeMaterial = zone
+    }
+  })
+}
 </script>
 
 <template>
@@ -67,7 +455,9 @@ const chipFill = computed(() => store.chipboard.image ? 'url(#patternChipboard)'
           </div>
 
           <div class="current-sel">
-            <div class="cur-dot" :style="current.image ? { backgroundImage: `url('${current.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' } : { background: current.color }"></div>
+            <div class="cur-dot" :style="current.image
+              ? { backgroundImage: `url('${current.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }
+              : { background: current.color }"/>
             <div class="cur-info">
               <span class="cur-name">{{ current.name }}</span>
               <span class="cur-code">{{ current.code }}</span>
@@ -79,7 +469,9 @@ const chipFill = computed(() => store.chipboard.image ? 'url(#patternChipboard)'
               v-for="sw in swatches"
               :key="sw.code"
               :class="['cswatch', { sel: isActive(sw) }]"
-              :style="sw.image ? { backgroundImage: `url('${sw.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' } : { background: sw.color }"
+              :style="sw.image
+                ? { backgroundImage: `url('${sw.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                : { background: sw.color }"
               :title="sw.name"
               @click="selectColor(sw)"
             >
@@ -93,261 +485,41 @@ const chipFill = computed(() => store.chipboard.image ? 'url(#patternChipboard)'
 
           <div class="summary-row">
             <div class="sum-item">
-              <span class="sum-dot" :style="store.countertop.image ? { backgroundImage: `url('${store.countertop.image}')`, backgroundSize: 'cover' } : { background: store.countertop.color }"></span>
+              <span class="sum-dot" :style="store.countertop.image
+                ? { backgroundImage: `url('${store.countertop.image}')`, backgroundSize: 'cover' }
+                : { background: store.countertop.color }"/>
               <span class="sum-text">{{ store.countertop.name }}</span>
             </div>
             <div class="sum-item">
-              <span class="sum-dot" :style="store.mdf.image ? { backgroundImage: `url('${store.mdf.image}')`, backgroundSize: 'cover' } : { background: store.mdf.color }"></span>
+              <span class="sum-dot" :style="store.mdf.image
+                ? { backgroundImage: `url('${store.mdf.image}')`, backgroundSize: 'cover' }
+                : { background: store.mdf.color }"/>
               <span class="sum-text">{{ store.mdf.name }}</span>
             </div>
             <div class="sum-item">
-              <span class="sum-dot" :style="store.chipboard.image ? { backgroundImage: `url('${store.chipboard.image}')`, backgroundSize: 'cover' } : { background: store.chipboard.color }"></span>
+              <span class="sum-dot" :style="store.chipboard.image
+                ? { backgroundImage: `url('${store.chipboard.image}')`, backgroundSize: 'cover' }
+                : { background: store.chipboard.color }"/>
               <span class="sum-text">{{ store.chipboard.name }}</span>
+            </div>
+            <div class="sum-item">
+              <span class="sum-dot" :style="store.sink.image
+                ? { backgroundImage: `url('${store.sink.image}')`, backgroundSize: 'cover' }
+                : { background: store.sink.color }"/>
+              <span class="sum-text">{{ store.sink.name }}</span>
             </div>
           </div>
         </div>
 
-        <!-- Kitchen SVG -->
+        <!-- Three.js canvas -->
         <div class="kitchen-wrap">
-          <svg viewBox="0 0 800 460" xmlns="http://www.w3.org/2000/svg" class="kitchen-svg">
-            <defs>
-              <linearGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#2a2a2a"/>
-                <stop offset="100%" stop-color="#1c1c1c"/>
-              </linearGradient>
-              <linearGradient id="doorSheen" x1="0" y1="0" x2="0.25" y2="1">
-                <stop offset="0%" stop-color="white" stop-opacity="0.13"/>
-                <stop offset="55%" stop-color="white" stop-opacity="0.02"/>
-                <stop offset="100%" stop-color="black" stop-opacity="0.1"/>
-              </linearGradient>
-              <linearGradient id="counterSheen" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="white" stop-opacity="0.18"/>
-                <stop offset="100%" stop-color="black" stop-opacity="0.14"/>
-              </linearGradient>
-              <filter id="cabShadow" x="-8%" y="-8%" width="120%" height="125%">
-                <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#000" flood-opacity="0.55"/>
-              </filter>
-              <!-- Material texture patterns -->
-              <pattern id="patternCountertop" x="0" y="0" width="400" height="400" patternUnits="userSpaceOnUse">
-                <rect width="400" height="400" :fill="counterFill"/>
-                <image v-if="store.countertop.image" :href="store.countertop.image" x="0" y="0" width="400" height="400" preserveAspectRatio="xMidYMid slice"/>
-              </pattern>
-              <pattern id="patternMdf" x="0" y="0" width="200" height="300" patternUnits="userSpaceOnUse">
-                <rect width="200" height="300" :fill="mdfFill"/>
-                <image v-if="store.mdf.image" :href="store.mdf.image" x="0" y="0" width="200" height="300" preserveAspectRatio="xMidYMid slice"/>
-              </pattern>
-              <pattern id="patternChipboard" x="0" y="0" width="300" height="200" patternUnits="userSpaceOnUse">
-                <rect width="300" height="200" :fill="chipFill"/>
-                <image v-if="store.chipboard.image" :href="store.chipboard.image" x="0" y="0" width="300" height="200" preserveAspectRatio="xMidYMid slice"/>
-              </pattern>
-            </defs>
-
-            <!-- Wall -->
-            <rect x="0" y="0" width="800" height="460" fill="url(#wallGrad)"/>
-            <!-- Floor -->
-            <rect x="0" y="432" width="800" height="28" fill="#101010"/>
-            <!-- Floor line -->
-            <line x1="0" y1="432" x2="800" y2="432" stroke="#1e1e1e" stroke-width="1"/>
-
-            <!-- Backsplash tiles -->
-            <rect x="20" y="210" width="760" height="40" fill="#222"/>
-            <line x1="20" y1="221" x2="780" y2="221" stroke="#1a1a1a" stroke-width="1"/>
-            <line x1="20" y1="232" x2="780" y2="232" stroke="#2e2e2e" stroke-width="0.5"/>
-            <line x1="20" y1="243" x2="780" y2="243" stroke="#1a1a1a" stroke-width="1"/>
-            <line x1="80"  y1="210" x2="80"  y2="250" stroke="#1a1a1a" stroke-width="0.5"/>
-            <line x1="140" y1="210" x2="140" y2="250" stroke="#2e2e2e" stroke-width="0.5"/>
-            <line x1="200" y1="210" x2="200" y2="250" stroke="#1a1a1a" stroke-width="0.5"/>
-            <line x1="260" y1="210" x2="260" y2="250" stroke="#2e2e2e" stroke-width="0.5"/>
-            <line x1="540" y1="210" x2="540" y2="250" stroke="#1a1a1a" stroke-width="0.5"/>
-            <line x1="600" y1="210" x2="600" y2="250" stroke="#2e2e2e" stroke-width="0.5"/>
-            <line x1="660" y1="210" x2="660" y2="250" stroke="#1a1a1a" stroke-width="0.5"/>
-            <line x1="720" y1="210" x2="720" y2="250" stroke="#2e2e2e" stroke-width="0.5"/>
-
-            <!-- ===== UPPER LEFT CARCASS ===== -->
-            <rect
-              :fill="chipFill"
-              :stroke="carcassStroke" stroke-width="1.5"
-              x="20" y="15" width="280" height="195" rx="2"
-              filter="url(#cabShadow)"
-              style="cursor:pointer"
-              @click="selectMaterial('chipboard')"
-            />
-
-            <!-- Upper left doors -->
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="27" y="21" width="82" height="182" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="27" y="21" width="82" height="182" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="116" y="21" width="82" height="182" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="116" y="21" width="82" height="182" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="205" y="21" width="82" height="182" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="205" y="21" width="82" height="182" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-
-            <!-- Upper left handles -->
-            <rect x="56"  y="196" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-            <rect x="145" y="196" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-            <rect x="234" y="196" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-
-            <!-- ===== RANGE HOOD ===== -->
-            <!-- Chimney -->
-            <rect x="367" y="0" width="66" height="20" fill="#161616" rx="1"/>
-            <!-- Canopy trapezoid -->
-            <polygon points="300,20 500,20 478,210 322,210" fill="#1c1c1c"/>
-            <!-- Hood accent line -->
-            <line x1="322" y1="185" x2="478" y2="185" stroke="#2a2a2a" stroke-width="1"/>
-            <!-- Vent grille lines -->
-            <line x1="340" y1="148" x2="460" y2="148" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>
-            <line x1="340" y1="158" x2="460" y2="158" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>
-            <line x1="340" y1="168" x2="460" y2="168" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>
-            <!-- Hood bottom light strip -->
-            <rect x="325" y="188" width="150" height="10" rx="3" fill="#131305" opacity="0.9"/>
-            <rect x="328" y="190" width="144" height="5" rx="2" fill="#3a3a10" opacity="0.7"/>
-
-            <!-- ===== UPPER RIGHT CARCASS ===== -->
-            <rect
-              :fill="chipFill"
-              :stroke="carcassStroke" stroke-width="1.5"
-              x="500" y="15" width="280" height="195" rx="2"
-              filter="url(#cabShadow)"
-              style="cursor:pointer"
-              @click="selectMaterial('chipboard')"
-            />
-
-            <!-- Upper right doors -->
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="507" y="21" width="82" height="182" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="507" y="21" width="82" height="182" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="596" y="21" width="82" height="182" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="596" y="21" width="82" height="182" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="685" y="21" width="82" height="182" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="685" y="21" width="82" height="182" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-
-            <!-- Upper right handles -->
-            <rect x="536" y="196" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-            <rect x="625" y="196" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-            <rect x="714" y="196" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-
-            <!-- ===== COUNTERTOP ===== -->
-            <rect
-              :fill="counterFill"
-              :stroke="counterStroke" stroke-width="1.5"
-              x="20" y="210" width="760" height="40" rx="1"
-              class="zone-counter"
-              @click="selectMaterial('countertop')"
-            />
-            <rect x="20" y="210" width="760" height="40" rx="1" fill="url(#counterSheen)" style="pointer-events:none"/>
-            <!-- Counter front edge -->
-            <rect :fill="darken(store.countertop.color)" x="20" y="247" width="760" height="5" rx="0" style="pointer-events:none"/>
-
-            <!-- Sink basin (sits on counter) -->
-            <rect x="323" y="217" width="154" height="28" rx="3" fill="#111" style="pointer-events:none"/>
-            <rect x="326" y="220" width="148" height="22" rx="2" fill="#0a0a0a" style="pointer-events:none"/>
-            <!-- Faucet neck -->
-            <rect x="395" y="207" width="10" height="16" rx="3" fill="#999" style="pointer-events:none"/>
-            <!-- Faucet spout -->
-            <path d="M395 210 Q395 204 404 204 L412 204" stroke="#aaa" stroke-width="3" fill="none" stroke-linecap="round" style="pointer-events:none"/>
-
-            <!-- ===== LOWER LEFT CARCASS ===== -->
-            <rect
-              :fill="chipFill"
-              :stroke="carcassStroke" stroke-width="1.5"
-              x="20" y="250" width="280" height="175" rx="2"
-              style="cursor:pointer"
-              @click="selectMaterial('chipboard')"
-            />
-
-            <!-- Lower left drawer -->
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="27" y="256" width="266" height="38" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="27" y="256" width="266" height="38" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-            <rect x="148" y="272" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-
-            <!-- Lower left doors -->
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="27" y="300" width="129" height="119" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="27" y="300" width="129" height="119" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="162" y="300" width="131" height="119" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="162" y="300" width="131" height="119" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-
-            <!-- Lower left door handles -->
-            <rect x="79"  y="306" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-            <rect x="215" y="306" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-
-            <!-- ===== SINK CARCASS ===== -->
-            <rect
-              :fill="chipFill"
-              :stroke="carcassStroke" stroke-width="1.5"
-              x="300" y="250" width="200" height="175" rx="2"
-              style="cursor:pointer"
-              @click="selectMaterial('chipboard')"
-            />
-
-            <!-- Sink door -->
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="307" y="256" width="186" height="163" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="307" y="256" width="186" height="163" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-            <rect x="388" y="262" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-
-            <!-- ===== LOWER RIGHT CARCASS ===== -->
-            <rect
-              :fill="chipFill"
-              :stroke="carcassStroke" stroke-width="1.5"
-              x="500" y="250" width="280" height="175" rx="2"
-              style="cursor:pointer"
-              @click="selectMaterial('chipboard')"
-            />
-
-            <!-- Lower right drawer -->
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="507" y="256" width="266" height="38" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="507" y="256" width="266" height="38" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-            <rect x="628" y="272" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-
-            <!-- Lower right doors -->
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="507" y="300" width="129" height="119" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="507" y="300" width="129" height="119" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-
-            <rect :fill="mdfFill" :stroke="doorStroke" stroke-width="1.5"
-                  x="642" y="300" width="131" height="119" rx="2"
-                  class="zone-door" @click="selectMaterial('mdf')"/>
-            <rect x="642" y="300" width="131" height="119" rx="2" fill="url(#doorSheen)" style="pointer-events:none"/>
-
-            <!-- Lower right door handles -->
-            <rect x="559" y="306" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-            <rect x="695" y="306" width="24" height="4" rx="2" fill="#b8b8b8" style="pointer-events:none"/>
-
-            <!-- ===== KICKBOARD ===== -->
-            <rect :fill="darken(store.chipboard.color, 40)" x="20" y="425" width="760" height="10" rx="1" style="pointer-events:none"/>
-          </svg>
-
+          <canvas ref="canvasRef" class="kitchen-canvas"/>
           <div class="kitchen-hint">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <circle cx="7" cy="7" r="6" stroke="#888" stroke-width="1.2"/>
               <path d="M7 6v4M7 4.5v.5" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
             </svg>
-            Click any cabinet or surface to switch material
+            Click a surface to switch material · Drag to rotate
           </div>
         </div>
       </div>
@@ -400,16 +572,8 @@ const chipFill = computed(() => store.chipboard.image ? 'url(#patternChipboard)'
 }
 .ptab:hover { border-color: var(--border-light); }
 .ptab.active { background: rgba(201,168,76,0.08); border-color: var(--accent); }
-.ptab-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-.ptab-hint {
-  font-size: 11px;
-  color: var(--text-muted);
-  letter-spacing: 0.04em;
-}
+.ptab-label { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.ptab-hint  { font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; }
 .ptab.active .ptab-label { color: var(--accent); }
 
 .current-sel {
@@ -466,40 +630,28 @@ const chipFill = computed(() => store.chipboard.image ? 'url(#patternChipboard)'
   padding-top: 16px;
   border-top: 1px solid var(--border);
 }
-.sum-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.sum-item { display: flex; align-items: center; gap: 10px; }
 .sum-dot {
   width: 16px; height: 16px;
   border-radius: 4px;
   border: 1px solid rgba(255,255,255,0.08);
   flex-shrink: 0;
 }
-.sum-text {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
+.sum-text { font-size: 12px; color: var(--text-secondary); }
 
-/* Kitchen canvas */
+/* Three.js canvas */
 .kitchen-wrap {
-  background: #1a1a1a;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  padding: 24px;
+  background: #f5f0e8;
 }
-.kitchen-svg {
+.kitchen-canvas {
   width: 100%;
-  height: auto;
   display: block;
-  border-radius: var(--radius);
+  cursor: grab;
 }
-.zone-door { cursor: pointer; transition: filter 0.2s; }
-.zone-door:hover { filter: brightness(1.12); }
-.zone-counter { cursor: pointer; transition: filter 0.2s; }
-.zone-counter:hover { filter: brightness(1.08); }
+.kitchen-canvas:active { cursor: grabbing; }
 
 .kitchen-hint {
   display: flex;
@@ -507,7 +659,39 @@ const chipFill = computed(() => store.chipboard.image ? 'url(#patternChipboard)'
   gap: 6px;
   font-size: 12px;
   color: var(--text-muted);
-  margin-top: 14px;
+  padding: 10px 16px;
   justify-content: center;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 900px) {
+  .vis-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .panel { position: static; }
+  .panel-tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ptab {
+    flex: 1;
+    min-width: 120px;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+  }
+  .ptab-hint { display: none; }
+  .color-grid { grid-template-columns: repeat(6, 1fr); }
+  .summary-row { flex-direction: row; flex-wrap: wrap; gap: 12px; }
+  .sum-item { flex: 1; min-width: 120px; }
+}
+
+@media (max-width: 480px) {
+  .color-grid { grid-template-columns: repeat(5, 1fr); }
+  .ptab { min-width: 90px; }
 }
 </style>

@@ -269,6 +269,20 @@ h1 {
   opacity: 0.85;
 }
 
+@media (max-width: 900px) {
+  .hero-layout {
+    grid-template-columns: 1fr;
+    padding: 100px 20px 60px;
+    gap: 48px;
+  }
+  .hero-visual { display: none; }
+  .hero-sub { font-size: 16px; }
+  .hero-actions { flex-direction: column; gap: 12px; }
+  .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+  .hero-stats { gap: 20px; flex-wrap: wrap; }
+  .stat-n { font-size: 22px; }
+}
+
 /* Scroll hint */
 .scroll-hint {
   position: absolute;

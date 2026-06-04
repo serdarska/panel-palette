@@ -99,3 +99,11 @@ img, svg { display: block; }
 ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #555; }
 ::selection { background: var(--accent); color: #000; }
+
+@media (max-width: 768px) {
+  .section-container { padding: 0 20px; }
+  .section-pad { padding: 72px 0; }
+  .section-header { margin-bottom: 40px; }
+  .section-header h2 { font-size: clamp(26px, 7vw, 38px); }
+  .section-header p { font-size: 15px; }
+}

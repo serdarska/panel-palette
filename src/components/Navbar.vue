@@ -3,16 +3,18 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 const scrolled = ref(false)
 const active = ref('home')
+const menuOpen = ref(false)
 
 const links = [
-  { id: 'catalog', label: 'Materials' },
-  { id: 'visualizer', label: 'Design Studio' },
-  { id: 'gallery', label: 'Gallery' },
-  { id: 'about', label: 'About' },
-  { id: 'process', label: 'Process' },
+  { id: 'catalog',      label: 'Materials' },
+  { id: 'accessories',  label: 'Accessories' },
+  { id: 'visualizer',   label: 'Design Studio' },
+  { id: 'gallery',      label: 'Gallery' },
+  { id: 'about',        label: 'About' },
+  { id: 'process',      label: 'Process' },
 ]
 
-const sections = ['home', 'catalog', 'visualizer', 'gallery', 'about', 'process']
+const sections = ['home', 'catalog', 'accessories', 'visualizer', 'gallery', 'about', 'process']
 
 function onScroll() {
   scrolled.value = window.scrollY > 60
@@ -26,11 +28,21 @@ function onScroll() {
 }
 
 function go(id) {
+  menuOpen.value = false
+  document.body.style.overflow = ''
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
 
+function toggleMenu() {
+  menuOpen.value = !menuOpen.value
+  document.body.style.overflow = menuOpen.value ? 'hidden' : ''
+}
+
 onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
-onUnmounted(() => window.removeEventListener('scroll', onScroll))
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScroll)
+  document.body.style.overflow = ''
+})
 </script>
 
 <template>
@@ -55,9 +67,30 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
         </a>
       </div>
 
-      <button class="cta" @click="go('visualizer')">Design Now</button>
+      <button class="cta desktop-cta" @click="go('visualizer')">Design Now</button>
+
+      <button class="hamburger" @click="toggleMenu" aria-label="Toggle menu">
+        <span :class="['bar', { open: menuOpen }]"></span>
+        <span :class="['bar', { open: menuOpen }]"></span>
+        <span :class="['bar', { open: menuOpen }]"></span>
+      </button>
     </div>
   </nav>
+
+  <!-- Mobile menu overlay -->
+  <Transition name="mobile-menu">
+    <div v-if="menuOpen" class="mobile-overlay" @click.self="toggleMenu">
+      <div class="mobile-menu">
+        <a v-for="link in links" :key="link.id"
+           :href="`#${link.id}`"
+           :class="['mobile-link', { active: active === link.id }]"
+           @click.prevent="go(link.id)">
+          {{ link.label }}
+        </a>
+        <button class="cta mobile-cta" @click="go('visualizer')">Design Now</button>
+      </div>
+    </div>
+  </Transition>
 </template>
 
 <style scoped>
@@ -132,4 +165,77 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   transition: all var(--transition);
 }
 .cta:hover { background: var(--accent-light); transform: translateY(-1px); }
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.bar {
+  width: 22px;
+  height: 2px;
+  background: var(--text-secondary);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+.bar:nth-child(1).open { transform: translateY(7px) rotate(45deg); }
+.bar:nth-child(2).open { opacity: 0; }
+.bar:nth-child(3).open { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile overlay */
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+}
+.mobile-menu {
+  position: absolute;
+  top: 0; right: 0;
+  width: min(320px, 85vw);
+  height: 100%;
+  background: rgba(14,14,14,0.98);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 80px 32px 40px;
+  gap: 8px;
+}
+.mobile-link {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  transition: color var(--transition);
+  text-decoration: none;
+}
+.mobile-link:last-of-type { border-bottom: none; }
+.mobile-link:hover, .mobile-link.active { color: var(--text-primary); }
+.mobile-link.active { color: var(--accent); }
+.mobile-cta {
+  margin-top: 24px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Transitions */
+.mobile-menu-enter-active, .mobile-menu-leave-active { transition: opacity 0.25s ease; }
+.mobile-menu-enter-active .mobile-menu, .mobile-menu-leave-active .mobile-menu { transition: transform 0.25s ease; }
+.mobile-menu-enter-from, .mobile-menu-leave-to { opacity: 0; }
+.mobile-menu-enter-from .mobile-menu, .mobile-menu-leave-to .mobile-menu { transform: translateX(100%); }
+
+@media (max-width: 900px) {
+  .links { display: none; }
+  .desktop-cta { display: none; }
+  .hamburger { display: flex; }
+  .nav-inner { padding: 0 20px; }
+}
 </style>

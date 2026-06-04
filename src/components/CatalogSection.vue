@@ -450,4 +450,22 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
   opacity: 0;
   transform: scale(0.95) translateY(16px);
 }
+
+@media (max-width: 768px) {
+  .tabs { flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .tab { padding: 10px 16px; font-size: 13px; }
+  .swatch-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .swatch-color { height: 140px; }
+
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .modal {
+    grid-template-columns: 1fr;
+    grid-template-rows: 260px 1fr;
+    max-height: 92vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .modal-image { min-height: unset; height: 260px; }
+  .modal-info { padding: 24px 20px; }
+  .modal-name { font-size: 22px; }
+}
 </style>
