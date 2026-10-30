@@ -1,73 +1,28 @@
 <script setup>
-const steps = [
-  {
-    num: '01',
-    title: 'Consultation',
-    desc: 'We meet to discuss your vision, space requirements, style preferences, and budget. No obligation, just ideas.',
-    icon: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M4 6h20v14H4z" rx="2"/>
-      <path d="M9 12h10M9 16h6"/>
-    </svg>`,
-  },
-  {
-    num: '02',
-    title: 'Measurements',
-    desc: 'Our team visits your home to take precise measurements of every wall, window, and corner of your kitchen space.',
-    icon: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M4 22L22 4"/>
-      <path d="M7 22h17v-3M7 22v-7"/>
-      <path d="M10 19l2-2M14 15l2-2M18 11l2-2"/>
-    </svg>`,
-  },
-  {
-    num: '03',
-    title: 'Design & Selection',
-    desc: 'We create a tailored 3D design and guide you through selecting countertops, MDF fronts, and chipboard from our catalog.',
-    icon: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M18 4l6 6-12 12H6v-6L18 4z"/>
-      <path d="M15 7l6 6"/>
-    </svg>`,
-  },
-  {
-    num: '04',
-    title: 'Production',
-    desc: 'Your kitchen components are precision-cut and finished in our workshop using the materials you selected.',
-    icon: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="4" y="12" width="20" height="12" rx="1"/>
-      <path d="M8 12V8a6 6 0 0112 0v4"/>
-      <circle cx="14" cy="18" r="2"/>
-    </svg>`,
-  },
-  {
-    num: '05',
-    title: 'Delivery',
-    desc: 'Every component is carefully wrapped and delivered to your home on a date that suits you, ready for installation.',
-    icon: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M2 8h16v12H2zM18 10l6 4v6h-6V10z"/>
-      <circle cx="7" cy="22" r="2"/>
-      <circle cx="21" cy="22" r="2"/>
-    </svg>`,
-  },
-  {
-    num: '06',
-    title: 'Installation',
-    desc: 'Our professional team installs your kitchen with meticulous attention to detail, leaving your space perfect and ready to use.',
-    icon: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6 22l3-3 10-10a2.83 2.83 0 00-4-4L5 15l-1 7 7-1z"/>
-      <path d="M15 7l4 4"/>
-      <path d="M19 3l2 2-1 2-3-3 2-1z"/>
-    </svg>`,
-  },
+import { computed } from 'vue'
+import { t } from '../i18n.js'
+
+const icons = [
+  `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h20v14H4z" rx="2"/><path d="M9 12h10M9 16h6"/></svg>`,
+  `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22L22 4"/><path d="M7 22h17v-3M7 22v-7"/><path d="M10 19l2-2M14 15l2-2M18 11l2-2"/></svg>`,
+  `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4l6 6-12 12H6v-6L18 4z"/><path d="M15 7l6 6"/></svg>`,
+  `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="20" height="12" rx="1"/><path d="M8 12V8a6 6 0 0112 0v4"/><circle cx="14" cy="18" r="2"/></svg>`,
+  `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h16v12H2zM18 10l6 4v6h-6V10z"/><circle cx="7" cy="22" r="2"/><circle cx="21" cy="22" r="2"/></svg>`,
+  `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22l3-3 10-10a2.83 2.83 0 00-4-4L5 15l-1 7 7-1z"/><path d="M15 7l4 4"/><path d="M19 3l2 2-1 2-3-3 2-1z"/></svg>`,
 ]
+
+const steps = computed(() =>
+  t('process.steps').map((s, i) => ({ num: String(i + 1).padStart(2, '0'), ...s, icon: icons[i] }))
+)
 </script>
 
 <template>
   <section id="process" class="process section-pad">
     <div class="section-container">
       <div class="section-header reveal">
-        <span class="section-label">How It Works</span>
-        <h2>From Measurement<br>to Move-In</h2>
-        <p>Six simple steps — from your first idea to a fully installed kitchen you'll love for years.</p>
+        <span class="section-label">{{ t('process.label') }}</span>
+        <h2>{{ t('process.title1') }}<br>{{ t('process.title2') }}</h2>
+        <p>{{ t('process.subtitle') }}</p>
       </div>
 
       <div class="timeline">
@@ -96,9 +51,9 @@ const steps = [
 
       <!-- Bottom CTA -->
       <div class="process-cta reveal">
-        <p>Ready to start your kitchen project?</p>
+        <p>{{ t('process.cta') }}</p>
         <button class="cta-btn" @click="document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })">
-          Get in Touch
+          {{ t('process.getInTouch') }}
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>

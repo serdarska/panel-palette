@@ -1,69 +1,48 @@
 <script setup>
-function goToDesign() {
-  document.getElementById('visualizer')?.scrollIntoView({ behavior: 'smooth' })
+import { computed } from 'vue'
+import { t } from '../i18n.js'
+
+function goToCatalog() {
+  document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })
 }
 
-const stats = [
-  { value: '15+', label: 'Years in business' },
-  { value: '500+', label: 'Kitchens completed' },
-  { value: '100+', label: 'Material colors' },
-  { value: '100%', label: 'Client satisfaction' },
-]
+// icon paths are 24×24 line drawings
+const features = computed(() => [
+  { key: 'f1', icon: 'M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z M8.5 12l2.5 2.5 4.5-5' },
+  { key: 'f2', icon: 'M4 5h16v11H9l-5 4V5z M8 9.5h8 M8 12.5h5' },
+  { key: 'f3', icon: 'M4 4h7v7H4z M13 4h7v7h-7z M4 13h7v7H4z M13 13h7v7h-7z' },
+  { key: 'f4', icon: 'M3 12a9 4 0 1 0 18 0a9 4 0 1 0-18 0 M12 3v18 M17 15l1.5 1.5L17 18' },
+].map(f => ({ ...f, title: t(`about.${f.key}`), text: t(`about.${f.key}Text`) })))
 </script>
 
 <template>
   <section id="about" class="about section-pad">
     <div class="section-container">
-      <div class="about-grid">
-        <!-- Text column -->
-        <div class="about-text reveal">
-          <span class="section-label">About Us</span>
-          <h2>Crafting Excellence<br>Since 2012</h2>
-          <p>
-            Interwood Design was built on a passion for beautiful, functional kitchens. For over 15 years,
-            we have been the trusted partner for homeowners and interior designers seeking premium
-            materials and expert craftsmanship.
-          </p>
-          <p>
-            Our curated selection of countertops, MDF panels, and chipboard gives you total creative
-            control over every surface in your kitchen. Every material is rigorously sourced for quality,
-            durability, and aesthetic excellence — because we believe a kitchen should be as lasting
-            as it is beautiful.
-          </p>
-          <p>
-            From contemporary minimalism to timeless classics, our team of designers works closely
-            with each client, ensuring their vision becomes an everyday reality.
-          </p>
-          <div class="about-actions">
-            <button class="btn-outline" @click="goToDesign()">
-              Start Designing
-            </button>
-          </div>
+      <div class="about-grid reveal">
+        <div class="about-head">
+          <span class="section-label">{{ t('about.label') }}</span>
+          <h2>{{ t('about.title1') }}<br>{{ t('about.title2') }}</h2>
+          <button class="btn-light" @click="goToCatalog()">
+            {{ t('about.startDesigning') }}
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
+        <div class="about-text">
+          <p class="lead">{{ t('about.p1') }}</p>
+          <p>{{ t('about.p2') }}</p>
+          <p>{{ t('about.p3') }}</p>
+        </div>
+      </div>
 
-        <!-- Stats column -->
-        <div class="about-right reveal">
-          <div class="stats-grid">
-            <div v-for="stat in stats" :key="stat.value" class="stat-card">
-              <span class="stat-val">{{ stat.value }}</span>
-              <span class="stat-lbl">{{ stat.label }}</span>
-            </div>
-          </div>
-
-          <div class="about-badge">
-            <div class="badge-inner">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <rect x="2" y="2" width="12" height="12" rx="2.5" fill="#c9a84c"/>
-                <rect x="18" y="2" width="12" height="12" rx="2.5" fill="#c9a84c" opacity="0.5"/>
-                <rect x="2" y="18" width="12" height="12" rx="2.5" fill="#c9a84c" opacity="0.5"/>
-                <rect x="18" y="18" width="12" height="12" rx="2.5" fill="#c9a84c" opacity="0.2"/>
-              </svg>
-              <div>
-                <span class="badge-title">Premium Quality</span>
-                <span class="badge-sub">Certified materials · Expert installation</span>
-              </div>
-            </div>
-          </div>
+      <div class="features reveal">
+        <div v-for="f in features" :key="f.key" class="feature">
+          <svg class="feature-icon" width="36" height="36" viewBox="0 0 24 24" fill="none">
+            <path :d="f.icon" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="feature-title">{{ f.title }}</span>
+          <span class="feature-text">{{ f.text }}</span>
         </div>
       </div>
     </div>
@@ -72,114 +51,105 @@ const stats = [
 
 <style scoped>
 .about {
-  background: var(--bg-secondary);
-  border-top: 1px solid var(--border);
+  background: #221f1c;
+  color: #fff;
 }
+.about .section-label { color: var(--accent-dim); }
+.about .section-label::before { background: var(--accent-light); }
 
 .about-grid {
   display: grid;
-  grid-template-columns: 1fr 440px;
+  grid-template-columns: 1fr 1fr;
   gap: 80px;
   align-items: start;
+  padding-bottom: 72px;
 }
 
-.about-text h2 {
-  font-size: clamp(32px, 3.5vw, 48px);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.12;
-  margin: 16px 0 28px;
+.about-head h2 {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 3.4vw, 48px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 40px;
+  color: #fff;
+}
+
+.btn-light {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
   color: var(--text-primary);
-}
-
-.about-text p {
-  font-size: 16px;
-  color: var(--text-secondary);
-  line-height: 1.8;
-  margin-bottom: 20px;
-  max-width: 520px;
-}
-
-.about-actions { margin-top: 36px; }
-.btn-outline {
-  background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-  padding: 13px 28px;
+  border: 1px solid #fff;
+  padding: 14px 24px;
   border-radius: var(--radius);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
-  letter-spacing: 0.04em;
   transition: all var(--transition);
 }
-.btn-outline:hover { background: var(--accent); color: #000; }
+.btn-light svg { transition: transform var(--transition); }
+.btn-light:hover { background: transparent; color: #fff; }
+.btn-light:hover svg { transform: translateX(3px); }
 
-/* Stats */
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 24px;
+.about-text p {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.8;
+  margin-bottom: 18px;
 }
-.stat-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 28px 24px;
+.about-text .lead {
+  font-size: 20px;
+  line-height: 1.6;
+  color: #fff;
+  margin-bottom: 26px;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.feature {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  transition: border-color var(--transition);
+  gap: 10px;
+  padding: 40px 32px 8px 0;
 }
-.stat-card:hover { border-color: var(--accent); }
-.stat-val {
-  font-size: 40px;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
+.feature + .feature {
+  padding-left: 32px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
 }
-.stat-lbl {
+.feature-icon { color: var(--accent-light); margin-bottom: 10px; }
+.feature-title {
   font-size: 13px;
-  color: var(--text-secondary);
-  font-weight: 400;
-  line-height: 1.4;
-}
-
-.about-badge {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px 24px;
-}
-.badge-inner {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.badge-title {
-  display: block;
-  font-size: 15px;
   font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 3px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
-.badge-sub {
-  font-size: 12px;
-  color: var(--text-secondary);
+.feature-text {
+  font-size: 13px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.55);
 }
 
+@media (max-width: 1000px) {
+  .features { grid-template-columns: repeat(2, 1fr); }
+  .feature, .feature + .feature { padding: 32px 24px 24px 0; border-left: none; }
+  .feature:nth-child(even) { padding-left: 24px; border-left: 1px solid rgba(255, 255, 255, 0.14); }
+  .feature:nth-child(n + 3) { border-top: 1px solid rgba(255, 255, 255, 0.14); }
+}
 @media (max-width: 900px) {
-  .about-grid {
-    grid-template-columns: 1fr;
-    gap: 48px;
-  }
-  .about-text p { max-width: 100%; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .stat-val { font-size: 32px; }
+  .about-grid { grid-template-columns: 1fr; gap: 32px; padding-bottom: 48px; }
+  .about-head h2 { margin-bottom: 28px; }
+  .about-text .lead { font-size: 17px; }
+}
+@media (max-width: 560px) {
+  .features { grid-template-columns: 1fr; }
+  .feature, .feature + .feature, .feature:nth-child(even) { padding: 28px 0 20px; border-left: none; }
+  .feature + .feature { border-top: 1px solid rgba(255, 255, 255, 0.14); }
 }
 </style>

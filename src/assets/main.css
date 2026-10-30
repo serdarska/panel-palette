@@ -1,20 +1,26 @@
 :root {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #111111;
-  --bg-card: #161616;
-  --bg-card-hover: #1e1e1e;
-  --border: #242424;
-  --border-light: #2e2e2e;
-  --accent: #c9a84c;
-  --accent-light: #e0c57a;
-  --accent-dim: #7a6230;
-  --text-primary: #f0f0f0;
-  --text-secondary: #888888;
-  --text-muted: #444444;
-  --font: 'Inter', system-ui, -apple-system, sans-serif;
-  --radius: 8px;
-  --radius-sm: 4px;
-  --radius-lg: 16px;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f5f3;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fafaf9;
+  --border: #e6e2dc;
+  --border-light: #d2ccc4;
+  --accent: #9a6a42;
+  --accent-light: #b5845a;
+  --accent-dim: #d9c2a8;
+  --on-accent: #ffffff;
+  --text-primary: #2b2724;
+  --text-secondary: #6b625a;
+  --text-muted: #a0968b;
+  --font: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-display: 'Montserrat', system-ui, -apple-system, sans-serif;
+  /* only for the INTERWOOD wordmark next to the logo, to match the logo itself */
+  --font-brand: 'Cormorant Garamond', Georgia, serif;
+  --shadow-sm: none;
+  --shadow-md: 0 14px 34px rgba(43, 39, 36, 0.08);
+  --radius: 0;
+  --radius-sm: 0;
+  --radius-lg: 0;
   --transition: 0.25s ease;
   --nav-height: 72px;
 }
@@ -53,34 +59,50 @@ img, svg { display: block; }
 
 .section-pad { padding: 120px 0; }
 
+/* Editorial header: label + title on the left, intro on the right, rule underneath */
 .section-header {
-  text-align: center;
-  margin-bottom: 72px;
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 440px);
+  gap: 0 64px;
+  align-items: end;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
 }
 
 .section-label {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+}
+.section-label::before {
+  content: '';
+  width: 10px; height: 10px;
+  background: var(--accent);
+  flex-shrink: 0;
 }
 
 .section-header h2 {
-  font-size: clamp(32px, 4vw, 52px);
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-family: var(--font-display);
+  font-size: clamp(29px, 3.2vw, 44px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
   line-height: 1.1;
-  margin-bottom: 18px;
 }
 
+.section-header .section-label { grid-column: 1; justify-self: start; }
+.section-header h2 { grid-column: 1; }
 .section-header p {
-  font-size: 17px;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 15px;
   color: var(--text-secondary);
-  max-width: 540px;
-  margin: 0 auto;
   line-height: 1.75;
 }
 
@@ -96,14 +118,18 @@ img, svg { display: block; }
 
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
-::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #555; }
-::selection { background: var(--accent); color: #000; }
+::-webkit-scrollbar-thumb { background: var(--border-light); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-dim); }
+::selection { background: var(--accent); color: var(--on-accent); }
+
+h1, h2, h3 { color: var(--text-primary); }
 
 @media (max-width: 768px) {
   .section-container { padding: 0 20px; }
   .section-pad { padding: 72px 0; }
-  .section-header { margin-bottom: 40px; }
+  .section-header { grid-template-columns: 1fr; margin-bottom: 32px; padding-bottom: 24px; }
+  .section-header p { grid-column: 1; grid-row: auto; margin-top: 16px; }
   .section-header h2 { font-size: clamp(26px, 7vw, 38px); }
   .section-header p { font-size: 15px; }
 }
+.modal-name, .card-body h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }

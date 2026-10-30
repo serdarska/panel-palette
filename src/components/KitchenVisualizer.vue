@@ -1,18 +1,30 @@
 <script setup>
-import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
+import { computed, ref, nextTick, onUnmounted, watch } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { store } from '../store.js'
-import { countertops, mdfColors, chipboardColors, sinks } from '../data/materials.js'
+import { countertops, mdfColors, chipboardColors } from '../data/materials.js'
+import { t } from '../i18n.js'
+import KitchenPhoto from './KitchenPhoto.vue'
+
+// ── Preview mode: the recoloured photo, or the interactive 3-D room ─────────
+const view = ref('photo')
+let sceneReady = false
+
+watch(view, async v => {
+  if (v !== '3d' || sceneReady) return
+  sceneReady = true
+  await nextTick()
+  initScene()
+})
 
 // ── Left panel ──────────────────────────────────────────────────────────────
-const tabs = [
-  { key: 'countertop', label: 'Counter Top',     hint: 'Surface slab' },
-  { key: 'mdf',        label: 'Cabinet Fronts',  hint: 'Doors & drawers' },
-  { key: 'chipboard',  label: 'Decorative Board', hint: 'Cabinet boxes' },
-  { key: 'sink',       label: 'Sink',             hint: 'Basin model' },
-]
-const swatchMap = { countertop: countertops, mdf: mdfColors, chipboard: chipboardColors, sink: sinks }
+const tabs = computed(() => [
+  { key: 'countertop', label: t('visualizer.tabCountertop'),  hint: t('visualizer.tabCountertopHint') },
+  { key: 'mdf',        label: t('visualizer.tabMdf'),         hint: t('visualizer.tabMdfHint') },
+  { key: 'chipboard',  label: t('visualizer.tabChipboard'),   hint: t('visualizer.tabChipboardHint') },
+])
+const swatchMap = { countertop: countertops, mdf: mdfColors, chipboard: chipboardColors }
 const swatches  = computed(() => swatchMap[store.activeMaterial])
 const current   = computed(() => store[store.activeMaterial])
 function selectMaterial(key)   { store.activeMaterial = key }
@@ -24,13 +36,13 @@ const canvasRef = ref(null)
 let renderer, scene, camera, controls, animId, ro
 
 // Shared kitchen materials (mutated on swatch change)
-let chipMat, mdfMat, ctMat, sinkMat
+let chipMat, mdfMat, ctMat, grooveMat
 
 const loader   = new THREE.TextureLoader()
 const texCache = {}
 
 // Shared clickable mesh arrays
-const chipMeshes = [], mdfMeshes = [], ctMeshes = [], sinkMeshes = []
+const chipMeshes = [], mdfMeshes = [], ctMeshes = []
 
 function loadTex(url) {
   if (!url) return null
@@ -54,7 +66,6 @@ function applyToMat(mat, swatch) {
 watch(() => store.chipboard,  s => applyToMat(chipMat, s),  { deep: true })
 watch(() => store.mdf,        s => applyToMat(mdfMat, s),   { deep: true })
 watch(() => store.countertop, s => applyToMat(ctMat, s),    { deep: true })
-watch(() => store.sink,       s => applyToMat(sinkMat, s),  { deep: true })
 
 // Highlight the active zone with a warm emissive tint
 watch(() => store.activeMaterial, zone => {
@@ -62,10 +73,8 @@ watch(() => store.activeMaterial, zone => {
   chipMat.emissive.set(zone === 'chipboard'  ? 0x1a1000 : 0x000000)
   mdfMat .emissive.set(zone === 'mdf'        ? 0x1a1000 : 0x000000)
   ctMat  .emissive.set(zone === 'countertop' ? 0x1a1000 : 0x000000)
-  sinkMat.emissive.set(zone === 'sink'       ? 0x1a1000 : 0x000000)
 })
 
-onMounted(initScene)
 onUnmounted(() => {
   cancelAnimationFrame(animId)
   ro?.disconnect()
@@ -91,19 +100,19 @@ function initScene() {
   scene = new THREE.Scene()
   scene.background = new THREE.Color(0xf5f0e8)
 
-  camera = new THREE.PerspectiveCamera(50, W / H, 0.05, 50)
-  camera.position.set(2.7, 1.9, 3.0)
-  camera.lookAt(0, 1.1, -1.8)
+  camera = new THREE.PerspectiveCamera(55, W / H, 0.05, 50)
+  camera.position.set(3.2, 1.5, 3.4)
+  camera.lookAt(-0.4, 1.3, -1.8)
 
   controls = new OrbitControls(camera, renderer.domElement)
-  controls.target.set(0, 1.1, -1.8)
+  controls.target.set(-0.4, 1.3, -1.8)
   controls.enablePan      = false
   controls.minPolarAngle  = Math.PI / 5
   controls.maxPolarAngle  = Math.PI / 2.1
-  controls.minAzimuthAngle = -Math.PI / 10
-  controls.maxAzimuthAngle =  Math.PI / 3.2
+  controls.minAzimuthAngle = -Math.PI / 6
+  controls.maxAzimuthAngle =  Math.PI / 2.8
   controls.minDistance    = 2.0
-  controls.maxDistance    = 5.5
+  controls.maxDistance    = 6.0
   controls.update()
 
   buildLighting()
@@ -122,6 +131,7 @@ function initScene() {
 
   ;(function animate() {
     animId = requestAnimationFrame(animate)
+    if (view.value !== '3d') return
     controls.update()
     renderer.render(scene, camera)
   })()
@@ -129,7 +139,8 @@ function initScene() {
 
 // ── Lighting ─────────────────────────────────────────────────────────────────
 function buildLighting() {
-  scene.add(new THREE.AmbientLight(0xfff8ee, 1.3))
+  // Reduced ambient so shadows inside grooves have proper contrast
+  scene.add(new THREE.AmbientLight(0xfff8ee, 0.55))
 
   const p = (x, y, z, intensity) => {
     const l = new THREE.PointLight(0xfff0d8, intensity, 10)
@@ -141,10 +152,17 @@ function buildLighting() {
   p(-0.9, 2.45, 0.5, 2.4)
   p( 1.4, 2.45, 0.5, 2.0)
 
-  const win = new THREE.DirectionalLight(0xd0e8ff, 0.85)
+  // Window – cool side light from the right
+  const win = new THREE.DirectionalLight(0xd0e8ff, 1.1)
   win.position.set(5, 3, 2)
   win.target.position.set(-1, 1, -2)
   scene.add(win, win.target)
+
+  // Grazing fill from the left – catches raised panel edges
+  const fill = new THREE.DirectionalLight(0xfff4e0, 0.7)
+  fill.position.set(-4, 1.5, 3)
+  fill.target.position.set(0, 1, -2)
+  scene.add(fill, fill.target)
 }
 
 // ── Room shell ───────────────────────────────────────────────────────────────
@@ -161,8 +179,8 @@ function buildRoom() {
     return m
   }
 
-  // Floor – light warm wood tone
-  plane(5.4, 5.0, std(0xc4b79e), 0,  0,  -0.2, -Math.PI / 2)
+  // Floor – light grey/white wood planks (matching the photo)
+  plane(5.4, 5.0, std(0xdddbd4), 0,  0,  -0.2, -Math.PI / 2)
   // Back wall
   plane(5.4, 2.8, lam(0xe8e3da), 0, 1.4, -2.0)
   // Left wall
@@ -210,141 +228,124 @@ function buildRoom() {
 
 // ── Kitchen ──────────────────────────────────────────────────────────────────
 function buildKitchen() {
-  chipMat = new THREE.MeshStandardMaterial({ roughness: 0.75, metalness: 0.0 })
-  mdfMat  = new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.0 })
-  ctMat   = new THREE.MeshStandardMaterial({ roughness: 0.28, metalness: 0.06 })
-  sinkMat = new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0.08 })
+  chipMat   = new THREE.MeshStandardMaterial({ roughness: 0.70, metalness: 0.02 })
+  mdfMat    = new THREE.MeshStandardMaterial({ roughness: 0.40, metalness: 0.04 })
+  grooveMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.98, metalness: 0.0 })
+  ctMat     = new THREE.MeshStandardMaterial({ roughness: 0.28, metalness: 0.06 })
 
   applyToMat(chipMat, store.chipboard)
   applyToMat(mdfMat,  store.mdf)
   applyToMat(ctMat,   store.countertop)
-  applyToMat(sinkMat, store.sink)
 
   // Trigger initial emissive state
   chipMat.emissive = new THREE.Color(store.activeMaterial === 'chipboard'  ? 0x1a1000 : 0x000000)
   mdfMat .emissive = new THREE.Color(store.activeMaterial === 'mdf'        ? 0x1a1000 : 0x000000)
   ctMat  .emissive = new THREE.Color(store.activeMaterial === 'countertop' ? 0x1a1000 : 0x000000)
-  sinkMat.emissive = new THREE.Color(store.activeMaterial === 'sink'       ? 0x1a1000 : 0x000000)
 
   const handleMat = new THREE.MeshStandardMaterial({ color: 0xd0d0d0, roughness: 0.12, metalness: 0.92 })
 
   const WZ   = -1.97   // face of back wall (cabinets live between WZ and WZ+depth)
   const UDEP = 0.34    // upper cabinet depth
   const LDEP = 0.60    // lower cabinet depth
-  const DOOR = 0.016   // door panel thickness
+  const DOOR = 0.028   // door panel thickness
 
-  // ── Upper cabinets ──
-  makeUpperBank(-2.05, -0.68, WZ, UDEP, DOOR, handleMat)
-  makeUpperBank( 0.68,  2.05, WZ, UDEP, DOOR, handleMat)
-
-  // ── Range hood ──
-  const hoodMat = new THREE.MeshStandardMaterial({ color: 0x1e1c18, roughness: 0.28, metalness: 0.5 })
   const box = (w, h, d, mat, x, y, z) => {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat)
     m.position.set(x, y, z); m.castShadow = true; scene.add(m); return m
   }
-  box(0.26, 0.58, 0.22, hoodMat, 0, 2.0,  WZ - 0.11)  // chimney
-  box(1.08, 0.38, 0.50, hoodMat, 0, 1.62, WZ - 0.25)  // canopy
-  // Grille slats
-  const grilleMat = new THREE.MeshStandardMaterial({ color: 0x111, roughness: 0.4, metalness: 0.3 })
-  for (let i = 0; i < 3; i++) {
-    box(0.82, 0.04, 0.015, grilleMat, 0, 1.5 - i * 0.055, WZ - 0.47)
-  }
-  // LED strip at hood bottom (emissive)
-  const ledMat = new THREE.MeshStandardMaterial({
-    color: 0xd4a010, emissive: new THREE.Color(0xd4a010), emissiveIntensity: 0.45,
-  })
-  box(0.98, 0.022, 0.04, ledMat, 0, 1.43, WZ - 0.47)
-  // Under-hood warm glow
-  const ledGlowL = new THREE.PointLight(0xd4900a, 1.1, 1.6)
-  ledGlowL.position.set(-1.3, 1.44, -1.72); scene.add(ledGlowL)
-  const ledGlowR = new THREE.PointLight(0xd4900a, 1.1, 1.6)
-  ledGlowR.position.set( 1.3, 1.44, -1.72); scene.add(ledGlowR)
 
-  // ── Backsplash tile panels ──
-  const bsMat = new THREE.MeshStandardMaterial({ color: 0x1e1b18, roughness: 0.65, metalness: 0.05 })
-  const bsH = 0.50, bsY = 1.195
-  const bsL = new THREE.Mesh(new THREE.PlaneGeometry(1.37, bsH), bsMat)
-  bsL.position.set(-1.365, bsY, -1.984); scene.add(bsL)
-  const bsR = new THREE.Mesh(new THREE.PlaneGeometry(1.37, bsH), bsMat)
-  bsR.position.set( 1.365, bsY, -1.984); scene.add(bsR)
+  // ── Upper cabinets – one continuous run, same width as countertop (-1.80 → 1.40) ──
+  makeUpperBank(-1.80, 1.40, WZ, UDEP, DOOR, handleMat)
+
+  // ── Range hood (slim built-in style) ──
+  const hoodMat = new THREE.MeshStandardMaterial({ color: 0x1e1c18, roughness: 0.28, metalness: 0.5 })
+  box(0.18, 0.80, 0.18, hoodMat,  0, 2.06, WZ - 0.09)   // chimney
+  box(0.90, 0.28, 0.44, hoodMat,  0, 1.66, WZ - 0.22)   // canopy
+  const grilleMat = new THREE.MeshStandardMaterial({ color: 0x111, roughness: 0.4, metalness: 0.3 })
+  for (let i = 0; i < 3; i++) box(0.70, 0.032, 0.014, grilleMat, 0, 1.54 - i * 0.048, WZ - 0.43)
+  // LED strip under hood
+  const ledMat = new THREE.MeshStandardMaterial({ color: 0xd4a010, emissive: new THREE.Color(0xd4a010), emissiveIntensity: 0.5 })
+  box(0.80, 0.018, 0.036, ledMat, 0, 1.45, WZ - 0.43)
+  const ledGlowL = new THREE.PointLight(0xd4900a, 1.0, 1.6); ledGlowL.position.set(-1.1, 1.46, -1.72); scene.add(ledGlowL)
+  const ledGlowR = new THREE.PointLight(0xd4900a, 1.0, 1.6); ledGlowR.position.set( 1.1, 1.46, -1.72); scene.add(ledGlowR)
+
+  // ── Under-cabinet LED strip (warm glow over backsplash) ──
+  const ucLedMat = new THREE.MeshStandardMaterial({ color: 0xffe8b0, emissive: new THREE.Color(0xffe8b0), emissiveIntensity: 0.6 })
+  // Cabinets run from x=-1.80 to x=1.40 → width=3.20, centre=-0.20
+  box(3.20, 0.012, 0.018, ucLedMat, -0.20, 1.465, WZ + 0.015)
+  const ucGlow = new THREE.PointLight(0xffe090, 0.7, 2.2); ucGlow.position.set(-0.20, 1.36, WZ + 0.32); scene.add(ucGlow)
+
+  // ── Marble backsplash ──
+  const bsMat = new THREE.MeshStandardMaterial({ color: 0xf0edea, roughness: 0.20, metalness: 0.05 })
+  const bsH = 0.52, bsY = 1.20
+  const bsFull = new THREE.Mesh(new THREE.PlaneGeometry(3.20, bsH), bsMat)
+  bsFull.position.set(-0.20, bsY, -1.983); scene.add(bsFull)
 
   // ── Countertop slab ──
-  const ct = new THREE.Mesh(new THREE.BoxGeometry(4.14, 0.06, 0.67), ctMat)
-  ct.position.set(0, 0.93, WZ + 0.67 / 2 - 0.01)
+  const ct = new THREE.Mesh(new THREE.BoxGeometry(3.20, 0.06, 0.67), ctMat)
+  ct.position.set(-0.20, 0.93, WZ + 0.67 / 2 - 0.01)
   ct.castShadow = true; ct.receiveShadow = true
   ct.userData.zone = 'countertop'
   ctMeshes.push(ct); scene.add(ct)
 
-  // ── Sink basin (clickable, uses sinkMat) ──
-  // Outer shell
-  const sinkShell = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.10, 0.48), sinkMat)
-  sinkShell.position.set(0, 0.905, WZ + 0.48 / 2 + 0.05)
-  sinkShell.castShadow = true
-  sinkShell.userData.zone = 'sink'
-  sinkMeshes.push(sinkShell); scene.add(sinkShell)
-  // Inner basin (dark recessed area)
-  const basinMat = new THREE.MeshStandardMaterial({ color: 0x141414, roughness: 0.5, metalness: 0.3 })
-  const basin = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.07, 0.40), basinMat)
-  basin.position.set(0, 0.915, WZ + 0.40 / 2 + 0.07)
-  scene.add(basin)
-  // Drain disc
-  const drainMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.2, metalness: 0.8 })
-  const drain = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.008, 16), drainMat)
-  drain.position.set(0, 0.883, WZ + 0.26)
-  scene.add(drain)
-
-  // ── Faucet (arch tube along a Bezier curve) ──
-  const fMat = new THREE.MeshStandardMaterial({ color: 0xc8c8c8, roughness: 0.12, metalness: 0.90 })
-  const fBase = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.024, 0.06, 12), fMat)
-  fBase.position.set(-0.13, 0.985, WZ + 0.10); scene.add(fBase)
-  const curve = new THREE.QuadraticBezierCurve3(
-    new THREE.Vector3(-0.13, 0.96, WZ + 0.10),
-    new THREE.Vector3(-0.13, 1.22, WZ + 0.22),
-    new THREE.Vector3( 0.05, 0.96, WZ + 0.40)
-  )
-  const arch = new THREE.Mesh(new THREE.TubeGeometry(curve, 24, 0.013, 8, false), fMat)
-  scene.add(arch)
-  const spout = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.04, 8), fMat)
-  spout.position.set(0.05, 0.94, WZ + 0.40); scene.add(spout)
 
   // ── Lower cabinets ──
-  makeLowerBank(-2.05, -0.68, WZ, LDEP, DOOR, handleMat)
+  makeLowerBank(-1.80, -0.68, WZ, LDEP, DOOR, handleMat)
   makeSinkCab(  -0.68,  0.68, WZ, LDEP, DOOR, handleMat)
-  makeLowerBank( 0.68,  2.05, WZ, LDEP, DOOR, handleMat)
+  makeLowerBank( 0.68,  1.40, WZ, LDEP, DOOR, handleMat)
 
   // ── Kickboard ──
-  const kickMat = new THREE.MeshStandardMaterial({ color: 0x151210, roughness: 0.85 })
-  const kick = new THREE.Mesh(new THREE.BoxGeometry(4.14, 0.12, 0.04), kickMat)
-  kick.position.set(0, 0.06, WZ + 0.01); scene.add(kick)
+  const kickMat = new THREE.MeshStandardMaterial({ color: 0x0e0c0a, roughness: 0.9 })
+  const kick = new THREE.Mesh(new THREE.BoxGeometry(3.20, 0.12, 0.04), kickMat)
+  kick.position.set(-0.20, 0.06, WZ + LDEP + 0.02); scene.add(kick)
+
+  // ── Left pantry tower (glass-front, full height) ──
+  makePantryTower(-2.55, -1.80, WZ, LDEP, DOOR)
+
+  // ── Right fridge / appliance tower ──
+  // Fridge: left edge at 1.40 (flush with cabinet right edge), centre at 1.76
+  const fridgeMat = new THREE.MeshStandardMaterial({ color: 0x636058, roughness: 0.28, metalness: 0.18 })
+  box(0.72, 2.56, 0.62, fridgeMat, 1.76, 1.28, WZ + 0.31)
+  const seamMat = new THREE.MeshStandardMaterial({ color: 0x111, roughness: 0.9 })
+  box(0.70, 0.003, 0.015, seamMat, 1.76, 1.75, WZ + 0.625)
+  const fHan = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.40, 0.018), handleMat)
+  fHan.position.set(1.76 - 0.28, 1.5, WZ + 0.64); scene.add(fHan)
+  // Top cabinet panel above fridge (same chipMat)
+  // (fridge goes nearly to ceiling – no gap needed)
 }
 
 // ── Cabinet helpers ───────────────────────────────────────────────────────────
 function makeUpperBank(x1, x2, wz, depth, doorThick, handleMat) {
   const w  = x2 - x1
-  const h  = 0.72
+  const h  = 1.10   // tall upper cabinets, bottom 1.46 → top 2.56
   const cx = (x1 + x2) / 2
-  const cy = 1.46 + h / 2  // bottom at 1.46, top at ~2.18
+  const cy = 1.46 + h / 2
 
+  // Carcass protrudes OUT from the wall (back face at wz, front face at wz + depth)
   const carc = new THREE.Mesh(new THREE.BoxGeometry(w - 0.005, h - 0.005, depth), chipMat)
-  carc.position.set(cx, cy, wz - depth / 2)
-  carc.castShadow = true
+  carc.position.set(cx, cy, wz + depth / 2)
+  carc.castShadow = true; carc.receiveShadow = true
   carc.userData.zone = 'chipboard'
   chipMeshes.push(carc); scene.add(carc)
 
-  const n  = 3
+  const n  = Math.max(2, Math.round((w - 0.024) / 0.52))
   const dw = (w - 0.024) / n
   for (let i = 0; i < n; i++) {
-    const dx = x1 + 0.012 + dw * (i + 0.5)
-    const door = new THREE.Mesh(new THREE.BoxGeometry(dw - 0.006, h - 0.018, doorThick), mdfMat)
-    door.position.set(dx, cy, wz + doorThick / 2)
-    door.castShadow = true
+    const dx    = x1 + 0.012 + dw * (i + 0.5)
+    const dW    = dw - 0.006
+    const dH    = h - 0.018
+    const dFace = wz + depth + doorThick  // front face of door
+
+    // Flat slab door on the front face of the carcass
+    const door = new THREE.Mesh(new THREE.BoxGeometry(dW, dH, doorThick), mdfMat)
+    door.position.set(dx, cy, wz + depth + doorThick / 2)
+    door.castShadow = true; door.receiveShadow = true
     door.userData.zone = 'mdf'
     mdfMeshes.push(door); scene.add(door)
 
-    // Vertical bar handle near door bottom
-    const han = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.1, 8), handleMat)
-    han.position.set(dx, cy - h / 2 + 0.15, wz + doorThick + 0.012)
+    // Thin integrated groove handle at door bottom
+    const han = new THREE.Mesh(new THREE.BoxGeometry(dW * 0.52, 0.010, 0.005), grooveMat)
+    han.position.set(dx, cy - dH / 2 + 0.024, dFace + 0.003)
     scene.add(han)
   }
 }
@@ -353,68 +354,135 @@ function makeLowerBank(x1, x2, wz, depth, doorThick, handleMat) {
   const w   = x2 - x1
   const h   = 0.88
   const cx  = (x1 + x2) / 2
-  const cy  = h / 2
 
+  // Carcass protrudes OUT from wall (back at wz, front at wz + depth)
   const carc = new THREE.Mesh(new THREE.BoxGeometry(w - 0.005, h - 0.005, depth), chipMat)
-  carc.position.set(cx, cy, wz - depth / 2)
-  carc.castShadow = true
+  carc.position.set(cx, h / 2, wz + depth / 2)
+  carc.castShadow = true; carc.receiveShadow = true
   carc.userData.zone = 'chipboard'
   chipMeshes.push(carc); scene.add(carc)
 
-  // Drawer
-  const drawerH = 0.2
+  // Flat slab drawer on the front face of the carcass
+  const drawerH  = 0.20
+  const drawerCY = h - drawerH / 2 - 0.006
+  const drFace   = wz + depth + doorThick
+
   const drawer = new THREE.Mesh(new THREE.BoxGeometry(w - 0.016, drawerH - 0.008, doorThick), mdfMat)
-  drawer.position.set(cx, h - drawerH / 2 - 0.006, wz + doorThick / 2)
+  drawer.position.set(cx, drawerCY, wz + depth + doorThick / 2)
+  drawer.castShadow = true; drawer.receiveShadow = true
   drawer.userData.zone = 'mdf'
   mdfMeshes.push(drawer); scene.add(drawer)
-  // Horizontal bar handle on drawer
-  const dhan = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, w * 0.45, 8), handleMat)
-  dhan.rotation.z = Math.PI / 2
-  dhan.position.set(cx, h - drawerH / 2 - 0.006, wz + doorThick + 0.013)
-  scene.add(dhan)
+  const dHan = new THREE.Mesh(new THREE.BoxGeometry((w - 0.016) * 0.52, 0.010, 0.005), grooveMat)
+  dHan.position.set(cx, drawerCY + (drawerH - 0.008) / 2 - 0.024, drFace + 0.003)
+  scene.add(dHan)
 
-  // 2 doors
+  // 2 flat slab lower doors
   const doorH = h - drawerH - 0.015
   const dw    = (w - 0.024) / 2
   for (let i = 0; i < 2; i++) {
-    const dx   = x1 + 0.012 + dw * (i + 0.5)
-    const door = new THREE.Mesh(new THREE.BoxGeometry(dw - 0.006, doorH - 0.006, doorThick), mdfMat)
-    door.position.set(dx, (doorH - 0.006) / 2 + 0.008, wz + doorThick / 2)
-    door.castShadow = true
+    const dx     = x1 + 0.012 + dw * (i + 0.5)
+    const doorCY = (doorH - 0.006) / 2 + 0.008
+    const ldW    = dw - 0.006
+    const ldH    = doorH - 0.006
+    const ldFace = wz + depth + doorThick
+
+    const door = new THREE.Mesh(new THREE.BoxGeometry(ldW, ldH, doorThick), mdfMat)
+    door.position.set(dx, doorCY, wz + depth + doorThick / 2)
+    door.castShadow = true; door.receiveShadow = true
     door.userData.zone = 'mdf'
     mdfMeshes.push(door); scene.add(door)
-    const han = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.1, 8), handleMat)
-    han.position.set(dx, doorH - 0.16, wz + doorThick + 0.013)
+    const han = new THREE.Mesh(new THREE.BoxGeometry(ldW * 0.52, 0.010, 0.005), grooveMat)
+    han.position.set(dx, doorCY + ldH / 2 - 0.024, ldFace + 0.003)
     scene.add(han)
   }
 }
 
 function makeSinkCab(x1, x2, wz, depth, doorThick, handleMat) {
-  const w  = x2 - x1
-  const h  = 0.88
-  const cx = (x1 + x2) / 2
+  const w      = x2 - x1
+  const h      = 0.88
+  const cx     = (x1 + x2) / 2
+  const sdFace = wz + depth + doorThick
 
+  // Carcass protrudes OUT from wall
   const carc = new THREE.Mesh(new THREE.BoxGeometry(w - 0.005, h - 0.005, depth), chipMat)
-  carc.position.set(cx, h / 2, wz - depth / 2)
-  carc.castShadow = true
+  carc.position.set(cx, h / 2, wz + depth / 2)
+  carc.castShadow = true; carc.receiveShadow = true
   carc.userData.zone = 'chipboard'
   chipMeshes.push(carc); scene.add(carc)
 
-  const door = new THREE.Mesh(new THREE.BoxGeometry(w - 0.016, h - 0.018, doorThick), mdfMat)
-  door.position.set(cx, h / 2, wz + doorThick / 2)
+  const sdW = w - 0.016, sdH = h - 0.018
+  const door = new THREE.Mesh(new THREE.BoxGeometry(sdW, sdH, doorThick), mdfMat)
+  door.position.set(cx, h / 2, wz + depth + doorThick / 2)
+  door.castShadow = true; door.receiveShadow = true
   door.userData.zone = 'mdf'
   mdfMeshes.push(door); scene.add(door)
-
-  const han = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.1, 8), handleMat)
-  han.position.set(cx, h / 2 + 0.14, wz + doorThick + 0.013)
+  const han = new THREE.Mesh(new THREE.BoxGeometry(sdW * 0.52, 0.010, 0.005), grooveMat)
+  han.position.set(cx, h / 2 + sdH / 2 - 0.024, sdFace + 0.003)
   scene.add(han)
+}
+
+function makePantryTower(x1, x2, wz, depth, doorThick) {
+  const w  = x2 - x1
+  const h  = 2.56
+  const cx = (x1 + x2) / 2
+
+  // Carcass protrudes OUT from wall (back face at wz, front face at wz + depth)
+  const carc = new THREE.Mesh(new THREE.BoxGeometry(w - 0.005, h - 0.005, depth), chipMat)
+  carc.position.set(cx, h / 2, wz + depth / 2)
+  carc.castShadow = true; carc.receiveShadow = true
+  carc.userData.zone = 'chipboard'
+  chipMeshes.push(carc); scene.add(carc)
+
+  // Interior shelves centred inside the carcass depth
+  const shelfMat = new THREE.MeshStandardMaterial({ color: 0xc8b888, roughness: 0.60 })
+  for (let i = 0; i <= 5; i++) {
+    const sy = 0.28 + i * (h - 0.42) / 5
+    const shelf = new THREE.Mesh(new THREE.BoxGeometry(w - 0.040, 0.018, depth - 0.040), shelfMat)
+    shelf.position.set(cx, sy, wz + depth / 2)
+    scene.add(shelf)
+  }
+
+  // Glass-front doors on the front face of the carcass
+  const glassMat = new THREE.MeshStandardMaterial({
+    color: 0xc8d8e0, transparent: true, opacity: 0.18,
+    roughness: 0.05, metalness: 0.12, depthWrite: false,
+  })
+  const frameMat = new THREE.MeshStandardMaterial({ color: 0x1a1714, roughness: 0.75 })
+  const dw    = (w - 0.024) / 2
+  const dH    = h - 0.018
+  const dFace = wz + depth + doorThick
+
+  for (let i = 0; i < 2; i++) {
+    const dx = x1 + 0.012 + dw * (i + 0.5)
+    const dW = dw - 0.006
+    const doorZ = wz + depth + doorThick / 2
+
+    const glDoor = new THREE.Mesh(new THREE.BoxGeometry(dW, dH, doorThick), glassMat)
+    glDoor.position.set(dx, h / 2, doorZ)
+    scene.add(glDoor)
+
+    const fw = 0.022
+    const addFrame = (fw, fh, fd, fx, fy) => {
+      const f = new THREE.Mesh(new THREE.BoxGeometry(fw, fh, fd), frameMat)
+      f.position.set(fx, fy, doorZ); scene.add(f)
+    }
+    addFrame(dW, fw, doorThick + 0.001, dx, h / 2 + dH / 2 - fw / 2)
+    addFrame(dW, fw, doorThick + 0.001, dx, h / 2 - dH / 2 + fw / 2)
+    addFrame(fw, dH, doorThick + 0.001, dx - dW / 2 + fw / 2, h / 2)
+    addFrame(fw, dH, doorThick + 0.001, dx + dW / 2 - fw / 2, h / 2)
+    addFrame(dW, fw, doorThick + 0.001, dx, h / 2)
+
+    const pHan = new THREE.Mesh(new THREE.BoxGeometry(0.010, 0.28, 0.016), grooveMat)
+    pHan.position.set(dx + (i === 0 ? dW / 2 - 0.04 : -dW / 2 + 0.04), h / 2, dFace + 0.012)
+    scene.add(pHan)
+  }
 }
 
 // ── Raycasting for click-to-select ────────────────────────────────────────────
 function buildRaycaster() {
   const raycaster = new THREE.Raycaster()
   const mouse     = new THREE.Vector2()
-  const allClick  = [...chipMeshes, ...mdfMeshes, ...ctMeshes, ...sinkMeshes]
+  const allClick  = [...chipMeshes, ...mdfMeshes, ...ctMeshes]
 
   renderer.domElement.addEventListener('click', e => {
     const rect = renderer.domElement.getBoundingClientRect()
@@ -434,9 +502,9 @@ function buildRaycaster() {
   <section id="visualizer" class="visualizer section-pad">
     <div class="section-container">
       <div class="section-header reveal">
-        <span class="section-label">Design Studio</span>
-        <h2>Build Your Kitchen</h2>
-        <p>Select a material category, choose a color, and watch your kitchen transform in real time.</p>
+        <span class="section-label">{{ t('visualizer.label') }}</span>
+        <h2>{{ t('visualizer.title') }}</h2>
+        <p>{{ t('visualizer.subtitle') }}</p>
       </div>
 
       <div class="vis-layout reveal">
@@ -502,24 +570,32 @@ function buildRaycaster() {
                 : { background: store.chipboard.color }"/>
               <span class="sum-text">{{ store.chipboard.name }}</span>
             </div>
-            <div class="sum-item">
-              <span class="sum-dot" :style="store.sink.image
-                ? { backgroundImage: `url('${store.sink.image}')`, backgroundSize: 'cover' }
-                : { background: store.sink.color }"/>
-              <span class="sum-text">{{ store.sink.name }}</span>
-            </div>
           </div>
         </div>
 
-        <!-- Three.js canvas -->
+        <!-- Preview -->
         <div class="kitchen-wrap">
-          <canvas ref="canvasRef" class="kitchen-canvas"/>
+          <div class="view-switch">
+            <button :class="['vbtn', { active: view === 'photo' }]" @click="view = 'photo'">
+              {{ t('visualizer.viewPhoto') }}
+            </button>
+            <button :class="['vbtn', { active: view === '3d' }]" @click="view = '3d'">
+              {{ t('visualizer.view3d') }}
+            </button>
+          </div>
+
+          <KitchenPhoto v-show="view === 'photo'"/>
+
+          <div v-show="view === '3d'" class="canvas-slot">
+            <canvas ref="canvasRef" class="kitchen-canvas"/>
+          </div>
+
           <div class="kitchen-hint">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <circle cx="7" cy="7" r="6" stroke="#888" stroke-width="1.2"/>
               <path d="M7 6v4M7 4.5v.5" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
             </svg>
-            Click a surface to switch material · Drag to rotate
+            {{ view === 'photo' ? t('visualizer.hintPhoto') : t('visualizer.hint') }}
           </div>
         </div>
       </div>
@@ -571,7 +647,7 @@ function buildRaycaster() {
   width: 100%;
 }
 .ptab:hover { border-color: var(--border-light); }
-.ptab.active { background: rgba(201,168,76,0.08); border-color: var(--accent); }
+.ptab.active { background: rgba(154,106,66,0.08); border-color: var(--accent); }
 .ptab-label { font-size: 14px; font-weight: 600; color: var(--text-primary); }
 .ptab-hint  { font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; }
 .ptab.active .ptab-label { color: var(--accent); }
@@ -588,8 +664,8 @@ function buildRaycaster() {
 }
 .cur-dot {
   width: 32px; height: 32px;
-  border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0;
+  border: 1px solid rgba(43,39,36,0.12);
   flex-shrink: 0;
 }
 .cur-info { display: flex; flex-direction: column; gap: 1px; }
@@ -605,7 +681,7 @@ function buildRaycaster() {
 .cswatch {
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 6px;
+  border-radius: 0;
   border: 2px solid transparent;
   cursor: pointer;
   transition: all var(--transition);
@@ -633,19 +709,48 @@ function buildRaycaster() {
 .sum-item { display: flex; align-items: center; gap: 10px; }
 .sum-dot {
   width: 16px; height: 16px;
-  border-radius: 4px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0;
+  border: 1px solid rgba(43,39,36,0.12);
   flex-shrink: 0;
 }
 .sum-text { font-size: 12px; color: var(--text-secondary); }
 
-/* Three.js canvas */
+/* Preview */
 .kitchen-wrap {
+  position: relative;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: #f5f0e8;
 }
+
+.view-switch {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 0;
+  background: rgba(20,18,16,0.55);
+  backdrop-filter: blur(6px);
+}
+.vbtn {
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,0.75);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.vbtn:hover  { color: #fff; }
+.vbtn.active { background: var(--accent); color: var(--on-accent); }
 .kitchen-canvas {
   width: 100%;
   display: block;
@@ -671,6 +776,8 @@ function buildRaycaster() {
     gap: 20px;
   }
   .panel { position: static; }
+  /* preview first, so the photo stays in view while swatches are tapped */
+  .kitchen-wrap { order: -1; }
   .panel-tabs {
     flex-direction: row;
     flex-wrap: wrap;

@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { store } from '../store.js'
 import { sinks, faucets } from '../data/materials.js'
+import { t } from '../i18n.js'
 
 const popup = ref(null)
 // track whether popup is for a sink or faucet
@@ -54,9 +55,9 @@ const finishLabel = (color) => {
 
       <!-- ── Sinks ── -->
       <div class="section-header reveal">
-        <span class="section-label">Accessories</span>
-        <h2>Sink Collection</h2>
-        <p>Premium granite composite sinks by Sadoperi — available in multiple models and finishes. Click any model to view details.</p>
+        <span class="section-label">{{ t('accessories.label') }}</span>
+        <h2>{{ t('accessories.sinkTitle') }}</h2>
+        <p>{{ t('accessories.sinkSubtitle') }}</p>
       </div>
 
       <div class="acc-grid reveal">
@@ -73,7 +74,7 @@ const finishLabel = (color) => {
                   <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="white" stroke-width="1.4"/>
                   <circle cx="8" cy="8" r="2" stroke="white" stroke-width="1.4"/>
                 </svg>
-                View details
+                {{ t('accessories.viewDetails') }}
               </span>
             </div>
             <div v-if="isSinkSelected(sink)" class="selected-badge">
@@ -94,8 +95,8 @@ const finishLabel = (color) => {
 
       <!-- ── Faucets ── -->
       <div class="section-header section-header--sub reveal">
-        <h2>Faucet Collection</h2>
-        <p>Kitchen mixer taps by Son Donna — available in multiple styles and finishes.</p>
+        <h2>{{ t('accessories.faucetTitle') }}</h2>
+        <p>{{ t('accessories.faucetSubtitle') }}</p>
       </div>
 
       <div class="acc-grid reveal">
@@ -112,7 +113,7 @@ const finishLabel = (color) => {
                   <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="white" stroke-width="1.4"/>
                   <circle cx="8" cy="8" r="2" stroke="white" stroke-width="1.4"/>
                 </svg>
-                View details
+                {{ t('accessories.viewDetails') }}
               </span>
             </div>
           </div>
@@ -157,39 +158,41 @@ const finishLabel = (color) => {
 
             <div class="modal-divider"/>
 
-            <!-- Dimensions -->
-            <p class="modal-section-title">Dimensions</p>
-            <div class="modal-dims">
-              <template v-if="popup.dimensions.diameter != null">
+            <!-- Dimensions (sinks only) -->
+            <template v-if="popupCategory === 'sink'">
+              <p class="modal-section-title">{{ t('accessories.dimensions') }}</p>
+              <div class="modal-dims">
+                <template v-if="popup.dimensions.diameter != null">
+                  <div class="dim-row">
+                    <span class="dim-label">{{ t('accessories.diameter') }}</span>
+                    <span class="dim-val">Ф{{ popup.dimensions.diameter }} mm</span>
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="dim-row">
+                    <span class="dim-label">{{ t('accessories.length') }}</span>
+                    <span class="dim-val">{{ dim(popup.dimensions.length) }}</span>
+                  </div>
+                  <div class="dim-row">
+                    <span class="dim-label">{{ t('accessories.width') }}</span>
+                    <span class="dim-val">{{ dim(popup.dimensions.width) }}</span>
+                  </div>
+                </template>
                 <div class="dim-row">
-                  <span class="dim-label">Diameter</span>
-                  <span class="dim-val">Ф{{ popup.dimensions.diameter }} mm</span>
+                  <span class="dim-label">{{ t('accessories.depth') }}</span>
+                  <span class="dim-val">{{ dim(popup.dimensions.depth) }}</span>
                 </div>
-              </template>
-              <template v-else>
-                <div class="dim-row">
-                  <span class="dim-label">Length</span>
-                  <span class="dim-val">{{ dim(popup.dimensions.length) }}</span>
-                </div>
-                <div class="dim-row">
-                  <span class="dim-label">Width</span>
-                  <span class="dim-val">{{ dim(popup.dimensions.width) }}</span>
-                </div>
-              </template>
-              <div class="dim-row">
-                <span class="dim-label">{{ popupCategory === 'faucet' ? 'Height' : 'Depth' }}</span>
-                <span class="dim-val">{{ popupCategory === 'faucet' ? dim(popup.dimensions.height) : dim(popup.dimensions.depth) }}</span>
               </div>
-            </div>
+            </template>
 
             <div class="modal-actions">
               <button v-if="popupCategory === 'sink'" class="modal-apply" @click="apply(popup)">
-                Apply to Design
+                {{ t('accessories.apply') }}
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
-              <button class="modal-cancel" @click="close">Close</button>
+              <button class="modal-cancel" @click="close">{{ t('accessories.close') }}</button>
             </div>
           </div>
         </div>
@@ -227,7 +230,7 @@ const finishLabel = (color) => {
 .acc-card:hover {
   border-color: var(--border-light);
   transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  box-shadow: 0 16px 36px rgba(43,39,36,0.12);
 }
 .acc-card.selected {
   border-color: var(--accent);
@@ -274,7 +277,7 @@ const finishLabel = (color) => {
   background: rgba(255,255,255,0.12);
   border: 1px solid rgba(255,255,255,0.25);
   padding: 8px 16px;
-  border-radius: 100px;
+  border-radius: 0;
 }
 
 .selected-badge {
@@ -282,7 +285,7 @@ const finishLabel = (color) => {
   top: 10px; right: 10px;
   width: 26px; height: 26px;
   background: var(--accent);
-  border-radius: 50%;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -299,7 +302,7 @@ const finishLabel = (color) => {
   width: 20px; height: 20px;
   border-radius: 50%;
   flex-shrink: 0;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(43,39,36,0.12);
 }
 .acc-text {
   display: flex;
@@ -325,7 +328,7 @@ const finishLabel = (color) => {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.82);
+  background: rgba(43,39,36,0.5);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: 1000;
@@ -346,16 +349,16 @@ const finishLabel = (color) => {
   max-height: 90vh;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+  box-shadow: 0 32px 80px rgba(43,39,36,0.18);
 }
 
 .modal-close {
   position: absolute;
   top: 16px; right: 16px;
   width: 36px; height: 36px;
-  background: rgba(0,0,0,0.5);
+  background: rgba(255,255,255,0.88);
   border: 1px solid var(--border-light);
-  border-radius: 50%;
+  border-radius: 0;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
@@ -417,7 +420,7 @@ const finishLabel = (color) => {
 .modal-color-dot {
   width: 24px; height: 24px;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(43,39,36,0.12);
   flex-shrink: 0;
 }
 .modal-color-label {
@@ -484,7 +487,7 @@ const finishLabel = (color) => {
   justify-content: center;
   gap: 8px;
   background: var(--accent);
-  color: #000;
+  color: var(--on-accent);
   border: none;
   padding: 14px 24px;
   border-radius: var(--radius);
@@ -527,7 +530,7 @@ const finishLabel = (color) => {
     grid-template-columns: 1fr;
     grid-template-rows: 240px 1fr;
     max-height: 92vh;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-radius: 0;
   }
   .modal-img { min-height: unset; height: 240px; }
   .modal-info { padding: 24px 20px; }

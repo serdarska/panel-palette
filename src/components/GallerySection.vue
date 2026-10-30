@@ -1,5 +1,14 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { t } from '../i18n.js'
+import { countertops, mdfColors, chipboardColors } from '../data/materials.js'
+
+// MDF fronts are looked up by code so names, photos and colours stay current
+const mdf = code => {
+  const p = mdfColors.find(m => m.code === code)
+  return { category: 'MDF Fronts', name: p.name, code: p.code, image: p.image }
+}
+const allMaterials = [...countertops, ...mdfColors, ...chipboardColors]
 
 const popupKitchen = ref(null)
 
@@ -15,89 +24,94 @@ function onKey(e) { if (e.key === 'Escape') closePopup() }
 onMounted(() => window.addEventListener('keydown', onKey))
 onUnmounted(() => window.removeEventListener('keydown', onKey))
 
+const categoryLabel = {
+  'Countertop': 'categories.countertop',
+  'MDF Fronts': 'categories.mdf',
+  'Chipboard':  'categories.chipboard',
+}
+
 const kitchens = [
   {
     name: 'Antrasit Elegance',
     style: 'Contemporary',
-    desc: 'Anthracite fronts · Grey marble backsplash · Warm oak accents',
+    desc: 'Антрацит фронтови · Сив мермерен заштитен ѕид · Топли дабови детали',
     image: '/gallery/kitchen-antrasit.webp',
-    palette: ['#4a4a4a', '#c0b8a8', '#a07848'],
     materials: [
       { category: 'Countertop',  name: '6645 GLOSS',         code: '6645 GLOSS', image: '/materials/countertop/6645 sjaj.jpg' },
-      { category: 'MDF Fronts',  name: 'HG Antrasit',        code: '6022',      image: '/materials/mdf/6022 HG ANTRASIT.webp' },
+      mdf('6022'),
       { category: 'Chipboard',   name: 'Supermat Beylerbeyi',code: '155',       image: '/materials/chipboard/155 Supermat Beylerbeyi.png' },
     ],
   },
   {
     name: 'Sage & Oak',
     style: 'Natural',
-    desc: 'Sage green MDF · Oak chipboard · White countertop',
+    desc: 'Жалфија зелен медијапан · Дабова иверка · Бела плотна',
     image: '/gallery/kitchen-green.webp',
-    palette: ['#7a9e7e', '#a07848', '#f5f5f3'],
     materials: [
       { category: 'Countertop',  name: '6624 MATT',            code: '6624 MATT', image: '/materials/countertop/6624 MAT.jpg' },
-      { category: 'MDF Fronts',  name: 'Soft Touch Green',    code: '735',      image: '/materials/mdf/735 SOFT TOUCH RELAX GREEN (ZELEN).webp' },
+      mdf('735'),
       { category: 'Chipboard',   name: 'Safir Meşe',          code: '102',      image: '/materials/chipboard/102 Safir Mese.jpg' },
     ],
   },
   {
     name: 'Luxury White',
     style: 'Luxury',
-    desc: 'Cream MDF · Calacatta backsplash · Stone island',
+    desc: 'Крем медијапан · Калаката заштитен ѕид · Камен остров',
     image: '/gallery/kitchen-white.webp',
-    palette: ['#f0ece8', '#c0b090', '#686870'],
     materials: [
       { category: 'Countertop',  name: '6681',                code: '6681',     image: '/materials/countertop/6681.png' },
-      { category: 'MDF Fronts',  name: 'HG Krem',             code: '605',      image: '/materials/mdf/605 HG KREM.webp' },
+      mdf('605'),
       { category: 'Chipboard',   name: 'Senkron Dolunay',     code: '161',      image: '/materials/chipboard/161 Senkron Dolunay.jpg' },
     ],
   },
   {
     name: 'Midnight Wood',
     style: 'Premium',
-    desc: 'Black MDF · Dark walnut accents · Marble island countertop',
+    desc: 'Антрацит медијапан · Темни орев детали · Мермерна плотна на островот',
     image: '/gallery/kitchen-antrasit-wood.jpg',
-    palette: ['#1a1a1a', '#5a3820', '#c0b0a0'],
     materials: [
-      { category: 'Countertop',  name: '6633 SHINE',          code: '6633 SHINE', image: '/materials/countertop/6633 sjaj.jpg' },
-      { category: 'MDF Fronts',  name: 'HG Antrasit',         code: '6022',      image: '/materials/mdf/6022 HG ANTRASIT.webp' },
+      { category: 'Countertop',  name: '6633 GLOSS',          code: '6633 GLOSS', image: '/materials/countertop/6633 sjaj.jpg' },
+      mdf('6022'),
       { category: 'Chipboard',   name: 'Tamni Orah Premium',  code: '6676',      image: '/materials/countertop/6676.png' },
     ],
   },
   {
     name: 'Beige & Oak',
     style: 'Transitional',
-    desc: 'Beige soft-touch MDF · Natural oak chipboard · Stone countertop',
+    desc: 'Крем soft-touch медијапан · Природна дабова иверка · Камена плотна',
     image: '/gallery/kitchen-beige.webp',
-    palette: ['#e0d0b0', '#c8a870', '#888878'],
     materials: [
       { category: 'Countertop',  name: '6618',                code: '6618',     image: '/materials/countertop/6618.png' },
-      { category: 'MDF Fronts',  name: 'Soft Touch Krem',     code: '730',      image: '/materials/mdf/730 SOFT TOUCH KREM MAT.webp' },
+      mdf('730'),
       { category: 'Chipboard',   name: 'Safir Meşe',          code: '102',      image: '/materials/chipboard/102 Safir Mese.jpg' },
     ],
   },
   {
     name: 'Pure Walnut',
     style: 'Minimalist',
-    desc: 'Full walnut MDF & chipboard · White quartz countertop · Handle-free design',
+    desc: 'Soft touch Siena медијапан и иверка · Бела кварцна плотна · Дизајн без рачки',
     image: '/gallery/kitchen-wood.jpg',
-    palette: ['#7a5030', '#a07848', '#f5f0e8'],
     materials: [
       { category: 'Countertop',  name: '6624 MATT',            code: '6624 MATT', image: '/materials/countertop/6624 MAT.jpg' },
-      { category: 'MDF Fronts',  name: 'Siena Soft Touch',     code: '737B',     image: '/materials/mdf/737BSIENA SOFT TOUCH .webp' },
+      mdf('737'),
       { category: 'Chipboard',   name: 'Supermat Beylerbeyi',  code: '155',      image: '/materials/chipboard/155 Supermat Beylerbeyi.png' },
     ],
   },
 ]
+
+// colour dots on each card = the colours of the materials it uses
+kitchens.forEach(k => {
+  k.palette = k.materials.map(m => allMaterials.find(x => x.image === m.image)?.color).filter(Boolean)
+})
 </script>
 
 <template>
   <section id="gallery" class="gallery section-pad">
     <div class="section-container">
       <div class="section-header reveal">
-        <span class="section-label">Our Work</span>
-        <h2>Kitchens We've Crafted</h2>
-        <p>A selection of completed kitchens showcasing our material combinations and craftsmanship.</p>
+        <span class="section-label">{{ t('gallery.label') }}</span>
+        <h2>{{ t('gallery.title') }}</h2>
+        <p>{{ t('gallery.subtitle') }}</p>
       </div>
 
       <div class="kitchen-grid">
@@ -122,14 +136,14 @@ const kitchens = [
               </div>
             </template>
             <div class="card-overlay">
-              <span class="style-tag">{{ k.style }}</span>
+              <span class="style-tag">{{ t(`gallery.style${k.style}`) }}</span>
             </div>
             <div class="card-view-hint">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="white" stroke-width="1.4"/>
                 <circle cx="8" cy="8" r="2" stroke="white" stroke-width="1.4"/>
               </svg>
-              View Details
+              {{ t('accessories.viewDetails') }}
             </div>
           </div>
 
@@ -140,7 +154,7 @@ const kitchens = [
               <div class="k-palette">
                 <span v-for="color in k.palette" :key="color" class="pal-dot" :style="{ background: color }"></span>
               </div>
-              <span class="view-link">View details →</span>
+              <span class="view-link">{{ t('gallery.viewDetails') }}</span>
             </div>
           </div>
         </div>
@@ -173,7 +187,7 @@ const kitchens = [
                 <div class="k-lower"></div>
               </div>
             </template>
-            <span class="modal-style-tag">{{ popupKitchen.style }}</span>
+            <span class="modal-style-tag">{{ t(`gallery.style${popupKitchen.style}`) }}</span>
           </div>
 
           <!-- Right: info -->
@@ -183,7 +197,7 @@ const kitchens = [
 
             <div class="modal-divider"></div>
 
-            <span class="modal-mat-label">Materials Used</span>
+            <span class="modal-mat-label">{{ t('gallery.materialsUsed') }}</span>
 
             <div class="modal-materials">
               <div v-for="mat in popupKitchen.materials" :key="mat.code" class="mat-row">
@@ -194,14 +208,14 @@ const kitchens = [
                     : { background: mat.color }"
                 ></div>
                 <div class="mat-text">
-                  <span class="mat-category">{{ mat.category }}</span>
+                  <span class="mat-category">{{ t(categoryLabel[mat.category]) }}</span>
                   <span class="mat-name">{{ mat.category === 'Countertop' ? mat.code : mat.name }}</span>
                   <span v-if="mat.category !== 'Countertop'" class="mat-code">{{ mat.code }}</span>
                 </div>
               </div>
             </div>
 
-            <button class="modal-close-btn" @click="closePopup">Close</button>
+            <button class="modal-close-btn" @click="closePopup">{{ t('gallery.close') }}</button>
           </div>
         </div>
       </div>
@@ -232,7 +246,7 @@ const kitchens = [
 .kitchen-card:hover {
   transform: translateY(-6px);
   border-color: var(--border-light);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  box-shadow: 0 20px 50px rgba(43,39,36,0.14);
 }
 .kitchen-card.photo .card-image { height: 260px; }
 
@@ -262,9 +276,9 @@ const kitchens = [
   z-index: 1;
   pointer-events: none;
 }
-.k-upper { height: 30%; background: rgba(0,0,0,0.25); border-radius: 3px 3px 0 0; margin-bottom: 10%; }
-.k-counter { height: 6%; background: rgba(0,0,0,0.4); border-radius: 1px; }
-.k-lower { height: 28%; background: rgba(0,0,0,0.25); border-radius: 0 0 3px 3px; }
+.k-upper { height: 30%; background: rgba(0,0,0,0.25); border-radius: 0; margin-bottom: 10%; }
+.k-counter { height: 6%; background: rgba(0,0,0,0.4); border-radius: 0; }
+.k-lower { height: 28%; background: rgba(0,0,0,0.25); border-radius: 0; }
 
 .card-overlay { position: absolute; top: 14px; left: 14px; z-index: 2; }
 .style-tag {
@@ -276,7 +290,7 @@ const kitchens = [
   background: rgba(0,0,0,0.45);
   backdrop-filter: blur(8px);
   padding: 5px 12px;
-  border-radius: 100px;
+  border-radius: 0;
   border: 1px solid rgba(255,255,255,0.18);
 }
 
@@ -303,7 +317,7 @@ const kitchens = [
 .card-body p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px; }
 .card-footer { display: flex; align-items: center; justify-content: space-between; }
 .k-palette { display: flex; gap: 5px; }
-.pal-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); }
+.pal-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(43,39,36,0.12); }
 .view-link { font-size: 12px; color: var(--accent); font-weight: 500; cursor: pointer; transition: color var(--transition); }
 .view-link:hover { color: var(--accent-light); }
 
@@ -311,7 +325,7 @@ const kitchens = [
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.85);
+  background: rgba(43,39,36,0.5);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: 1000;
@@ -332,16 +346,16 @@ const kitchens = [
   max-height: 90vh;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+  box-shadow: 0 32px 80px rgba(43,39,36,0.18);
 }
 
 .modal-close {
   position: absolute;
   top: 16px; right: 16px;
   width: 36px; height: 36px;
-  background: rgba(0,0,0,0.5);
+  background: rgba(255,255,255,0.88);
   border: 1px solid var(--border-light);
-  border-radius: 50%;
+  border-radius: 0;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
@@ -371,7 +385,7 @@ const kitchens = [
   background: rgba(0,0,0,0.45);
   backdrop-filter: blur(8px);
   padding: 6px 14px;
-  border-radius: 100px;
+  border-radius: 0;
   border: 1px solid rgba(255,255,255,0.18);
 }
 
@@ -438,9 +452,9 @@ const kitchens = [
 .mat-swatch {
   width: 44px;
   height: 44px;
-  border-radius: 6px;
+  border-radius: 0;
   flex-shrink: 0;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(43,39,36,0.12);
   background-size: cover;
   background-position: center;
 }
@@ -508,7 +522,7 @@ const kitchens = [
     grid-template-columns: 1fr;
     grid-template-rows: 240px 1fr;
     max-height: 92vh;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-radius: 0;
   }
   .modal-image { min-height: unset; height: 240px; }
   .modal-info { padding: 24px 20px; }

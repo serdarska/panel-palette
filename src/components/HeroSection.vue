@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { t } from '../i18n.js'
 
 const visible = ref(false)
 onMounted(() => setTimeout(() => visible.value = true, 80))
@@ -8,305 +9,248 @@ function go(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
 
-const mosaic = [
-  { image: '/materials/countertop/6624 MAT.jpg',                    name: 'Calacatta Mat',       dark: false },
-  { image: '/materials/chipboard/17 Supermat Sonomo.png',           name: 'Supermat Sonomo',     dark: false },
-  { image: '/materials/mdf/6022 HG ANTRASIT.webp',                  name: 'HG Antrasit',         dark: true  },
-  { image: '/materials/chipboard/113 Dinamik Yosun.jpg',            name: 'Dinamik Yosun',       dark: true  },
-  { image: '/materials/chipboard/155 Supermat Beylerbeyi.png',      name: 'Beylerbeyi',          dark: true  },
-  { image: '/materials/mdf/735 SOFT TOUCH RELAX GREEN (ZELEN).webp',name: 'Relax Green',         dark: false },
-  { image: '/materials/chipboard/7749 Country Copper - 18mm.jpg',  name: 'Country Copper',      dark: false },
-  { image: '/materials/mdf/605 HG KREM.webp',                       name: 'HG Krem',             dark: false },
-  { image: '/materials/countertop/6645 sjaj.jpg',                   name: 'Sivi Mramor',         dark: true  },
-]
+const heroImage = '/gallery/kitchen-antrasit-wood.jpg'
 </script>
 
 <template>
   <section id="home" class="hero">
-    <div class="hero-bg">
-      <div class="hero-glow"></div>
-    </div>
+    <div class="hero-photo" :style="{ backgroundImage: `url('${heroImage}')` }">
+      <div class="hero-shade"></div>
 
-    <div class="hero-layout">
-      <div :class="['hero-content', { visible }]">
-        <div class="hero-badge">
-          <span class="badge-dot"></span>
-          Premium Kitchen Materials
+      <div :class="['hero-inner', { visible }]">
+        <div class="hero-main">
+          <span class="eyebrow">{{ t('hero.badge') }}</span>
+          <h1>{{ t('hero.title1') }}<br>{{ t('hero.title2') }}</h1>
         </div>
-        <h1>Craft Your<br><span class="accent">Perfect Kitchen.</span></h1>
-        <p class="hero-sub">
-          Three material categories, hundreds of colors — countertops, MDF fronts,
-          and chipboard crafted for your dream kitchen.
-        </p>
-        <div class="hero-actions">
-          <button class="btn-primary" @click="go('catalog')">
-            Explore Materials
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <button class="btn-ghost" @click="go('visualizer')">Design Your Kitchen</button>
-        </div>
-        <div class="hero-stats">
-          <div class="stat">
-            <span class="stat-n">100+</span>
-            <span class="stat-l">Material Colors</span>
-          </div>
-          <div class="stat-sep"></div>
-          <div class="stat">
-            <span class="stat-n">15+</span>
-            <span class="stat-l">Years Experience</span>
-          </div>
-          <div class="stat-sep"></div>
-          <div class="stat">
-            <span class="stat-n">500+</span>
-            <span class="stat-l">Kitchens Made</span>
+
+        <div class="hero-side">
+          <p class="hero-sub">{{ t('hero.subtitle') }}</p>
+          <div class="hero-actions">
+            <button class="btn-light" @click="go('catalog')">
+              {{ t('hero.exploreMaterials') }}
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="btn-line" @click="$router.push({ name: 'design' })">{{ t('hero.designKitchen') }}</button>
           </div>
         </div>
       </div>
 
-      <div :class="['hero-visual', { visible }]">
-        <div class="mosaic">
-          <div
-            v-for="(card, i) in mosaic"
-            :key="card.name"
-            class="mosaic-card"
-            :style="{ backgroundImage: `url('${card.image}')`, backgroundSize: 'cover', backgroundPosition: 'center', animationDelay: `${i * 0.12}s` }"
-          >
-            <span :style="{ color: card.dark ? '#f0f0f0' : '#1a1a1a' }">{{ card.name }}</span>
-          </div>
-        </div>
-      </div>
+      <button class="scroll-down" @click="go('catalog')">
+        <span class="scroll-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M2 8l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        {{ t('hero.scroll') }}
+      </button>
     </div>
 
-    <button class="scroll-hint" @click="go('catalog')">
-      <span>Scroll to explore</span>
-      <div class="scroll-line"></div>
-    </button>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-n">100+</span>
+        <span class="stat-l">{{ t('hero.statColors') }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-n">15+</span>
+        <span class="stat-l">{{ t('hero.statYears') }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-n">500+</span>
+        <span class="stat-l">{{ t('hero.statKitchens') }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-n">360°</span>
+        <span class="stat-l">{{ t('design.label') }}</span>
+      </div>
+    </div>
   </section>
 </template>
 
 <style scoped>
-@keyframes heroBg {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-@keyframes scrollPulse {
-  0%, 100% { transform: scaleY(1); opacity: 1; }
-  50% { transform: scaleY(0.4); opacity: 0.4; }
+.hero {
+  /* the photo starts under the navbar, which is transparent over white at the top */
+  padding-top: 86px;
+  background: var(--bg-primary);
 }
 
-.hero {
+.hero-photo {
   position: relative;
-  min-height: 100vh;
+  height: calc(100vh - 86px - 112px);
+  min-height: 560px;
+  max-height: 860px;
+  background-size: cover;
+  background-position: center 62%;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: flex-end;
   overflow: hidden;
-  background: linear-gradient(-45deg, #0a0a0a, #0d0d10, #0a0a0a, #10100d);
-  background-size: 400% 400%;
-  animation: heroBg 22s ease infinite;
 }
-.hero-bg {
+.hero-shade {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-}
-.hero-glow {
-  position: absolute;
-  width: 600px; height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
+  background:
+    linear-gradient(to top, rgba(20, 17, 15, 0.82) 0%, rgba(20, 17, 15, 0.35) 45%, rgba(20, 17, 15, 0.1) 100%);
 }
 
-.hero-layout {
+.hero-inner {
+  position: relative;
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 120px 48px 80px;
+  padding: 0 48px 96px;
   display: grid;
-  grid-template-columns: 1fr 480px;
-  gap: 80px;
-  align-items: center;
-  width: 100%;
-}
-
-.hero-content {
+  grid-template-columns: 1fr 420px;
+  gap: 64px;
+  align-items: end;
+  color: #fff;
   opacity: 0;
-  transform: translateY(32px);
+  transform: translateY(24px);
   transition: opacity 0.9s ease, transform 0.9s ease;
 }
-.hero-content.visible { opacity: 1; transform: translateY(0); }
+.hero-inner.visible { opacity: 1; transform: translateY(0); }
 
-.hero-badge {
+.eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  font-weight: 600;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 28px;
-  border: 1px solid rgba(201,168,76,0.25);
-  padding: 8px 16px;
-  border-radius: 100px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 22px;
 }
-.badge-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: float 2s ease infinite;
+.eyebrow::before {
+  content: '';
+  width: 10px; height: 10px;
+  background: var(--accent-light);
 }
 
 h1 {
-  font-size: clamp(48px, 6vw, 80px);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
-  margin-bottom: 24px;
-  color: var(--text-primary);
-}
-.accent {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-family: var(--font-display);
+  font-size: clamp(38px, 4.6vw, 66px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.04;
+  text-transform: uppercase;
+  color: #fff;
 }
 
 .hero-sub {
-  font-size: 18px;
-  color: var(--text-secondary);
-  line-height: 1.75;
-  max-width: 480px;
-  margin-bottom: 40px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.82);
+  margin-bottom: 28px;
 }
 
-.hero-actions {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 56px;
-  flex-wrap: wrap;
-}
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
-.btn-primary {
+.btn-light, .btn-line {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: var(--accent);
-  color: #000;
-  border: none;
-  padding: 14px 28px;
+  gap: 10px;
+  padding: 14px 24px;
   border-radius: var(--radius);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition);
-  letter-spacing: 0.02em;
-}
-.btn-primary:hover { background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.25); }
-
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  background: transparent;
-  color: var(--text-primary);
-  border: 1px solid var(--border-light);
-  padding: 14px 28px;
-  border-radius: var(--radius);
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-
-.hero-stats {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
-.stat { display: flex; flex-direction: column; gap: 2px; }
-.stat-n { font-size: 26px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.03em; }
-.stat-l { font-size: 12px; color: var(--text-secondary); letter-spacing: 0.05em; }
-.stat-sep { width: 1px; height: 40px; background: var(--border-light); }
-
-/* Mosaic */
-.hero-visual {
-  opacity: 0;
-  transform: translateY(32px) scale(0.96);
-  transition: opacity 1s ease 0.2s, transform 1s ease 0.2s;
-}
-.hero-visual.visible { opacity: 1; transform: translateY(0) scale(1); }
-
-.mosaic {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  transform: rotate(-4deg);
-  filter: drop-shadow(0 20px 60px rgba(0,0,0,0.6));
-}
-.mosaic-card {
-  border-radius: var(--radius);
-  height: 110px;
-  display: flex;
-  align-items: flex-end;
-  padding: 10px;
-  animation: float 4s ease infinite;
-  transition: transform 0.3s ease;
-}
-.mosaic-card:hover { transform: scale(1.04); }
-.mosaic-card span {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.85;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-light {
+  background: #fff;
+  color: var(--text-primary);
+  border: 1px solid #fff;
+}
+.btn-light svg { transition: transform var(--transition); }
+.btn-light:hover { background: transparent; color: #fff; }
+.btn-light:hover svg { transform: translateX(3px); }
+.btn-line {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+.btn-line:hover { border-color: #fff; background: rgba(255, 255, 255, 0.1); }
+
+.scroll-down {
+  position: absolute;
+  left: 48px;
+  bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.scroll-icon {
+  width: 32px; height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition);
+}
+.scroll-down:hover { color: #fff; }
+.scroll-down:hover .scroll-icon { background: rgba(255, 255, 255, 0.12); }
+
+/* Stats strip under the photo */
+.hero-stats {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 36px 48px;
+  border-left: 1px solid var(--border);
+}
+.stat:first-child { border-left: none; }
+.stat-n {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+.stat-l {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+@media (max-width: 1100px) {
+  .stat { flex-direction: column; gap: 4px; padding: 28px 32px; }
 }
 
 @media (max-width: 900px) {
-  .hero-layout {
+  .hero { padding-top: 76px; }
+  .hero-photo { height: auto; min-height: 78vh; max-height: none; }
+  .hero-inner {
     grid-template-columns: 1fr;
-    padding: 100px 20px 60px;
-    gap: 48px;
+    gap: 24px;
+    padding: 120px 20px 88px;
   }
-  .hero-visual { display: none; }
-  .hero-sub { font-size: 16px; }
-  .hero-actions { flex-direction: column; gap: 12px; }
-  .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
-  .hero-stats { gap: 20px; flex-wrap: wrap; }
+  .hero-actions { flex-direction: column; }
+  .btn-light, .btn-line { width: 100%; justify-content: center; }
+  .scroll-down { left: 20px; bottom: 24px; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .stat { padding: 22px 20px; border-left: none; }
+  .stat:nth-child(even) { border-left: 1px solid var(--border); }
+  .stat:nth-child(n + 3) { border-top: 1px solid var(--border); }
   .stat-n { font-size: 22px; }
-}
-
-/* Scroll hint */
-.scroll-hint {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  transition: color var(--transition);
-}
-.scroll-hint:hover { color: var(--accent); }
-.scroll-line {
-  width: 1px; height: 40px;
-  background: linear-gradient(to bottom, var(--text-muted), transparent);
-  animation: scrollPulse 2s ease infinite;
+  .stat-l { font-size: 10px; }
 }
 </style>

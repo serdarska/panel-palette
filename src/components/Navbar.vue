@@ -1,23 +1,29 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { t } from '../i18n.js'
+import logoMark from '../assets/logo-mark.png'
+
+const route = useRoute()
+const router = useRouter()
 
 const scrolled = ref(false)
 const active = ref('home')
 const menuOpen = ref(false)
 
-const links = [
-  { id: 'catalog',      label: 'Materials' },
-  { id: 'accessories',  label: 'Accessories' },
-  { id: 'visualizer',   label: 'Design Studio' },
-  { id: 'gallery',      label: 'Gallery' },
-  { id: 'about',        label: 'About' },
-  { id: 'process',      label: 'Process' },
-]
+const links = computed(() => [
+  { id: 'catalog',      label: t('nav.materials') },
+  { id: 'visualizer',   label: t('nav.designStudio') },
+  // { id: 'gallery',      label: t('nav.gallery') },
+  { id: 'about',        label: t('nav.about') },
+  // { id: 'process',      label: t('nav.process') },
+])
 
-const sections = ['home', 'catalog', 'accessories', 'visualizer', 'gallery', 'about', 'process']
+const sections = ['home', 'catalog', 'visualizer', 'about']
 
 function onScroll() {
   scrolled.value = window.scrollY > 60
+  if (route.name !== 'home') { active.value = { category: 'catalog', design: 'visualizer' }[route.name] ?? ''; return }
   const found = sections.find(id => {
     const el = document.getElementById(id)
     if (!el) return false
@@ -30,6 +36,12 @@ function onScroll() {
 function go(id) {
   menuOpen.value = false
   document.body.style.overflow = ''
+  // the design studio has its own page
+  if (id === 'visualizer') return router.push({ name: 'design' })
+  if (route.name !== 'home') {
+    router.push(id === 'home' ? { name: 'home' } : { name: 'home', hash: `#${id}` })
+    return
+  }
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
 
@@ -38,7 +50,12 @@ function toggleMenu() {
   document.body.style.overflow = menuOpen.value ? 'hidden' : ''
 }
 
-onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
+watch(() => route.fullPath, () => setTimeout(onScroll, 200))
+
+onMounted(() => {
+  window.addEventListener('scroll', onScroll, { passive: true })
+  onScroll()
+})
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
   document.body.style.overflow = ''
@@ -46,16 +63,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav :class="['navbar', { scrolled }]">
+  <nav :class="['navbar', { scrolled, wide: ['category', 'design'].includes(route.name) }]">
     <div class="nav-inner">
-      <button class="logo" @click="go('home')">
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
-          <rect x="2" y="2" width="10" height="10" rx="2" fill="#c9a84c"/>
-          <rect x="14" y="2" width="10" height="10" rx="2" fill="#c9a84c" opacity="0.55"/>
-          <rect x="2" y="14" width="10" height="10" rx="2" fill="#c9a84c" opacity="0.55"/>
-          <rect x="14" y="14" width="10" height="10" rx="2" fill="#c9a84c" opacity="0.25"/>
-        </svg>
-        <span class="logo-text">INTERWOOD <strong>DESIGN</strong></span>
+      <button class="logo" @click="go('home')" aria-label="Interwood Design">
+        <img :src="logoMark" alt="" class="logo-mark" />
+        <span class="logo-text">
+          <span class="logo-name">INTERWOOD</span>
+          <span class="logo-sub">DESIGN</span>
+        </span>
       </button>
 
       <div class="links">
@@ -67,7 +82,12 @@ onUnmounted(() => {
         </a>
       </div>
 
-      <button class="cta desktop-cta" @click="go('visualizer')">Design Now</button>
+      <div class="nav-end">
+        <button class="cta desktop-cta" @click="go('visualizer')">{{ t('nav.designNow') }}</button>
+        <!-- Language switch hidden while the site is Macedonian-only -->
+        <!-- <span class="nav-sep"></span>
+        <button class="lang-toggle" @click="toggleLang">{{ i18n.lang === 'en' ? 'MK' : 'EN' }}</button> -->
+      </div>
 
       <button class="hamburger" @click="toggleMenu" aria-label="Toggle menu">
         <span :class="['bar', { open: menuOpen }]"></span>
@@ -87,7 +107,8 @@ onUnmounted(() => {
            @click.prevent="go(link.id)">
           {{ link.label }}
         </a>
-        <button class="cta mobile-cta" @click="go('visualizer')">Design Now</button>
+        <button class="cta mobile-cta" @click="go('visualizer')">{{ t('nav.designNow') }}</button>
+        <!-- <button class="lang-toggle mobile-lang" @click="toggleLang">{{ i18n.lang === 'en' ? 'MK' : 'EN' }}</button> -->
       </div>
     </div>
   </Transition>
@@ -102,12 +123,15 @@ onUnmounted(() => {
   transition: all 0.3s ease;
 }
 .navbar.scrolled {
-  background: rgba(10, 10, 10, 0.96);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
-  padding: 14px 0;
+  box-shadow: 0 4px 24px rgba(43, 39, 36, 0.05);
+  padding: 10px 0;
 }
+/* full-width pages (catalogue, studio) stretch the bar to match */
+.wide .nav-inner { max-width: none; padding: 0 32px; }
 .nav-inner {
   max-width: 1280px;
   margin: 0 auto;
@@ -123,13 +147,38 @@ onUnmounted(() => {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text-secondary);
-  font-size: 13px;
-  letter-spacing: 0.12em;
   padding: 0;
 }
-.logo strong { color: var(--text-primary); font-weight: 700; }
-.links { display: flex; gap: 36px; }
+.logo-mark {
+  height: 42px;
+  width: auto;
+  transition: height 0.3s ease;
+}
+.scrolled .logo-mark { height: 36px; }
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  font-family: var(--font-brand);
+}
+.logo-name {
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  margin-right: -0.28em;
+  color: var(--text-primary);
+}
+.logo-sub {
+  font-family: var(--font);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.5em;
+  margin-right: -0.5em;
+  color: var(--accent);
+  margin-top: 5px;
+}
+.links { display: flex; gap: 32px; }
 .links a {
   font-size: 14px;
   color: var(--text-secondary);
@@ -154,7 +203,7 @@ onUnmounted(() => {
 .links a.active::after, .links a:hover::after { transform: scaleX(1); }
 .cta {
   background: var(--accent);
-  color: #000;
+  color: var(--on-accent);
   border: none;
   padding: 10px 22px;
   border-radius: var(--radius-sm);
@@ -165,6 +214,32 @@ onUnmounted(() => {
   transition: all var(--transition);
 }
 .cta:hover { background: var(--accent-light); transform: translateY(-1px); }
+
+.nav-end {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.nav-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border-light);
+}
+
+.lang-toggle {
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  padding: 7px 13px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: all var(--transition);
+}
+.lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.mobile-lang { margin-top: 8px; width: 100%; }
 
 /* Hamburger */
 .hamburger {
@@ -179,8 +254,8 @@ onUnmounted(() => {
 .bar {
   width: 22px;
   height: 2px;
-  background: var(--text-secondary);
-  border-radius: 2px;
+  background: var(--text-primary);
+  border-radius: 0;
   transition: all 0.3s ease;
   transform-origin: center;
 }
@@ -193,7 +268,7 @@ onUnmounted(() => {
   position: fixed;
   inset: 0;
   z-index: 99;
-  background: rgba(0,0,0,0.6);
+  background: rgba(43, 39, 36, 0.35);
   backdrop-filter: blur(4px);
 }
 .mobile-menu {
@@ -201,8 +276,9 @@ onUnmounted(() => {
   top: 0; right: 0;
   width: min(320px, 85vw);
   height: 100%;
-  background: rgba(14,14,14,0.98);
+  background: var(--bg-primary);
   border-left: 1px solid var(--border);
+  box-shadow: -12px 0 40px rgba(43, 39, 36, 0.12);
   display: flex;
   flex-direction: column;
   padding: 80px 32px 40px;
@@ -236,6 +312,6 @@ onUnmounted(() => {
   .links { display: none; }
   .desktop-cta { display: none; }
   .hamburger { display: flex; }
-  .nav-inner { padding: 0 20px; }
+  .nav-inner, .wide .nav-inner { padding: 0 20px; }
 }
 </style>

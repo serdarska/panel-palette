@@ -1,5 +1,13 @@
 <script setup>
+import { useRoute, useRouter } from 'vue-router'
+import { t } from '../i18n.js'
+import logo from '../assets/logo.png'
+
+const route = useRoute()
+const router = useRouter()
+
 function go(id) {
+  if (route.name !== 'home') return router.push({ name: 'home', hash: `#${id}` })
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
 </script>
@@ -9,48 +17,43 @@ function go(id) {
     <div class="section-container">
       <div class="footer-top">
         <div class="footer-brand">
-          <div class="footer-logo">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <rect x="2" y="2" width="11" height="11" rx="2" fill="#c9a84c"/>
-              <rect x="15" y="2" width="11" height="11" rx="2" fill="#c9a84c" opacity="0.55"/>
-              <rect x="2" y="15" width="11" height="11" rx="2" fill="#c9a84c" opacity="0.55"/>
-              <rect x="15" y="15" width="11" height="11" rx="2" fill="#c9a84c" opacity="0.25"/>
-            </svg>
-            <span>INTERWOOD <strong>DESIGN</strong></span>
-          </div>
-          <p class="brand-tagline">Premium materials for the kitchen of your dreams. Three categories, hundreds of colors, one perfect result.</p>
+          <img :src="logo" alt="Interwood Design" class="footer-logo" />
+          <p class="brand-tagline">{{ t('footer.tagline') }}</p>
         </div>
 
         <div class="footer-cols">
           <div class="footer-col">
-            <span class="col-title">Materials</span>
-            <a href="#catalog" @click.prevent="go('catalog')">Counter Tops</a>
-            <a href="#catalog" @click.prevent="go('catalog')">MDF Fronts</a>
-            <a href="#catalog" @click.prevent="go('catalog')">Decorative Boards</a>
-            <a href="#visualizer" @click.prevent="go('catalog')">All Collections</a>
+            <span class="col-title">{{ t('footer.materials') }}</span>
+            <RouterLink :to="{ name: 'category', params: { category: 'mdf' } }">{{ t('categories.mdf') }}</RouterLink>
+            <RouterLink :to="{ name: 'category', params: { category: 'chipboard' } }">{{ t('categories.chipboard') }}</RouterLink>
+            <RouterLink :to="{ name: 'category', params: { category: 'countertop' } }">{{ t('categories.countertop') }}</RouterLink>
+            <RouterLink :to="{ name: 'category', params: { category: 'laminate' } }">{{ t('categories.laminate') }}</RouterLink>
+            <RouterLink :to="{ name: 'category', params: { category: 'sinks' } }">{{ t('categories.sinks') }}</RouterLink>
+            <RouterLink :to="{ name: 'category', params: { category: 'faucets' } }">{{ t('categories.faucets') }}</RouterLink>
+            <a href="/#catalog" @click.prevent="go('catalog')">{{ t('footer.allCollections') }}</a>
           </div>
           <div class="footer-col">
-            <span class="col-title">Services</span>
-            <a href="#visualizer" @click.prevent="go('visualizer')">Design Studio</a>
-            <a href="#gallery" @click.prevent="go('gallery')">Kitchen Gallery</a>
-            <a href="#about" @click.prevent="go('about')">Consultation</a>
-            <a href="#about" @click.prevent="go('about')">Installation</a>
+            <span class="col-title">{{ t('footer.services') }}</span>
+            <RouterLink :to="{ name: 'design' }">{{ t('footer.designStudio') }}</RouterLink>
+            <!-- <a href="#gallery" @click.prevent="go('gallery')">{{ t('footer.kitchenGallery') }}</a> -->
+            <a href="#about" @click.prevent="go('about')">{{ t('footer.consultation') }}</a>
+            <a href="#about" @click.prevent="go('about')">{{ t('footer.installation') }}</a>
           </div>
           <div class="footer-col">
-            <span class="col-title">Contact</span>
-            <span class="contact-item">interwoodd@gmail.com</span>
+            <span class="col-title">{{ t('footer.contact') }}</span>
+            <a href="mailto:interwoodd@gmail.com">interwoodd@gmail.com</a>
             <span class="contact-item">+381 11 000 0000</span>
-            <span class="contact-item">Mon–Fri  08:00–17:00</span>
-            <span class="contact-item">Shtip, North Macedonia</span>
+            <span class="contact-item">{{ t('footer.hours') }}</span>
+            <span class="contact-item">{{ t('footer.location') }}</span>
           </div>
         </div>
       </div>
 
       <div class="footer-bottom">
-        <span>© 2025 Interwood Design. All rights reserved.</span>
+        <span>{{ t('footer.copyright').replace(/\d{4}/, new Date().getFullYear()) }}</span>
         <div class="footer-links">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
+          <a href="#">{{ t('footer.privacy') }}</a>
+          <a href="#">{{ t('footer.terms') }}</a>
         </div>
       </div>
     </div>
@@ -59,34 +62,27 @@ function go(id) {
 
 <style scoped>
 .footer {
-  background: #060606;
-  border-top: 1px solid var(--border);
-  padding: 72px 0 32px;
+  background: var(--bg-primary);
+  padding: 0 0 28px;
 }
 
 .footer-top {
   display: grid;
   grid-template-columns: 320px 1fr;
-  gap: 80px;
-  margin-bottom: 56px;
-  padding-bottom: 56px;
+  margin-bottom: 28px;
   border-bottom: 1px solid var(--border);
 }
 
 .footer-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-secondary);
-  font-size: 13px;
-  letter-spacing: 0.12em;
-  margin-bottom: 20px;
+  width: 170px;
+  height: auto;
+  margin-bottom: 24px;
 }
-.footer-logo strong { color: var(--text-primary); font-weight: 700; }
 
+.footer-brand { padding: 64px 48px 56px 0; }
 .brand-tagline {
   font-size: 14px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   line-height: 1.7;
   max-width: 280px;
 }
@@ -94,27 +90,28 @@ function go(id) {
 .footer-cols {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
 }
 
 .footer-col {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding: 64px 32px 56px;
+  border-left: 1px solid var(--border);
 }
 
 .col-title {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 10px;
 }
 
 .footer-col a {
   font-size: 14px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   transition: color var(--transition);
   text-decoration: none;
 }
@@ -122,7 +119,7 @@ function go(id) {
 
 .contact-item {
   font-size: 14px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .footer-bottom {
@@ -144,16 +141,18 @@ function go(id) {
 .footer-links a:hover { color: var(--text-secondary); }
 
 @media (max-width: 900px) {
-  .footer-top {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-  .footer-cols { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-brand { padding: 48px 0 32px; border-bottom: 1px solid var(--border); }
+  .footer-cols { grid-template-columns: repeat(2, 1fr); }
+  .footer-col { padding: 32px 20px 32px 0; border-left: none; }
+  .footer-col + .footer-col { padding-left: 20px; border-left: 1px solid var(--border); }
   .brand-tagline { max-width: 100%; }
 }
 
 @media (max-width: 600px) {
   .footer-cols { grid-template-columns: 1fr; }
+  .footer-col, .footer-col + .footer-col { padding: 28px 0; border-left: none; }
+  .footer-col + .footer-col { border-top: 1px solid var(--border); }
   .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
   .footer-links { justify-content: center; }
 }

@@ -33,33 +33,164 @@ export const countertops = [
   { code: '6685',      color: '#c0a860', textColor: '#3a3a3a', image: '/materials/countertop/6685.png' },
 ]
 
+// MDF panels: colour photo + interior example(s), size in mm, price in MKD (ден.)
 export const mdfColors = [
-  { name: 'PERU MESE',           code: '3041',     color: '#a07848', textColor: '#f0f0f0', image: '/materials/mdf/3041 PERU MESE.webp' },
-  { name: 'AKRA MESE',           code: '3042',     color: '#6a6258', textColor: '#f0f0f0', image: '/materials/mdf/3042 AKRA MESE.webp' },
-  { name: 'MAT STONE GRI',       code: '390',      color: '#9aa898', textColor: '#3a3a3a', image: '/materials/mdf/390 MAT STONE GRI.webp' },
-  { name: 'NATURAL TOUCH MESE',  code: '397',      color: '#c8a870', textColor: '#3a3a3a', image: '/materials/mdf/397 NATURAL TOUCH MESE.webp' },
-  { name: 'HG SIYAH',            code: '6002',     color: '#080808', textColor: '#f0f0f0', image: '/materials/mdf/6002 HG SIYAH.webp' },
-  { name: 'HG EFES SIYAH',       code: '6006',     color: '#141414', textColor: '#f0f0f0', image: '/materials/mdf/6006 HG EFES SIYAH.jpg' },
-  { name: 'HG EFES BEYAZ',       code: '6007',     color: '#f0ece8', textColor: '#3a3a3a', image: '/materials/mdf/6007 HF EFES BEYAZ (BEL MERMER SJAJ AGT).webp' },
-  { name: 'HG COOL GRI',         code: '6017',     color: '#6a6e72', textColor: '#f0f0f0', image: '/materials/mdf/6017 HG COOL GRI.webp' },
-  { name: 'HG KROM GRI',         code: '6021',     color: '#7a8082', textColor: '#f0f0f0', image: '/materials/mdf/6021 HG KROM GRI.webp' },
-  { name: 'HG ANTRASIT',         code: '6022',     color: '#2a2a28', textColor: '#f0f0f0', image: '/materials/mdf/6022 HG ANTRASIT.webp' },
-  { name: 'HG KREM',             code: '605',      color: '#faf4ec', textColor: '#3a3a3a', image: '/materials/mdf/605 HG KREM.webp' },
-  { name: 'HG VIZON',            code: '623',      color: '#c0b898', textColor: '#3a3a3a', image: '/materials/mdf/623 HG VIZON.webp' },
-  { name: 'HG BIANCO',           code: '647',      color: '#f8f4ec', textColor: '#3a3a3a', image: '/materials/mdf/647 HG BIANCO.webp' },
-  { name: 'HG GALAKSI SIYAH',    code: '677',      color: '#282828', textColor: '#f0f0f0', image: '/materials/mdf/677 HG GALAKSI SIYAH.jpg' },
-  { name: 'Soft TOUCH BLACK MATT',  code: '723',      color: '#0a0a0a', textColor: '#f0f0f0', image: '/materials/mdf/723 SOFT TOUCH CRN MAT.webp' },
-  { name: 'Soft TOUCH FIRTINA GRI MATT',  code: '726',      color: '#464840', textColor: '#f0f0f0', image: '/materials/mdf/726 SOFT TOUCH FIRTINA GRI MAT.webp' },
-  { name: 'Soft TOUCH KAYA GRI MATT', code: '728',      color: '#7a8078', textColor: '#f0f0f0', image: '/materials/mdf/728 SOFT TOUCH KAYA GRI MAT.webp' },
-  { name: 'Soft TOUCH YENI GRI MATT', code: '729',      color: '#c0b8a8', textColor: '#3a3a3a', image: '/materials/mdf/729 SOFT TOUCH YENI GRI MAT.webp' },
-  { name: 'Soft TOUCH BEIGE',     code: '730',      color: '#e8e0d0', textColor: '#3a3a3a', image: '/materials/mdf/730 SOFT TOUCH KREM MAT.webp' },
-  { name: 'Soft TOUCH VIZON MATT',    code: '732',      color: '#b8a888', textColor: '#3a3a3a', image: '/materials/mdf/732 SOFT TOUCH VIZON MAT.webp' },
-  { name: 'Soft TOUCH MOCCA MATT',    code: '733',      color: '#302018', textColor: '#f0f0f0', image: '/materials/mdf/733 SOFT TOUCH MOCCA MAT.jpeg' },
-  { name: 'Soft TOUCH WHITE MATT',  code: '734',      color: '#f8f4ec', textColor: '#3a3a3a', image: '/materials/mdf/734 SOFT TOUCH BEL MAT.webp' },
-  { name: 'Soft TOUCH RELAX GREEN ',    code: '735',      color: '#90b0a0', textColor: '#3a3a3a', image: '/materials/mdf/735 SOFT TOUCH RELAX GREEN (ZELEN).webp' },
-  { name: 'SIENA SOFT TOUCH',    code: '737B',     color: '#7a5838', textColor: '#f0f0f0', image: '/materials/mdf/737BSIENA SOFT TOUCH .webp' },
-  { name: 'HG YENI VIZON',       code: '878',      color: '#a89870', textColor: '#3a3a3a', image: '/materials/mdf/878 HG YENI VIZON NEW.webp' },
-  { name: 'HG TREND GRI',        code: 'HG-TREND', color: '#c8c8c0', textColor: '#3a3a3a', image: '/materials/mdf/HG TREND GRI.webp' },
+  {
+    name: 'HG Antrasit', code: '6022', color: '#282826', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Antrasit 6022 1220x2800x18mm 6250den..webp',
+    examples: ['/materials/mdf/HG Antrasit example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 6250,
+  },
+  {
+    name: 'HG Beyaz', code: '601', color: '#fdfbf7', textColor: '#3a3a3a',
+    image: '/materials/mdf/HG Beyaz 601 1220x2800x18mm 5200den..webp',
+    examples: ['/materials/mdf/HG Beyaz 601 ezample.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5200,
+  },
+  {
+    name: 'HG Bianco', code: '647', color: '#fffae7', textColor: '#3a3a3a',
+    image: '/materials/mdf/HG Bianco 647 1220x2800x18mm 5300den..webp',
+    examples: ['/materials/mdf/HG Bianco 647 example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5300,
+  },
+  {
+    name: 'HG Cool Gri', code: '6017', color: '#515357', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Cool Gri 6017 1220x2800x18mm 6250den..webp',
+    examples: ['/materials/mdf/HG Cool Gri example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 6250,
+  },
+  {
+    name: 'HG Cream', code: '605', color: '#fef7ec', textColor: '#3a3a3a',
+    image: '/materials/mdf/HG Cream 605 1220x2800x18mm 5300den..webp',
+    examples: ['/materials/mdf/HG Cream example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5300,
+  },
+  {
+    name: 'HG Galaksi Beyaz', code: '670', color: '#f7fbfc', textColor: '#3a3a3a',
+    image: '/materials/mdf/HG Galaksi Beyaz 670 1220x2800x18mm 6700den..webp',
+    examples: ['/materials/mdf/HG Galaksi Beyaz example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 6700,
+  },
+  {
+    name: 'HG Krom Gri', code: '6021', color: '#77817e', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Krom Gri 6021 1220x2800x18mm 6250den..webp',
+    examples: ['/materials/mdf/HG Krom Gri example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 6250,
+  },
+  {
+    name: 'HG Metalik Antrasit', code: '608', color: '#494e4f', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Metalik Antrasit 608 1220x2800x18mm 6700den..webp',
+    examples: ['/materials/mdf/HG Metalik Antrasit example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 6700,
+  },
+  {
+    name: 'HG Trend Gri', code: '6020', color: '#cfd0c9', textColor: '#3a3a3a',
+    image: '/materials/mdf/HG Trend Gri 6020 1220x2800x18mm 6700den..webp',
+    examples: ['/materials/mdf/HG Trend Gri example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 6700,
+  },
+  {
+    name: 'HG Vizon', code: '623', color: '#b9b2a0', textColor: '#3a3a3a',
+    image: '/materials/mdf/HG Vizon 623 1220x2800x18mm 5300den..webp',
+    examples: ['/materials/mdf/HG Vizon ezample.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5300,
+  },
+  {
+    name: 'HG Yeni Siyah', code: '6002', color: '#000002', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Yeni Siyah 6002 1220x2800x18mm 5300den..webp',
+    examples: ['/materials/mdf/HG Yeni Siyah  example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5300,
+  },
+  {
+    name: 'HG Yeni Vizon', code: '878', color: '#a6967b', textColor: '#3a3a3a',
+    image: '/materials/mdf/HG Yeni Vizon 878 1220x2800x18mm 5500den..webp',
+    examples: ['/materials/mdf/HG Yeni Vizon example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5500,
+  },
+  {
+    name: 'Soft Touch Beyaz', code: '734', color: '#fefffa', textColor: '#3a3a3a',
+    image: '/materials/mdf/Soft touch Beyaz 734 1220x2800x18mm 5300den..webp',
+    examples: ['/materials/mdf/soft touch beyaz example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5300,
+  },
+  {
+    name: 'Soft Touch Firtina Gri', code: '726', color: '#4b544c', textColor: '#f0f0f0',
+    image: '/materials/mdf/Soft Touch Firtina Gri 726 1220x2800x18mm 5300den..webp',
+    examples: ['/materials/mdf/soft touch firtina gri example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5300,
+  },
+  {
+    name: 'Soft Touch Kaya Gri', code: '728', color: '#858673', textColor: '#f0f0f0',
+    image: '/materials/mdf/Soft Touch Kaya Gri 728 1220x2800x18mm 5300den..webp',
+    examples: ['/materials/mdf/Soft Touch Kaya Gri example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5300,
+  },
+  {
+    name: 'Soft Touch Krem', code: '730', color: '#e3e1d1', textColor: '#3a3a3a',
+    image: '/materials/mdf/Soft Touch Krem 730 1220x2800x18mm 5300den..webp',
+    examples: ['/materials/mdf/soft touch krem example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5300,
+  },
+  {
+    name: 'Soft Touch Mocca Mat', code: '733', color: '#3e2c22', textColor: '#f0f0f0',
+    image: '/materials/mdf/Soft touch mocca mat 733 1220x2800x18mm 4500den..jpg',
+    examples: ['/materials/mdf/soft touch mocca mat example.jpg'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 4500,
+  },
+  {
+    name: 'Soft Touch Relax Green', code: '735', color: '#a7c6b9', textColor: '#3a3a3a',
+    image: '/materials/mdf/soft touch Relax Green 735 1220x2800x18mm 5500den..webp',
+    examples: ['/materials/mdf/soft touch relax green exmple.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5500,
+  },
+  {
+    name: 'Soft Touch Sari', code: '739', color: '#f9ba17', textColor: '#3a3a3a',
+    image: '/materials/mdf/Soft Touch Sari 739 1220x2800x18mm 5500den..webp',
+    examples: ['/materials/mdf/Soft touch sari example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5500,
+  },
+  {
+    name: 'Soft Touch Siena', code: '737', color: '#665140', textColor: '#f0f0f0',
+    image: '/materials/mdf/Soft Touch Siena 737 1220x2800x18mm 6700den..webp',
+    examples: ['/materials/mdf/Soft touch siena example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 6700,
+  },
+  {
+    name: 'Soft Touch Siyah', code: '723', color: '#000002', textColor: '#f0f0f0',
+    image: '/materials/mdf/Soft Touch Siyah 723 1220x2800x18mm 5300den..webp',
+    examples: ['/materials/mdf/Soft Touch Siyah  example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5300,
+  },
+  {
+    name: 'Soft Touch Vizon', code: '732', color: '#bea88e', textColor: '#3a3a3a',
+    image: '/materials/mdf/Soft Touch Vizon 732 1220x2800x18mm 5500den..webp',
+    examples: ['/materials/mdf/soft touch vizon example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5500,
+  },
+  {
+    name: 'Soft Touch Yeni Gri', code: '729', color: '#c3bea7', textColor: '#3a3a3a',
+    image: '/materials/mdf/Soft Touch Yeni Gri 729 1220x2800x18mm 5500den..webp',
+    examples: ['/materials/mdf/soft touch yeni gri example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 5500,
+  },
+  {
+    name: 'Natural Touch Oak', code: '397', color: '#bd9366', textColor: '#3a3a3a',
+    image: '/materials/mdf/Natural touch oak 397 1220x2800x18mm 6700den..webp',
+    examples: ['/materials/mdf/Natural touch Oak example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 6700,
+  },
+  {
+    name: 'Peru Oak', code: '3041', color: '#896a46', textColor: '#f0f0f0',
+    image: '/materials/mdf/Peru Oak 3041 1220x2800x18mm 6700den..webp',
+    examples: ['/materials/mdf/Peru Oak example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 6700,
+  },
+  {
+    name: 'Stone Gray', code: '390', color: '#b7b4af', textColor: '#3a3a3a',
+    image: '/materials/mdf/Stone Gray 390 1220x2800x18mm 6250den..webp',
+    examples: ['/materials/mdf/Stone Gray 390 example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 }, price: 6250,
+  },
 ]
 
 export const chipboardColors = [
@@ -153,6 +284,83 @@ export const faucets = [
   { name: 'Solo White',   code: 'SOLO-W',   color: '#f4f0ec', image: '/materials/faucets/solo white.avif',   dimensions: { length: null, width: null, height: null } },
 ]
 
+
+// Laminate flooring, one folder per thickness (public/materials/flooring/laminat <mm>mm).
+// No product codes or prices yet, so `code` is just the URL key (name + thickness).
+// File names are kept exactly as delivered (some have stray spaces).
+const laminate = (mm, name, color, file, example) => {
+  const dir = `/materials/flooring/laminat ${mm}mm`
+  return {
+    name, code: `${name.toLowerCase().replace(/\s+/g, '-')}-${mm}`, urlKeyOnly: true, color,
+    textColor: parseInt(color.slice(1, 3), 16) > 140 ? '#3a3a3a' : '#f0f0f0',
+    image: `${dir}/${file}`, examples: [`${dir}/${example}`],
+    dimensions: { thickness: mm },
+  }
+}
+export const laminates = [
+  // 8 mm
+  laminate(8, 'Antalya Cam', '#d9d2c9', 'ANTALYA CAM 8mm.webp', 'ANTALYA CAM 8mm example.webp'),
+  laminate(8, 'Colorado', '#875f47', 'COLORADO 8mm .webp', 'COLORADO 8mm example.webp'),
+  laminate(8, 'Elbruz', '#8f8b85', 'ELBRUZ 8mm.webp', 'ELBRUZ 8mm example.webp'),
+  laminate(8, 'Florida', '#b6aba2', 'FLORIDA 8mm.webp', 'FLORIDA 8mm example.webp'),
+  laminate(8, 'Gala Mese', '#dbc8ae', 'GALA MESE 8mm.webp', 'GALA MESE 8mm example.webp'),
+  laminate(8, 'Gri Mese', '#d0c7be', 'GRI MESE 8mm.webp', 'GRI MESE 8mm example.webp'),
+  laminate(8, 'Kaledonya', '#a69173', 'KALEDONYA 8mm.webp', 'KALEDONYA 8mm example.webp'),
+  laminate(8, 'Kanyon Mese', '#d4c8be', 'KANYON MESE 8mm.webp', 'KANYON MESE 8mm example.webp'),
+  laminate(8, 'Kemer Cam', '#dae0d6', 'KEMER CAM 8mm.webp', 'KEMER CAM 8mm example.webp'),
+  laminate(8, 'Labrador', '#b59d81', 'LABRADOR 8mm.webp', 'LABRADOR 8mm example.webp'),
+  laminate(8, 'Lena', '#c2b4a4', 'LENA 8mm.webp', 'LENA 8mm example.webp'),
+  laminate(8, 'Logan', '#a4988b', 'LOGAN 8mm.webp', 'LOGAN 8mm example.webp'),
+  laminate(8, 'Minori', '#dddbd7', 'MINORI 8mm.webp', 'MINORI 8mm example.webp'),
+  laminate(8, 'Natura Mese', '#af8d6d', 'NATURA MESE 8mm.webp', 'NATURA MESE 8mm example.webp'),
+  laminate(8, 'Olimpos Mese', '#9e7f65', 'OLIMPOS MESE 8mm.webp', 'OLIMPOS MESE 8mm example.webp'),
+  laminate(8, 'Pasifik Cam', '#d7d4d2', 'PASIFIK CAM 8mm.webp', 'PASIFIK CAM 8mm example.webp'),
+  laminate(8, 'Patara', '#dfdfe1', 'PATARA 8mm.webp', 'PATARA 8mm example.webp'),
+  laminate(8, 'Patricia', '#a48465', 'PATRICIA 8mm.webp', 'PATRICIA 8mm example.webp'),
+  laminate(8, 'Porto', '#cbc9c5', 'PORTO 8mm.webp', 'PORTO 8mm example.webp'),
+  laminate(8, 'Pruva Ales', '#e7e0e3', 'PRUVA ALES 8mm.webp', 'PRUVA ALES 8mm example.webp'),
+  laminate(8, 'Ravello', '#cdcbc2', 'RAVELLO 8mm.webp', 'RAVELLO 8mm example.webp'),
+  laminate(8, 'Rodos', '#936744', 'RODOS 8mm.webp', 'RODOS 8mm example.webp'),
+  laminate(8, 'Sia Mese', '#afa39c', 'SIA MESE 8mm.webp', 'SIA MESE 8mm example.webp'),
+  laminate(8, 'Silyon Mese', '#aba391', 'SILYON MESE 8mm.webp', 'SILYON MESE 8mm example.webp'),
+  laminate(8, 'Siraz Mese', '#b19f88', 'SIRAZ MESE 8mm.webp', 'SIRAZ MESE 8mm example.webp'),
+  laminate(8, 'Sorento', '#c9ad97', 'SORENTO 8mm.webp', 'SORENTO 8mm example.webp'),
+  laminate(8, 'Sorento Large', '#c9ad97', 'SORENTO LARGE 8mm.webp', 'SORENTO LARGE 8mm example.webp'),
+  laminate(8, 'Teos', '#b5875f', 'TEOS 8mm.webp', 'TEOS 8mm example.webp'),
+  laminate(8, 'Termessos', '#c2a67c', 'TERMESSOS 8mm.webp', 'TERMESSOS 8mm example.webp'),
+  laminate(8, 'Tibet', '#b09b87', 'TIBET 8mm.webp', 'TIBET 8mm example.webp'),
+  laminate(8, 'Toskana', '#ba996c', 'TOSKANA 8mm.webp', 'TOSKANA 8mm example.webp'),
+  laminate(8, 'Trend Mese', '#c6a984', 'TREND MESE 8mm.webp', 'TREND MESE 8mm example.webp'),
+  laminate(8, 'Tuna', '#bab9ac', 'TUNA 8mm.webp', 'TUNA 8mm example.webp'),
+  laminate(8, 'Ural', '#b3957b', 'URAL 8mm .webp', 'URAL 8mm example.webp'),
+  // 10 mm
+  laminate(10, 'Casella', '#e3e3e0', 'CASELLA 10mm.webp', 'CASELLA 10mm example.webp'),
+  laminate(10, 'Malta', '#868782', 'Malta 10mm.webp', 'MALTA 10mm example.webp'),
+  laminate(10, 'Mare', '#e1dfda', 'MARE 10mm.webp', 'MARE 10mm example.webp'),
+  laminate(10, 'Marine', '#c6c4c2', 'MARINE 10mm.webp', 'MARINE 10mm example .webp'),
+  laminate(10, 'Marvel', '#6d6b66', 'MARVEL 10mm .webp', 'MARVEL 10mm example.webp'),
+  laminate(10, 'Mimoza', '#be9563', 'MIMOZA 10mm.webp', 'MIMOZA 10mm example.webp'),
+  laminate(10, 'Moderna', '#b1906d', 'MODERNA 100mm.webp', 'MODERNA 10mm example.webp'),
+  laminate(10, 'Pelemir', '#826345', 'PELEMIR 10mm.webp', 'PELEMI 10mm example.webp'),
+  laminate(10, 'Pero', '#764a38', 'PERO 10mm.webp', 'PERO 10mm example.webp'),
+  laminate(10, 'Skala', '#b2987e', 'SKALA 10mm.webp', 'SKALA 10mm example.webp'),
+  laminate(10, 'Zambak', '#bf9f7a', 'ZAMBAK 10mm.webp', 'ZAMBAK 10mm example.webp'),
+  // 12 mm
+  laminate(12, 'Altay', '#8a6848', 'ALTAY 12mm .webp', 'ALTAY 12mm example.webp'),
+  laminate(12, 'Atlas', '#836d4b', 'ATLAS 12mm.webp', 'ATLAS 12mm example.webp'),
+  laminate(12, 'Everest', '#cec8c1', 'EVEREST 12mm.webp', 'EVEREST 12mm example.webp'),
+  laminate(12, 'Karma', '#80523c', 'KARMA 12mm.webp', 'KARMA 12mm example.webp'),
+  laminate(12, 'Logan', '#a5998c', 'LOGAN 12mm.webp', 'LOGAN 12mm example.webp'),
+  laminate(12, 'Mantra', '#976c3c', 'MANTRA 12mm.webp', 'MANTRA 12mm example.webp'),
+  laminate(12, 'Namaste', '#a78759', 'NAMASTE 12mm.webp', 'NAMASTE 12mm example.webp'),
+  laminate(12, 'Nirvana', '#837a70', 'NIRVANA 12mm.webp', 'NIRVANA 12mm example.webp'),
+  laminate(12, 'Pamir', '#8c7361', 'PAMIR 12mm.webp', 'PAMIR 12mm example.webp'),
+  laminate(12, 'Rosso', '#442b1a', 'ROSSO 12mm.webp', 'ROSSO 12mm example.webp'),
+  laminate(12, 'Solaro', '#97826a', 'SOLARO 12mm.webp', 'SOLARO 12mm example.webp'),
+  laminate(12, 'Tibet', '#b29e89', 'TIBET 12mm.webp', 'TIBET 12mm example.webp'),
+  laminate(12, 'Toros', '#625b5a', 'TOROS 12mm.webp', 'TOROS 12mm example.webp'),
+]
+
 export const materialMeta = {
   countertop: {
     label: 'Countertop',
@@ -168,5 +376,10 @@ export const materialMeta = {
     label: 'Chipboard Carcass',
     description: 'The structural backbone of your cabinets. Our chipboard selection provides exceptional durability with authentic wood-grain appearances.',
     data: chipboardColors,
+  },
+  laminate: {
+    label: 'Laminate Flooring',
+    description: 'Laminate flooring in 8, 10 and 12 mm.',
+    data: laminates,
   },
 }
