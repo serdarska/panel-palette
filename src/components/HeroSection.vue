@@ -1,30 +1,87 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+// Hero carousel: the photos in public/carousel crossfade with a slow zoom and
+// the headline changes with each one (hero.slides in i18n.js, same order).
+// Moves on every 4 s; arrows, swipe and the arrow keys move it by hand,
+// and it pauses while the pointer is over the text or the tab is hidden.
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { t } from '../i18n.js'
 
 const visible = ref(false)
-onMounted(() => setTimeout(() => visible.value = true, 80))
 
 function go(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
 
-const heroImage = '/gallery/kitchen-antrasit-wood.jpg'
+const images = [1, 2, 3, 4, 5].map(n => `/carousel/interwood_slide_${n}.jpg`)
+const slides = computed(() => images.map((src, i) => ({ src, title: t(`hero.slides.${i}`) })))
+const current = ref(0)
+const INTERVAL = 4000
+let timer = null, paused = false
+
+function show(i) {
+  current.value = (i + images.length) % images.length
+  restart()
+}
+const next = () => show(current.value + 1)
+const prev = () => show(current.value - 1)
+
+function restart() {
+  clearInterval(timer)
+  timer = setInterval(() => { if (!paused && !document.hidden) current.value = (current.value + 1) % images.length }, INTERVAL)
+}
+
+// touch swipe
+let touchX = null
+const onTouchStart = e => { touchX = e.touches[0].clientX }
+function onTouchEnd(e) {
+  if (touchX == null) return
+  const dx = e.changedTouches[0].clientX - touchX
+  if (Math.abs(dx) > 50) (dx < 0 ? next : prev)()
+  touchX = null
+}
+function onKey(e) {
+  if (e.target.closest?.('input, textarea')) return
+  const r = document.getElementById('home')?.getBoundingClientRect()
+  if (!r || r.bottom < 100) return
+  if (e.key === 'ArrowRight') next()
+  if (e.key === 'ArrowLeft') prev()
+}
+
+onMounted(() => {
+  setTimeout(() => visible.value = true, 80)
+  images.slice(1).forEach(src => { new Image().src = src })   // preload, so fades never wait
+  restart()
+  window.addEventListener('keydown', onKey)
+})
+onUnmounted(() => {
+  clearInterval(timer)
+  window.removeEventListener('keydown', onKey)
+})
 </script>
 
 <template>
   <section id="home" class="hero">
-    <div class="hero-photo" :style="{ backgroundImage: `url('${heroImage}')` }">
+    <div class="hero-photo" @touchstart.passive="onTouchStart" @touchend="onTouchEnd">
+      <div
+        v-for="(s, i) in slides"
+        :key="s.src"
+        :class="['slide', { on: i === current }]"
+        :style="{ backgroundImage: `url('${s.src}')` }"
+        :aria-hidden="i !== current"
+      ></div>
       <div class="hero-shade"></div>
 
-      <div :class="['hero-inner', { visible }]">
+      <div :class="['hero-inner', { visible }]" @mouseenter="paused = true" @mouseleave="paused = false">
         <div class="hero-main">
           <span class="eyebrow">{{ t('hero.badge') }}</span>
-          <h1>{{ t('hero.title1') }}<br>{{ t('hero.title2') }}</h1>
+          <div class="titles" aria-live="polite">
+            <Transition name="title" mode="out-in">
+              <h1 :key="current">{{ slides[current].title }}</h1>
+            </Transition>
+          </div>
         </div>
 
         <div class="hero-side">
-          <p class="hero-sub">{{ t('hero.subtitle') }}</p>
           <div class="hero-actions">
             <button class="btn-light" @click="go('catalog')">
               {{ t('hero.exploreMaterials') }}
@@ -37,6 +94,13 @@ const heroImage = '/gallery/kitchen-antrasit-wood.jpg'
         </div>
       </div>
 
+      <button class="arrow arrow-prev" :aria-label="t('hero.prev')" @click="prev">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="arrow arrow-next" :aria-label="t('hero.next')" @click="next">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
       <button class="scroll-down" @click="go('catalog')">
         <span class="scroll-icon">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M2 8l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -45,24 +109,6 @@ const heroImage = '/gallery/kitchen-antrasit-wood.jpg'
       </button>
     </div>
 
-    <div class="hero-stats">
-      <div class="stat">
-        <span class="stat-n">100+</span>
-        <span class="stat-l">{{ t('hero.statColors') }}</span>
-      </div>
-      <div class="stat">
-        <span class="stat-n">15+</span>
-        <span class="stat-l">{{ t('hero.statYears') }}</span>
-      </div>
-      <div class="stat">
-        <span class="stat-n">500+</span>
-        <span class="stat-l">{{ t('hero.statKitchens') }}</span>
-      </div>
-      <div class="stat">
-        <span class="stat-n">360°</span>
-        <span class="stat-l">{{ t('design.label') }}</span>
-      </div>
-    </div>
   </section>
 </template>
 
@@ -75,15 +121,55 @@ const heroImage = '/gallery/kitchen-antrasit-wood.jpg'
 
 .hero-photo {
   position: relative;
-  height: calc(100vh - 86px - 112px);
+  height: calc(100vh - 86px);
   min-height: 560px;
   max-height: 860px;
-  background-size: cover;
-  background-position: center 62%;
+  background: #1b1815;
   display: flex;
   align-items: flex-end;
   overflow: hidden;
 }
+/* slides: crossfade, each one slowly zooming while it is shown */
+.slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.08);
+  transition: opacity 1.1s ease, transform 5s ease-out;
+}
+.slide.on { opacity: 1; transform: scale(1); }
+@media (prefers-reduced-motion: reduce) {
+  .slide { transition: opacity 0.6s ease; transform: none; }
+  .slide.on { transform: none; }
+}
+
+/* headline: one at a time, sliding up */
+.titles { min-height: calc(3 * 1.04 * clamp(38px, 4.6vw, 66px)); display: flex; align-items: flex-end; }
+.title-enter-active, .title-leave-active { transition: opacity 0.5s ease, transform 0.5s ease; }
+.title-enter-from { opacity: 0; transform: translateY(18px); }
+.title-leave-to { opacity: 0; transform: translateY(-12px); }
+
+/* previous / next arrows on the left and right edge, above the text block */
+.arrow {
+  position: absolute;
+  top: 36%;
+  z-index: 2;
+  transform: translateY(-50%);
+  width: 46px; height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(20, 17, 15, 0.2);
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.arrow:hover { background: #fff; color: var(--text-primary); border-color: #fff; }
+.arrow-prev { left: 24px; }
+.arrow-next { right: 24px; }
 .hero-shade {
   position: absolute;
   inset: 0;
@@ -135,12 +221,6 @@ h1 {
   color: #fff;
 }
 
-.hero-sub {
-  font-size: 16px;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.82);
-  margin-bottom: 28px;
-}
 
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
@@ -200,41 +280,6 @@ h1 {
 .scroll-down:hover { color: #fff; }
 .scroll-down:hover .scroll-icon { background: rgba(255, 255, 255, 0.12); }
 
-/* Stats strip under the photo */
-.hero-stats {
-  max-width: 1280px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-bottom: 1px solid var(--border);
-}
-.stat {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  padding: 36px 48px;
-  border-left: 1px solid var(--border);
-}
-.stat:first-child { border-left: none; }
-.stat-n {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-}
-.stat-l {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-@media (max-width: 1100px) {
-  .stat { flex-direction: column; gap: 4px; padding: 28px 32px; }
-}
-
 @media (max-width: 900px) {
   .hero { padding-top: 76px; }
   .hero-photo { height: auto; min-height: 78vh; max-height: none; }
@@ -245,12 +290,12 @@ h1 {
   }
   .hero-actions { flex-direction: column; }
   .btn-light, .btn-line { width: 100%; justify-content: center; }
-  .scroll-down { left: 20px; bottom: 24px; }
-  .hero-stats { grid-template-columns: repeat(2, 1fr); }
-  .stat { padding: 22px 20px; border-left: none; }
-  .stat:nth-child(even) { border-left: 1px solid var(--border); }
-  .stat:nth-child(n + 3) { border-top: 1px solid var(--border); }
-  .stat-n { font-size: 22px; }
-  .stat-l { font-size: 10px; }
+  .scroll-down { display: none; }
+  /* on phones the text fills the middle, so the arrows sit in the bottom corners */
+  .arrow { top: auto; bottom: 22px; transform: none; }
+  .arrow-prev { left: 20px; }
+  .arrow-next { right: 20px; }
+  .arrow { width: 40px; height: 40px; }
+  .titles { min-height: calc(3 * 1.04 * 38px); }
 }
 </style>

@@ -3,8 +3,9 @@ import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { store } from '../store.js'
 import { categories, getCategory } from '../data/categories.js'
+import { studioCategories } from '../data/rooms.js'
 import { t } from '../i18n.js'
-import { formatPrice, hasCode } from '../format.js'
+import { hasCode } from '../format.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,11 +17,13 @@ const isProduct = computed(() => category.value.kind === 'product')
 const unit = c => t(c.kind === 'product' ? 'categories.models' : 'categories.decors')
 
 const query = ref('')
-// flooring is chosen by thickness: one chip per thickness found in the data (null = all)
+// flooring and chipboard are chosen by thickness (null = all): flooring gets
+// one chip per thickness in the data, chipboard the board thicknesses on offer
 const thickness = ref(null)
+const thicknessesOf = i => i.thicknesses ?? [i.dimensions?.thickness]
 const thicknesses = computed(() => key.value === 'laminate'
   ? [...new Set(items.value.map(i => i.dimensions.thickness))].sort((a, b) => a - b)
-  : [])
+  : key.value === 'chipboard' ? [16, 18, 25] : [])
 watch(key, () => { query.value = ''; thickness.value = null; closePopup(); revealActive() })
 
 // on phones the sidebar is a horizontal strip — keep the current category visible
@@ -36,7 +39,7 @@ function revealActive() {
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase()
   return items.value.filter(s =>
-    (thickness.value == null || s.dimensions?.thickness === thickness.value) &&
+    (thickness.value == null || thicknessesOf(s).includes(thickness.value)) &&
     (!q || `${s.name ?? ''} ${s.code}`.toLowerCase().includes(q)))
 })
 
@@ -48,8 +51,8 @@ const imgStyle = s => (s.image ? { backgroundImage: `url("${encodeURI(s.image)}"
 // Items with interior examples get their own page instead of the popup
 const hasPages = computed(() => items.value.some(i => i.examples))
 
-// Board decors can be tried on in the 360° studio
-const canApply = computed(() => ['mdf', 'chipboard', 'countertop'].includes(key.value))
+// Decors with a surface in the design studio can be tried on there
+const canApply = computed(() => studioCategories.has(key.value))
 
 const popup = ref(null)
 
@@ -80,6 +83,7 @@ const dims = computed(() => {
     d.length != null && [t('accessories.length'), mm(d.length)],
     d.width != null && [t('accessories.width'), mm(d.width)],
     d.depth != null && [t('accessories.depth'), mm(d.depth)],
+    d.thickness != null && [t('panel.thickness'), mm(d.thickness)],
   ].filter(Boolean)
 })
 
@@ -127,7 +131,6 @@ onUnmounted(() => {
           </RouterLink>
         </nav>
         <RouterLink :to="{ name: 'design' }" class="side-studio">
-          <span class="studio-badge">360°</span>
           <span>{{ t('nav.designStudio') }}</span>
         </RouterLink>
       </aside>
@@ -148,7 +151,8 @@ onUnmounted(() => {
               <p class="lead">{{ t(`categories.${key}Desc`) }}</p>
             </div>
             <div v-if="items.length" class="count">
-              <span class="count-n">{{ items.length }}</span>
+              <!-- follows the thickness filter and search, so it matches the cards shown -->
+              <span class="count-n">{{ filtered.length }}</span>
               <span class="count-l">{{ unit(category) }}</span>
             </div>
           </div>
@@ -178,7 +182,7 @@ onUnmounted(() => {
 
         <p v-if="hasPages && filtered.length" class="hover-hint">{{ t('panel.exampleHint') }}</p>
 
-        <!-- Categories with their own product pages (MDF): colour, interior on hover, price -->
+        <!-- Categories with their own product pages (MDF): colour, interior on hover -->
         <div v-if="hasPages && filtered.length" class="grid panels">
           <RouterLink
             v-for="item in filtered"
@@ -193,7 +197,6 @@ onUnmounted(() => {
               <span class="card-name">{{ item.name }}</span>
               <span class="card-row">
                 <span class="card-code">{{ hasCode(item) ? item.code : `${item.dimensions.thickness} mm` }}</span>
-                <span v-if="item.price != null" class="card-price">{{ formatPrice(item.price) }}</span>
               </span>
             </div>
           </RouterLink>
@@ -341,14 +344,6 @@ onUnmounted(() => {
   transition: background var(--transition);
 }
 .side-studio:hover { background: var(--accent-dim); }
-.studio-badge {
-  font-family: var(--font-display);
-  font-size: 12px;
-  color: var(--on-accent);
-  background: var(--accent);
-  border-radius: 0;
-  padding: 2px 9px;
-}
 
 /* ===== CONTENT ===== */
 .content { min-width: 0; }
@@ -490,7 +485,6 @@ h1 {
 @media (max-width: 1199px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .panels .card-info { padding: 16px 18px 18px; }
 .panels .card-name { font-size: 16px; }
-.panels .card-price { font-size: 20px; }
 .panels .card { display: block; }
 .panels .card-img { aspect-ratio: 3 / 2; overflow: hidden; }
 .card-example {
@@ -504,7 +498,6 @@ h1 {
 }
 .panels .card:hover .card-example { opacity: 1; transform: none; }
 .card-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.card-price { font-variant-numeric: lining-nums; font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--accent); }
 .empty { text-align: center; color: var(--text-secondary); padding: 60px 0; }
 
 .soon {

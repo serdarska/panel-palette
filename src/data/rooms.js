@@ -1,69 +1,63 @@
-// Rooms for the 360° design studio (/design).
+// Rooms for the design studio (/design).
 //
-// Every room lives in public/rooms/<id>/ as three equirectangular images
-// (2:1, same size) plus a thumbnail — see tools/ROOMS.md for the full spec:
-//   beauty.jpg  the 360° render, changeable surfaces rendered plain white
-//   mask.png    red channel = surface id × 16 (0 = not changeable)
-//   uv.png      texture coordinates of the changeable surfaces, 12-bit packed
-//   thumb.jpg   small preview for the room picker
-//   hotspots.json  surface id → [yaw, pitch] in degrees for the markers
-//                  (a surface's `aim` steers its marker, e.g. floors)
-//
-// `id` here must match the id painted into mask.png. `tile` is how many metres
-// one copy of the material photo covers (its height); `rotate` turns the grain 90°.
-// Laminate photos span about 1.45 m across, so floors use 0.7 (~19 cm planks).
-// The placeholder rooms are produced by tools/render-rooms.mjs.
+// Every room is a 3-D model built in src/components/Room3D.vue, modelled after
+// the reference photos in public/rooms/photos/. `key` places a surface's
+// marker (Room3D's anchors). `tile` is how many metres one copy of the decor
+// photo covers (its height); `grain` ('h' or 'v') is the way the wood grain
+// should run on that surface. Floors are laid as planks, wall panels at
+// their real 600 mm width.
 
 export const rooms = [
   {
     id: 'kitchen',
     name: 'Кујна',
-    view: { yaw: 0, pitch: -8, fov: 75 },
     surfaces: [
-      { id: 1, key: 'fronts',     label: 'Долни фронтови',  category: 'mdf',        default: '730',       tile: 0.7 },
-      { id: 4, key: 'upper',      label: 'Горни фронтови',  category: 'mdf',        default: '647',       tile: 0.7 },
-      { id: 2, key: 'carcass',    label: 'Корпус',          category: 'chipboard',  default: '17',        tile: 0.9 },
-      { id: 5, key: 'island',     label: 'Остров',          category: 'chipboard',  default: '7789',      tile: 0.9 },
-      { id: 3, key: 'worktop',    label: 'Плотна',          category: 'countertop', default: '6624 MATT', tile: 1.4 },
-      { id: 6, key: 'backsplash', label: 'Заштитен ѕид',    category: 'countertop', default: '6624 MATT', tile: 1.4 },
-      { id: 7, key: 'floor',      label: 'Под',             category: 'laminate',   default: 'mimoza-10', tile: 0.7, aim: [25, -40] },
+      { id: 1, key: 'fronts',     label: 'Долни фронтови',  category: 'mdf',        default: '732',         tile: 0.8, grain: 'v' },
+      { id: 2, key: 'upper',      label: 'Горни фронтови',  category: 'mdf',        default: '734',         tile: 0.8, grain: 'v' },
+      { id: 3, key: 'tall',       label: 'Високи елементи', category: 'mdf',        default: '732',         tile: 0.8, grain: 'v' },
+      { id: 4, key: 'island',     label: 'Остров',          category: 'chipboard',  default: '7787',        tile: 1.0, grain: 'h' },
+      { id: 5, key: 'worktop',    label: 'Плотна',          category: 'countertop', default: '6624',        tile: 1.4 },
+      { id: 6, key: 'backsplash', label: 'Заштитен ѕид',    category: 'countertop', default: '6624',        tile: 1.4 },
+      { id: 7, key: 'floor',      label: 'Под',             category: 'laminate',   default: 'termessos-8' },
+      { id: 8, key: 'shelves',    label: 'Полици',          category: 'chipboard',  default: '7787',        tile: 1.0, grain: 'h' },
     ],
   },
   {
+    // modelled in 3-D after public/rooms/photos/living.png, see Room3D.vue
     id: 'living',
     name: 'Дневна соба',
-    view: { yaw: 0, pitch: -6, fov: 78 },
     surfaces: [
-      { id: 1, key: 'tvwall',  label: 'ТВ ѕид',       category: 'chipboard',  default: '7787',      tile: 1.0 },
-      { id: 2, key: 'slats',   label: 'Летви',        category: 'chipboard',  default: '7789',      tile: 1.0 },
-      { id: 3, key: 'tvunit',  label: 'ТВ комода',    category: 'mdf',        default: '6022',      tile: 0.7 },
-      { id: 4, key: 'shelves', label: 'Полици',       category: 'chipboard',  default: '102',       tile: 0.9 },
-      { id: 5, key: 'table',   label: 'Маса',         category: 'countertop', default: '6645 GLOSS', tile: 1.2 },
-      { id: 6, key: 'floor',   label: 'Под',          category: 'laminate',   default: 'mimoza-10',  tile: 0.7, aim: [-30, -35] },
+      { id: 1, key: 'tvwall',  label: 'ТВ ѕид',      category: 'mdf',       default: '732',         tile: 0.8, grain: 'v' },
+      { id: 2, key: 'slats',   label: 'Ѕидни панели', category: 'panels',    default: '265' },
+      { id: 3, key: 'tvunit',  label: 'ТВ комода',   category: 'mdf',       default: '732',         tile: 0.8, grain: 'h' },
+      { id: 4, key: 'shelves', label: 'Полици',      category: 'chipboard', default: '7787',        tile: 1.0, grain: 'h' },
+      { id: 5, key: 'floor',   label: 'Под',         category: 'laminate',  default: 'termessos-8' },
     ],
   },
   {
+    // modelled in 3-D after public/rooms/photos/bedroom.png, see Room3D.vue
     id: 'bedroom',
     name: 'Спална соба',
-    view: { yaw: -20, pitch: -6, fov: 78 },
     surfaces: [
-      { id: 1, key: 'wardrobe',  label: 'Плакар — фронтови', category: 'mdf',       default: '734', tile: 0.7 },
-      { id: 2, key: 'carcass',   label: 'Плакар — корпус',   category: 'chipboard', default: '17',  tile: 0.9 },
-      { id: 3, key: 'headboard', label: 'Табла за кревет',   category: 'chipboard', default: '7791', tile: 1.0 },
-      { id: 4, key: 'nightstand',label: 'Ноќни шкафчиња',    category: 'mdf',       default: '733', tile: 0.7 },
-      { id: 5, key: 'floor',     label: 'Под',               category: 'laminate',  default: 'natura-mese-8', tile: 0.7, aim: [-40, -40] },
+      { id: 1, key: 'wardrobe',   label: 'Плакар',           category: 'mdf',       default: '730',         tile: 0.8, grain: 'v' },
+      { id: 3, key: 'slats',      label: 'Ѕидни панели',     category: 'panels',    default: '265' },
+      { id: 4, key: 'headboard',  label: 'Табла зад кревет', category: 'chipboard', default: '7789',        tile: 1.0, grain: 'h' },
+      { id: 5, key: 'nightstand', label: 'Ноќни шкафчиња',   category: 'mdf',       default: '734',         tile: 0.8, grain: 'h' },
+      { id: 6, key: 'floor',      label: 'Под',              category: 'laminate',  default: 'termessos-8' },
     ],
   },
   {
+    // modelled in 3-D after public/rooms/photos/hallway.png, see Room3D.vue
     id: 'hallway',
     name: 'Ходник',
-    view: { yaw: 0, pitch: -8, fov: 78 },
     surfaces: [
-      { id: 1, key: 'shoes',    label: 'Чевлар — фронтови', category: 'mdf',       default: '647',  tile: 0.7 },
-      { id: 2, key: 'carcass',  label: 'Корпус',            category: 'chipboard', default: '17',   tile: 0.9 },
-      { id: 3, key: 'panel',    label: 'Ѕиден панел',       category: 'chipboard', default: '7789', tile: 1.0 },
-      { id: 4, key: 'wardrobe', label: 'Плакар',            category: 'mdf',       default: '730',  tile: 0.7 },
-      { id: 5, key: 'floor',    label: 'Под',               category: 'laminate',  default: 'termessos-8', tile: 0.7, aim: [0, -35] },
+      { id: 1, key: 'wardrobe', label: 'Плакар',       category: 'mdf',      default: '729',         tile: 0.8, grain: 'v' },
+      { id: 2, key: 'slats',    label: 'Ѕидни панели', category: 'panels',   default: '265' },
+      { id: 3, key: 'console',  label: 'Конзола',      category: 'mdf',      default: '730',         tile: 0.8, grain: 'h' },
+      { id: 4, key: 'floor',    label: 'Под',          category: 'laminate', default: 'termessos-8' },
     ],
   },
 ]
+
+// material categories that have a surface in some room ("try it in the studio")
+export const studioCategories = new Set(rooms.flatMap(r => r.surfaces.map(s => s.category)))

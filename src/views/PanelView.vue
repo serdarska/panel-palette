@@ -3,8 +3,9 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { store } from '../store.js'
 import { getCategory } from '../data/categories.js'
+import { studioCategories } from '../data/rooms.js'
 import { t } from '../i18n.js'
-import { formatPrice, hasCode } from '../format.js'
+import { hasCode } from '../format.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,7 +17,7 @@ const panel = computed(() => list.value[index.value])
 const prev = computed(() => list.value[(index.value - 1 + list.value.length) % list.value.length])
 const next = computed(() => list.value[(index.value + 1) % list.value.length])
 
-const finish = p => (p.name.startsWith('HG') ? 'finishHG' : /soft touch/i.test(p.name) ? 'finishSoft' : 'finishDecor')
+const finish = p => (p.gloss ? 'finishHG' : /soft touch/i.test(p.name) ? 'finishSoft' : 'finishDecor')
 // boards are grouped by finish, flooring by thickness
 const group = p => (p.dimensions.length ? finish(p) : p.dimensions.thickness)
 // other colours from the same group first
@@ -26,13 +27,12 @@ const related = computed(() => {
   return [...others.filter(p => group(p) === g), ...others.filter(p => group(p) !== g)].slice(0, 8)
 })
 
-const price = p => formatPrice(p.price)
 const size = ({ dimensions: d }) => (d.length ? `${d.length} × ${d.width} × ${d.thickness} mm` : `${d.thickness} mm`)
-// code, price or (for laminate) thickness under each related tile
-const meta = p => (hasCode(p) ? [p.code, p.price != null && price(p)] : [size(p)]).filter(Boolean).join(' · ')
+// code or (for laminate) thickness under each related tile
+const meta = p => (hasCode(p) ? p.code : size(p))
 
-// categories with a surface in the 360° studio (laminate = floors)
-const canTry = computed(() => ['mdf', 'chipboard', 'countertop', 'laminate'].includes(categoryKey.value))
+// categories with a surface in the design studio
+const canTry = computed(() => studioCategories.has(categoryKey.value))
 
 // one row per picture: the colour, then each interior example
 const figures = computed(() => [
@@ -121,10 +121,6 @@ onUnmounted(() => {
             <dl class="specs">
               <div v-if="hasCode(panel)"><dt>{{ t('panel.code') }}</dt><dd>{{ panel.code }}</dd></div>
               <div><dt>{{ t(panel.dimensions.length ? 'panel.dimensions' : 'panel.thickness') }}</dt><dd>{{ size(panel) }}</dd></div>
-              <div v-if="panel.price != null" class="price-row">
-                <dt>{{ t('panel.price') }}</dt>
-                <dd><strong>{{ price(panel) }}</strong> <span>{{ t('panel.perBoard') }}</span></dd>
-              </div>
             </dl>
             <div v-if="i === 0" class="actions">
               <button v-if="canTry" class="btn-primary" @click="tryInStudio">
@@ -297,8 +293,6 @@ h2 {
 .specs > div:first-child { border-top: 1px solid var(--border); }
 dt { font-size: 13px; color: var(--text-secondary); }
 dd { font-size: 14px; font-weight: 600; color: var(--text-primary); text-align: right; }
-.price-row dd strong { font-variant-numeric: lining-nums; font-family: var(--font-display); font-size: 21px; font-weight: 600; color: var(--accent); }
-.price-row dd span { font-size: 12px; font-weight: 400; color: var(--text-muted); }
 
 .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
 .btn-primary, .btn-ghost {

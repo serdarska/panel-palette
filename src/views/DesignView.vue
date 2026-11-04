@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
-import PanoViewer from '../components/PanoViewer.vue'
+import Room3D from '../components/Room3D.vue'
 import { rooms } from '../data/rooms.js'
 import { materialMeta } from '../data/materials.js'
 import { store } from '../store.js'
@@ -14,8 +14,6 @@ const roomId = ref(rooms[0].id)
 const room = computed(() => rooms.find(r => r.id === roomId.value))
 const selectedId = ref(room.value.surfaces[0].id)
 const surface = computed(() => room.value.surfaces.find(s => s.id === selectedId.value))
-const hotspots = reactive({})
-const rotating = ref(false)
 const isFullscreen = ref(false)
 const viewer = ref(null)
 const stage = ref(null)
@@ -56,18 +54,21 @@ function toggleFav(sw) {
   save(FAV_KEY, [...favourites])
 }
 
-// filters per category: thickness for floors, finish for MDF
+// filters per category: thickness for floors and chipboard, finish for MDF
 const filters = computed(() => {
   const list = materialMeta[surface.value.category].data
   if (surface.value.category === 'laminate') {
     return [...new Set(list.map(s => s.dimensions.thickness))].sort((a, b) => a - b)
       .map(mm => ({ key: mm, label: `${mm} mm`, test: s => s.dimensions.thickness === mm }))
   }
+  if (surface.value.category === 'chipboard') {
+    return [16, 18, 25].map(mm => ({ key: mm, label: `${mm} mm`, test: s => s.thicknesses?.includes(mm) }))
+  }
   if (surface.value.category === 'mdf') {
     return [
-      { key: 'hg', label: t('panel.finishHG'), test: s => s.name.startsWith('HG') },
+      { key: 'hg', label: t('panel.finishHG'), test: s => s.gloss },
       { key: 'soft', label: t('panel.finishSoft'), test: s => /soft touch/i.test(s.name) },
-      { key: 'decor', label: t('panel.finishDecor'), test: s => !s.name.startsWith('HG') && !/soft touch/i.test(s.name) },
+      { key: 'decor', label: t('panel.finishDecor'), test: s => !s.gloss && !/soft touch/i.test(s.name) },
     ]
   }
   return []
@@ -89,17 +90,10 @@ const swatchTitle = (category, s) => (category === 'countertop' ? s.code : (s.na
 const swatchSub = s => (!hasCode(s) ? `${s.dimensions.thickness} mm` : s.name ? s.code : '')
 const bg = s => (s.image ? { backgroundImage: `url("${encodeURI(s.image)}")` } : { background: s.color })
 
-async function loadHotspots(id) {
-  if (hotspots[id]) return
-  try { hotspots[id] = await (await fetch(`/rooms/${id}/hotspots.json`)).json() } catch { hotspots[id] = {} }
-}
-
 function selectRoom(id) {
   roomId.value = id
   selectedId.value = room.value.surfaces[0].id
-  rotating.value = false
   open.value = null
-  loadHotspots(id)
 }
 
 function selectSurface(id) {
@@ -109,10 +103,6 @@ function selectSurface(id) {
 
 function pick(swatch) {
   selections[roomId.value][selectedId.value] = swatch
-}
-
-function toggleRotate() {
-  rotating.value = viewer.value.toggleRotate()
 }
 
 function toggleFullscreen() {
@@ -138,12 +128,15 @@ const mailto = computed(() => {
 })
 
 onMounted(() => {
-  rooms.forEach(r => loadHotspots(r.id))
   document.addEventListener('fullscreenchange', () => { isFullscreen.value = !!document.fullscreenElement })
   // "Try in the studio" from a category or product page
   if (store.pendingApply) {
     const { category, swatch } = store.pendingApply
     store.pendingApply = null
+    if (!room.value.surfaces.some(s => s.category === category)) {
+      const r = rooms.find(r => r.surfaces.some(s => s.category === category))
+      if (r) selectRoom(r.id)
+    }
     const target = room.value.surfaces.filter(s => s.category === category)
     target.forEach(s => { selections[roomId.value][s.id] = swatch })
     if (target[0]) selectedId.value = target[0].id
@@ -169,10 +162,10 @@ onMounted(() => {
 
     <!-- Viewer -->
     <div ref="stage" class="stage">
-      <PanoViewer
+      <Room3D
+        :key="room.id"
         ref="viewer"
         :room="room"
-        :hotspots="hotspots[roomId] || {}"
         :selections="selections[roomId]"
         :selected="selectedId"
         @select="selectSurface"
@@ -318,7 +311,6 @@ onMounted(() => {
         <a class="ctl" :href="mailto" :title="t('design.send')">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 5.5L10 10.5l6.5-5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
         </a>
-        <button :class="['ctl', 'ctl-360', { on: rotating }]" :title="t('design.rotate')" @click="toggleRotate">360</button>
         <button class="ctl" :title="t('design.download')" @click="download">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="5.5" width="15" height="10.5" rx="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10.7" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M7 5.5l1-2h4l1 2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
         </button>
@@ -687,7 +679,6 @@ onMounted(() => {
 }
 .ctl:hover { background: rgba(255, 255, 255, 0.95); color: var(--text-primary); }
 .ctl.on { background: #fff; color: var(--text-primary); }
-.ctl-360 { font: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }

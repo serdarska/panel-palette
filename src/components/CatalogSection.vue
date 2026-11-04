@@ -1,9 +1,22 @@
 <script setup>
+// Home page catalogue: the board materials as tiles of
+// different shapes that follow their cover photos (the MDF and laminate covers
+// are wide landscape shots, chipboard and worktops square, the wall panels a
+// tall strip), or — with
+// kind="product" — sinks and faucets as their own section.
 import { computed } from 'vue'
 import { categories } from '../data/categories.js'
 import { t } from '../i18n.js'
 
-const cards = computed(() => categories.map((c, i) => ({
+const props = defineProps({
+  kind: { type: String, default: 'material' },   // 'material' | 'product'
+})
+const product = computed(() => props.kind === 'product')
+const head = computed(() => (product.value
+  ? { id: 'accessories', label: t('accessories.label'), title: t('accessories.title'), subtitle: t('accessories.subtitle') }
+  : { id: 'catalog', label: t('categories.label'), title: t('categories.title'), subtitle: t('categories.subtitle') }))
+
+const cards = computed(() => categories.filter(c => c.kind === props.kind).map((c, i) => ({
   key: c.key,
   num: String(i + 1).padStart(2, '0'),
   title: t(`categories.${c.key}`),
@@ -16,20 +29,20 @@ const cards = computed(() => categories.map((c, i) => ({
 </script>
 
 <template>
-  <section id="catalog" class="catalog section-pad">
-    <div class="section-container">
+  <section :id="head.id" :class="['catalog', 'section-pad', { products: product }]">
+    <div :class="['section-container', { wide: !product }]">
       <div class="section-header reveal">
-        <span class="section-label">{{ t('categories.label') }}</span>
-        <h2>{{ t('categories.title') }}</h2>
-        <p>{{ t('categories.subtitle') }}</p>
+        <span class="section-label">{{ head.label }}</span>
+        <h2>{{ head.title }}</h2>
+        <p>{{ head.subtitle }}</p>
       </div>
 
-      <div class="cat-grid reveal">
+      <div :class="['cat-grid', 'reveal', product ? 'grid-products' : 'grid-materials']">
         <RouterLink
           v-for="cat in cards"
           :key="cat.key"
           :to="{ name: 'category', params: { category: cat.key } }"
-          :class="['tile', { product: cat.product }]"
+          :class="['tile', `tile-${cat.key}`, { product: cat.product }]"
         >
           <!-- material: one room photo filling the tile -->
           <div
@@ -70,16 +83,40 @@ const cards = computed(() => categories.map((c, i) => ({
 
 <style scoped>
 .catalog { background: var(--bg-primary); }
+.catalog.products { background: var(--bg-secondary); }
+/* the materials section is a bit wider than the rest of the page */
+.section-container.wide { max-width: 1440px; }
 
 .cat-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
+/* materials: wide tiles for the landscape covers, square ones for the square covers */
+.grid-materials {
+  gap: 24px;
+  grid-template-columns: 1fr 1fr 1fr 0.8fr;
+  grid-template-rows: 330px 370px;
+  grid-template-areas:
+    'mdf        mdf      chipboard panels'
+    'countertop laminate laminate  panels';
+}
+.tile-mdf        { grid-area: mdf; }
+.tile-chipboard  { grid-area: chipboard; }
+.tile-countertop { grid-area: countertop; }
+.tile-laminate   { grid-area: laminate; }
+.tile-panels     { grid-area: panels; }
+.tile-mdf .tile-title { font-size: 30px; }
+.tile-mdf .tile-body { padding: 32px; }
+.tile-laminate .tile-title { font-size: 22px; }
+.tile-panels .tile-title { font-size: 19px; }
+.tile-panels .tile-body { padding: 22px; }
+/* sinks and faucets: two wide tiles side by side */
+.grid-products { grid-template-columns: repeat(2, 1fr); }
+.grid-products .tile { height: 400px; }
+.grid-products .tile.product { background: var(--bg-primary); }
 
 .tile {
   position: relative;
-  height: 440px;
   overflow: hidden;
   display: flex;
   align-items: flex-end;
@@ -192,12 +229,26 @@ const cards = computed(() => categories.map((c, i) => ({
 .tile.product .tile-link { border-top-color: var(--border-light); color: var(--accent); }
 
 @media (max-width: 1000px) {
-  .cat-grid { grid-template-columns: repeat(2, 1fr); }
-  .tile { height: 380px; }
+  .grid-materials {
+    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 300px 300px 300px 300px;
+    grid-template-areas: 'mdf mdf' 'chipboard panels' 'countertop panels' 'laminate laminate';
+  }
+  .grid-products .tile { height: 360px; }
 }
 @media (max-width: 640px) {
-  .cat-grid { grid-template-columns: 1fr; gap: 12px; }
-  .tile { height: 340px; }
+  .cat-grid { gap: 12px; }
+  .grid-materials {
+    gap: 14px;
+    grid-template-columns: 1fr;
+    grid-template-rows: 260px 320px 320px 260px 400px;
+    grid-template-areas: 'mdf' 'chipboard' 'countertop' 'laminate' 'panels';
+  }
+  .grid-products { grid-template-columns: 1fr; }
+  .grid-products .tile { height: 340px; }
+  .tile-mdf .tile-title { font-size: 26px; }
+  .tile-mdf .tile-body { padding: 22px 20px; }
   .tile-body { padding: 22px 20px; }
   .tile-title { font-size: 21px; }
   /* no hover on touch screens: always show the description */

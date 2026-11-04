@@ -28,6 +28,7 @@ function go(id) {
             <RouterLink :to="{ name: 'category', params: { category: 'chipboard' } }">{{ t('categories.chipboard') }}</RouterLink>
             <RouterLink :to="{ name: 'category', params: { category: 'countertop' } }">{{ t('categories.countertop') }}</RouterLink>
             <RouterLink :to="{ name: 'category', params: { category: 'laminate' } }">{{ t('categories.laminate') }}</RouterLink>
+            <RouterLink :to="{ name: 'category', params: { category: 'panels' } }">{{ t('categories.panels') }}</RouterLink>
             <RouterLink :to="{ name: 'category', params: { category: 'sinks' } }">{{ t('categories.sinks') }}</RouterLink>
             <RouterLink :to="{ name: 'category', params: { category: 'faucets' } }">{{ t('categories.faucets') }}</RouterLink>
             <a href="/#catalog" @click.prevent="go('catalog')">{{ t('footer.allCollections') }}</a>

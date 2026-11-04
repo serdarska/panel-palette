@@ -1,25 +1,29 @@
 // Catalogue categories shown in the sidebar, on the home page and at
 // /materials/<key>. `kind: 'material'` = board decors that can be tried in the
-// 360° studio; `kind: 'product'` = items shown as product photos.
+// design studio; `kind: 'product'` = items shown as product photos.
 // Covers show the product itself: one board photo for materials, cut-outs for products.
-import { mdfColors, chipboardColors, countertops, laminates, sinks, faucets } from './materials.js'
+import { mdfColors, chipboardColors, countertops, laminates, wallPanels, sinks, faucets } from './materials.js'
 
 export const categories = [
   {
     key: 'mdf', kind: 'material', data: mdfColors,
-    covers: ['/materials/mdf/Stone Gray 390 1220x2800x18mm 6250den..webp'],
+    covers: ['/materials/mdf/HG Cool Gri example.webp'],
   },
   {
     key: 'chipboard', kind: 'material', data: chipboardColors,
-    covers: ['/materials/chipboard/7789 Royal Oak 18mm.jpg'],
+    covers: ['/materials/chipboard/Senkron Asya 328 example.jpg'],
   },
   {
     key: 'countertop', kind: 'material', data: countertops,
-    covers: ['/materials/countertop/6624 MAT.jpg'],
+    covers: ['/materials/countertop/6624.webp'],
   },
   {
     key: 'laminate', kind: 'material', data: laminates,
-    covers: ['/materials/flooring/laminat 10mm/MIMOZA 10mm.webp'],
+    covers: ['/materials/flooring/laminat 10mm/MARVEL 10mm example.webp'],
+  },
+  {
+    key: 'panels', kind: 'material', data: wallPanels,
+    covers: ['/materials/dekorativni dzidni paneli/329_Seul.jpg'],
   },
   {
     key: 'sinks', kind: 'product', data: sinks,
