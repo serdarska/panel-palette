@@ -54,6 +54,7 @@ function closeZoom() {
 
 function tryInStudio() {
   store[categoryKey.value] = panel.value
+  store.picked[categoryKey.value] = true
   store.pendingApply = { category: categoryKey.value, swatch: panel.value }
   router.push({ name: 'design' })
 }

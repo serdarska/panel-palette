@@ -24,10 +24,11 @@ const thicknessesOf = i => i.thicknesses ?? [i.dimensions?.thickness]
 const thicknesses = computed(() => key.value === 'laminate'
   ? [...new Set(items.value.map(i => i.dimensions.thickness))].sort((a, b) => a - b)
   : key.value === 'chipboard' ? [16, 18, 25] : [])
-// countertops are filtered by finish (null = all): matt, or high gloss (`gloss`)
+// countertops and MDF are filtered by finish (null = all): matt or high gloss.
+// Countertops go by their `gloss` flag; MDF by name — "HG …" is high gloss
 const finish = ref(null)
-const finishes = computed(() => key.value === 'countertop' ? ['matt', 'gloss'] : [])
-const finishOf = i => (i.gloss ? 'gloss' : 'matt')
+const finishes = computed(() => ['countertop', 'mdf'].includes(key.value) ? ['matt', 'gloss'] : [])
+const finishOf = i => ((key.value === 'mdf' ? /^HG\b/i.test(i.name ?? '') : i.gloss) ? 'gloss' : 'matt')
 watch(key, () => { query.value = ''; thickness.value = null; finish.value = null; closePopup(); revealActive() })
 
 // on phones the sidebar is a horizontal strip — keep the current category visible
@@ -73,6 +74,7 @@ function closePopup() {
 
 function apply(swatch) {
   store[key.value] = swatch
+  store.picked[key.value] = true
   store.activeMaterial = key.value
   store.pendingApply = { category: key.value, swatch }
   closePopup()
@@ -99,7 +101,8 @@ const offerLink = computed(() => {
 })
 
 function isSelected(item) {
-  return store[key.value]?.code === item.code
+  // a studio default isn't a choice, so nothing is outlined until one is made
+  return !!store.picked[key.value] && store[key.value]?.code === item.code
 }
 
 function onKey(e) {

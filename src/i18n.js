@@ -364,7 +364,7 @@ const translations = {
       prev:         'Претходна',
       next:         'Следна',
       zoom:         'Кликни за поголема слика',
-      exampleHint:  'Помини со глувчето за пример во ентериер',
+      exampleHint:  '',
     },
     accessories: {
       label:          'Додатоци',

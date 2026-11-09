@@ -28,7 +28,7 @@ const swatchMap = { countertop: countertops, mdf: mdfColors, chipboard: chipboar
 const swatches  = computed(() => swatchMap[store.activeMaterial])
 const current   = computed(() => store[store.activeMaterial])
 function selectMaterial(key)   { store.activeMaterial = key }
-function selectColor(swatch)   { store[store.activeMaterial] = swatch }
+function selectColor(swatch)   { store[store.activeMaterial] = swatch; store.picked[store.activeMaterial] = true }
 function isActive(swatch)      { return current.value?.code === swatch.code }
 
 // ── Three.js ─────────────────────────────────────────────────────────────────
