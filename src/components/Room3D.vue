@@ -119,12 +119,13 @@ function metricUV(geo, offset = [0, 0, 0]) {
 }
 
 // a box from its min/max corners, rounded a little so its edges catch light
-function box(x0, y0, z0, x1, y1, z1, mat, { r = 0.003, id = 0, shadow = true } = {}) {
+// `origin` moves the texture's (0, 0) to that world point, e.g. a panel's corner
+function box(x0, y0, z0, x1, y1, z1, mat, { r = 0.003, id = 0, shadow = true, origin = null } = {}) {
   const w = x1 - x0, h = y1 - y0, d = z1 - z0
   const rr = Math.min(r, w / 2.01, h / 2.01, d / 2.01)
   const c = [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2]
   const geo = rr > 0.0005 ? new RoundedBoxGeometry(w, h, d, 2, rr) : new THREE.BoxGeometry(w, h, d)
-  metricUV(geo, c)
+  metricUV(geo, origin ? c.map((v, i) => v - origin[i]) : c)
   const m = new THREE.Mesh(geo, typeof mat === 'number' ? surfaceMat(mat) : mat)
   m.position.set(...c)
   m.castShadow = shadow; m.receiveShadow = true
@@ -269,9 +270,11 @@ function buildKitchen() {
   box(x0, top, z0, 1.0, wt, backFront + DOOR_T + 0.025, 5, { r: 0.004 })
   box(x0, top, backFront + DOOR_T + 0.025, leftFront + DOOR_T + 0.025, wt, 0.6 + DOOR_T + 0.01, 5, { r: 0.004 })
 
-  // backsplash on both walls, up to the wall cabinets
-  box(x0, wt, z0, 1.0, 1.45, z0 + 0.012, 6, { r: 0.001 })
-  box(x0, wt, z0 + 0.012, x0 + 0.012, 1.45, 0.6, 6, { r: 0.001 })
+  // backsplash on both walls, up to the wall cabinets: one panel per wall,
+  // both starting in the corner and sitting on the worktop (see `slab`)
+  const corner = [x0, wt, z0]
+  box(x0, wt, z0, 1.0, 1.45, z0 + 0.012, 6, { r: 0.001, origin: corner })
+  box(x0, wt, z0 + 0.012, x0 + 0.012, 1.45, 0.6, 6, { r: 0.001, origin: corner })
 
   // hob with its cooking zones, sink and tap
   box(-1.42, wt, -2.3, -0.78, wt + 0.006, -1.82, M.black, { r: 0.002 })
@@ -948,6 +951,15 @@ async function applySelections() {
       tex.needsUpdate = true
       mat.bumpMap = tex
       mat.bumpScale = 4
+    } else if (s.slab) {
+      // a long panel (the backsplash): the photo spans the panel's full
+      // length once, unmirrored, so no vein is folded back on itself
+      tex = new THREE.Texture(img)
+      tex.colorSpace = THREE.SRGBColorSpace
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy()
+      tex.repeat.set(1 / s.slab, img.width / (img.height * s.slab))
+      tex.needsUpdate = true
     } else {
       tex = new THREE.Texture(img)
       tex.colorSpace = THREE.SRGBColorSpace

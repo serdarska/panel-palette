@@ -1,22 +1,43 @@
+// Worktops are named by their code (the photo's file name). Photos in
+// countertop/trimmed/ are the originals with their white margins cut off.
+// `wall: true` = the same decor also comes as a wall panel, so the kitchen's
+// backsplash in the design studio offers only these. `gloss` = high gloss (SJAJ).
+// `examples` (none yet) gives each worktop its own page, like the MDF fronts.
+const WORKTOP = { length: 4100, width: 600, thickness: 38 }
+
 export const countertops = [
-  { code: '6608',  color: '#6d5b44', textColor: '#f0f0f0', image: '/materials/countertop/6608.webp' },
-  { code: '6618',  color: '#bbb19a', textColor: '#3a3a3a', image: '/materials/countertop/6618.webp' },
-  { code: '6624',  color: '#ededeb', textColor: '#3a3a3a', image: '/materials/countertop/6624.webp' },
-  { code: '6626',  color: '#5d5d58', textColor: '#f0f0f0', image: '/materials/countertop/6626.webp' },
-  { code: '6633',  color: '#353b3b', textColor: '#f0f0f0', image: '/materials/countertop/6633.webp' },
-  { code: '6648',  color: '#ddd9cd', textColor: '#3a3a3a', image: '/materials/countertop/6648.webp' },
-  { code: '6650',  color: '#a3977f', textColor: '#3a3a3a', image: '/materials/countertop/6650.webp' },
-  { code: '6660',  color: '#c1b084', textColor: '#3a3a3a', image: '/materials/countertop/6660.webp' },
-  { code: '6661',  color: '#090a0a', textColor: '#f0f0f0', image: '/materials/countertop/6661.webp' },
-  { code: '6670',  color: '#bca97f', textColor: '#3a3a3a', image: '/materials/countertop/6670.webp' },
-  { code: '6674',  color: '#695c52', textColor: '#f0f0f0', image: '/materials/countertop/6674.webp' },
-  { code: '6675',  color: '#a88e63', textColor: '#3a3a3a', image: '/materials/countertop/6675.webp' },
-  { code: '6676',  color: '#706148', textColor: '#f0f0f0', image: '/materials/countertop/6676.webp' },
-  { code: '6677',  color: '#a28c5b', textColor: '#3a3a3a', image: '/materials/countertop/6677.webp' },
-  { code: '6679',  color: '#aeaba6', textColor: '#3a3a3a', image: '/materials/countertop/6679.webp' },
-  { code: '6680',  color: '#b0afa7', textColor: '#3a3a3a', image: '/materials/countertop/6680.webp' },
-  { code: '6681',  color: '#c3c1bb', textColor: '#3a3a3a', image: '/materials/countertop/6681.webp' },
-  { code: '6685',  color: '#b8a482', textColor: '#3a3a3a', image: '/materials/countertop/6685.webp' },
+  { code: '3054', color: '#c08e5a', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/3054.webp', examples: [], dimensions: WORKTOP },
+  { code: '3117 Сјај', color: '#a57350', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/3117 SJAJ.webp', examples: [], dimensions: WORKTOP, gloss: true },
+  { code: '3151 Сјај', color: '#9e784b', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/3151 SJAJ.webp', examples: [], dimensions: WORKTOP, gloss: true },
+  { code: '3155', color: '#c8b094', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/3155.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6605', color: '#b9a37f', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6605.webp', examples: [], dimensions: WORKTOP },
+  { code: '6607', color: '#9d886d', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6607.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6608', color: '#6e5b44', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6608.webp', examples: [], dimensions: WORKTOP },
+  { code: '6618', color: '#c0b7a3', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6618.webp', examples: [], dimensions: WORKTOP },
+  { code: '6624', color: '#eeedeb', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6624 sjaj.webp', examples: [], dimensions: WORKTOP, matt: true, wall: true },
+  { code: '6624 Сјај', color: '#f1f0ef', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6624 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true, wall: true },
+  { code: '6626', color: '#5d5f59', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6626.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6630', color: '#000000', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6630.webp', examples: [], dimensions: WORKTOP },
+  { code: '6633 Сјај', color: '#333939', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6633 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true },
+  { code: '6645 Сјај', color: '#afada8', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6645.webp', examples: [], dimensions: WORKTOP, gloss: true, wall: true },
+  { code: '6648', color: '#dfdbce', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6648.webp', examples: [], dimensions: WORKTOP },
+  { code: '6650', color: '#8e8875', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6650.webp', examples: [], dimensions: WORKTOP },
+  { code: '6652', color: '#977e5f', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6652.webp', examples: [], dimensions: WORKTOP },
+  { code: '6654 Сјај', color: '#33281e', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6654.webp', examples: [], dimensions: WORKTOP, gloss: true },
+  { code: '6660', color: '#b4a378', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6660.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6661', color: '#080809', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6661.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6664', color: '#71797b', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6664.webp', examples: [], dimensions: WORKTOP },
+  { code: '6670', color: '#a79675', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6670.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6671 Сјај', color: '#dcdcdb', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6671 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true },
+  { code: '6672 Сјај', color: '#202021', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6672.webp', examples: [], dimensions: WORKTOP, gloss: true, wall: true },
+  { code: '6674', color: '#726357', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6674.webp', examples: [], dimensions: WORKTOP },
+  { code: '6675', color: '#a38c64', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6675.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6676', color: '#6a5e4b', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6676.webp', examples: [], dimensions: WORKTOP },
+  { code: '6677', color: '#a28c5b', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6677.webp', examples: [], dimensions: WORKTOP },
+  { code: '6679', color: '#b4b1ac', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6679.webp', examples: [], dimensions: WORKTOP },
+  { code: '6680', color: '#bbbab2', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6680.webp', examples: [], dimensions: WORKTOP },
+  { code: '6681', color: '#bab4ab', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6681.webp', examples: [], dimensions: WORKTOP },
+  { code: '6685', color: '#b6a27f', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6685.webp', examples: [], dimensions: WORKTOP, wall: true },
 ]
 
 // MDF panels: colour photo + interior example(s), size in mm; `gloss` = high-gloss finish,
@@ -208,10 +229,22 @@ export const mdfColors = [
 // example was supplied), size in mm; `thicknesses` lists every thickness made
 export const chipboardColors = [
   {
-    name: 'Antracite', code: '275', color: '#2a2c2b', textColor: '#f0f0f0',
+    name: 'Natural Antracit', code: '275', color: '#2a2c2b', textColor: '#f0f0f0',
     image: '/materials/chipboard/Antracite 275 2100x2800x16.jpg',
     examples: ['/materials/chipboard/Antracite 275 2100x2800x16.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
+  {
+    name: 'Antik Beyaz', code: '144', color: '#e2dfdb', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Antik Beyaz 144 2100x2800x16.jpeg',
+    examples: ['/materials/chipboard/Antik Beyaz 144 2100x2800x16.jpeg'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
+  {
+    name: 'Antracit Сјај', code: '159', gloss: true, color: '#76736c', textColor: '#f0f0f0',
+    image: '/materials/chipboard/Antracit Glossy 159 2100x2800x16.jpg',
+    examples: ['/materials/chipboard/Antracit Glossy 159 2100x2800x16.jpg'],
+    dimensions: { width: 2100, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
     name: 'Barok', code: '427', color: '#6b4428', textColor: '#f0f0f0',
@@ -225,11 +258,18 @@ export const chipboardColors = [
     examples: ['/materials/chipboard/Bendir 300 example.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
+  // the same black board in two finishes; `gloss` makes the studio render it glossy
   {
-    name: 'Beyaz', code: '66', color: '#ecf2f0', textColor: '#3a3a3a',
-    image: '/materials/chipboard/Beyaz 66 2100x2800x16:25.jpg',
-    examples: ['/materials/chipboard/Beyaz 66 2100x2800x16:25.jpg'],
-    dimensions: { width: 2100, length: 2800, thickness: '16 / 25' }, thicknesses: [16, 25],
+    name: 'Black МАТ', code: '2', color: '#000000', textColor: '#f0f0f0',
+    image: '/materials/chipboard/Black 2 2100x2800x16.png',
+    examples: ['/materials/chipboard/Black 2 2100x2800x16.png'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
+  {
+    name: 'Black Сјај', code: '2-hg', shownCode: '2', gloss: true, color: '#000000', textColor: '#f0f0f0',
+    image: '/materials/chipboard/Black 2 2100x2800x16.png',
+    examples: ['/materials/chipboard/Black 2 2100x2800x16.png'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
     name: 'Cashmere Scratch', code: '7782', color: '#d5cfc9', textColor: '#3a3a3a',
@@ -243,6 +283,19 @@ export const chipboardColors = [
     examples: ['/materials/chipboard/Country Copper 7749 2070x2800x18.webp'],
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
+  // the same cream board in two finishes; `gloss` makes the studio render it glossy
+  {
+    name: 'Cream МАТ', code: '7', color: '#eae1d2', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Krem 7 2100x2800x16.jpg',
+    examples: ['/materials/chipboard/Krem 7 2100x2800x16.jpg'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
+  {
+    name: 'Cream Сјај', code: '7-hg', shownCode: '7', gloss: true, color: '#eae1d2', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Krem 7 2100x2800x16.jpg',
+    examples: ['/materials/chipboard/Krem 7 2100x2800x16.jpg'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
   {
     name: 'Delano Oak', code: '7787', color: '#c1b084', textColor: '#3a3a3a',
     image: '/materials/chipboard/Delano Oak 7787 2070x2800x18.webp',
@@ -254,6 +307,12 @@ export const chipboardColors = [
     image: '/materials/chipboard/Delta 554 2100x2800x26.jpg',
     examples: ['/materials/chipboard/Delta 554 2100x2800x26.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 26 }, thicknesses: [26],
+  },
+  {
+    name: 'Delta', code: 'A554', color: '#8c7453', textColor: '#f0f0f0',
+    image: '/materials/chipboard/Delta A554 2100x2800x16.jpg',
+    examples: ['/materials/chipboard/Delta A554 2100x2800x16.jpg'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
     name: 'Derin Ud', code: '297', color: '#97734e', textColor: '#f0f0f0',
@@ -310,9 +369,22 @@ export const chipboardColors = [
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
+    name: 'Duz Atlas', code: '44', color: '#9d9389', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Duz Atlas 44 2100x2800x16 .jpg',
+    examples: ['/materials/chipboard/Duz Atlas 44 example.jpg'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
+  {
     name: 'Duz Iyon', code: '48', color: '#63564d', textColor: '#f0f0f0',
     image: '/materials/chipboard/Duz Iyon 48 2100x2800x16.jpg',
     examples: ['/materials/chipboard/Duz Iyon 48 example.jpg'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
+  // shares code 40 with Senkron Kumsal; `code` stays unique as the URL key
+  {
+    name: 'Duz Kumsal', code: '40-duz', shownCode: '40', color: '#cdc1b5', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Duz Kumsal 40 2100x2800x16.jpg',
+    examples: ['/materials/chipboard/Duz Kumsal 40 example.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -334,7 +406,7 @@ export const chipboardColors = [
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
-    name: 'Gri', code: '11', color: '#bebbb2', textColor: '#3a3a3a',
+    name: 'Gri 3414', code: '11', color: '#bebbb2', textColor: '#3a3a3a',
     image: '/materials/chipboard/Gri 11 2100x2800x16 .jpg',
     examples: ['/materials/chipboard/Gri 11 2100x2800x16 .jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
@@ -352,12 +424,6 @@ export const chipboardColors = [
     dimensions: { width: 2100, length: 2800, thickness: '16 / 25' }, thicknesses: [16, 25],
   },
   {
-    name: 'Krem', code: '7', color: '#eae1d2', textColor: '#3a3a3a',
-    image: '/materials/chipboard/Krem 7 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Krem 7 2100x2800x16.jpg'],
-    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
-  },
-  {
     name: 'Kumtasi', code: '139', color: '#cecabe', textColor: '#3a3a3a',
     image: '/materials/chipboard/Kumtasi 139 2100x2800x16.jpg',
     examples: ['/materials/chipboard/Kumtasi 139 2100x2800x16.jpg'],
@@ -367,6 +433,12 @@ export const chipboardColors = [
     name: 'Lidya', code: '301', color: '#684a33', textColor: '#f0f0f0',
     image: '/materials/chipboard/Lidya 301 2100x2800x16.jpg',
     examples: ['/materials/chipboard/Lidya 301 exampe.jpg'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
+  {
+    name: 'Lizbon', code: '143', color: '#c1bdb2', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Lizbon 143 2100x2800x16.png',
+    examples: ['/materials/chipboard/Lizbon 143 2100x2800x16.png'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -388,7 +460,13 @@ export const chipboardColors = [
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
-    name: 'Modena', code: '140', color: '#9c7a59', textColor: '#f0f0f0',
+    name: 'Metalic', code: '201', color: '#a29fa0', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Metalic 201 3660x1830x25.gif',
+    examples: ['/materials/chipboard/Metalic 201 3660x1830x25.gif'],
+    dimensions: { width: 1830, length: 3660, thickness: 25 }, thicknesses: [25],
+  },
+  {
+    name: 'Supermat Modena', code: '140', color: '#9c7a59', textColor: '#f0f0f0',
     image: '/materials/chipboard/Modena 140 2100x2800x16.png',
     examples: ['/materials/chipboard/Modena 140 2100x2800x16.png'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
@@ -397,6 +475,12 @@ export const chipboardColors = [
     name: 'Patik', code: '289', color: '#958265', textColor: '#f0f0f0',
     image: '/materials/chipboard/Patik 289 2100x2800x16.jpg',
     examples: ['/materials/chipboard/Patik 289 example.jpeg'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
+  {
+    name: 'Peach Pink', code: 'D274', color: '#eba492', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Peach Pink D274 2100x2800x16.jpg',
+    examples: ['/materials/chipboard/Peach Pink D274 2100x2800x16.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -409,7 +493,7 @@ export const chipboardColors = [
     name: 'Safir Mese', code: '102', color: '#c5a47d', textColor: '#3a3a3a',
     image: '/materials/chipboard/Safir Mese 102 2100x2800x16.jpg',
     examples: ['/materials/chipboard/Safir Mese 102 2100x2800x16.jpg'],
-    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+    dimensions: { width: 2100, length: 2800, thickness: '16 / 25' }, thicknesses: [16, 25],
   },
   {
     name: 'Senkron Asya', code: '328', color: '#9f907c', textColor: '#3a3a3a',
@@ -459,8 +543,15 @@ export const chipboardColors = [
     examples: ['/materials/chipboard/Sofya 147 example.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
+  // the same Sonomo board in two finishes; `gloss` makes the studio render it glossy
   {
-    name: 'Sonomo', code: '17', color: '#c3a790', textColor: '#3a3a3a',
+    name: 'Supermat Sonomo', code: '17', color: '#c3a790', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Sonomo 17 2100x2800x16.jpg',
+    examples: ['/materials/chipboard/Sonomo 17 2100x2800x16.jpg'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
+  {
+    name: 'Sonomo Сјај', code: '17-hg', shownCode: '17', gloss: true, color: '#c3a790', textColor: '#3a3a3a',
     image: '/materials/chipboard/Sonomo 17 2100x2800x16.jpg',
     examples: ['/materials/chipboard/Sonomo 17 2100x2800x16.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
@@ -469,6 +560,25 @@ export const chipboardColors = [
     name: 'Traverten', code: '46', color: '#cec2ac', textColor: '#3a3a3a',
     image: '/materials/chipboard/Traverten 46 2100x2800x16.jpg',
     examples: ['/materials/chipboard/Traverten 46 example.jpg'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
+  {
+    name: 'Vizon Bej', code: '170', color: '#ece2d9', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Vizon Bej 170 2100x2800x16.jpg',
+    examples: ['/materials/chipboard/Vizon Bej 170 2100x2800x16.jpg'],
+    dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
+  },
+  // the same white board in two finishes; `gloss` makes the studio render it glossy
+  {
+    name: 'White МАТ', code: '66', color: '#ecf2f0', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Beyaz 66 2100x2800x16:25.jpg',
+    examples: ['/materials/chipboard/Beyaz 66 2100x2800x16:25.jpg'],
+    dimensions: { width: 2100, length: 2800, thickness: '16 / 18 / 25' }, thicknesses: [16, 18, 25],
+  },
+  {
+    name: 'White Сјај', code: '66-hg', shownCode: '66', gloss: true, color: '#ecf2f0', textColor: '#3a3a3a',
+    image: '/materials/chipboard/Beyaz 66 2100x2800x16:25.jpg',
+    examples: ['/materials/chipboard/Beyaz 66 2100x2800x16:25.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
 ]

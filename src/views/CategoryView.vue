@@ -5,7 +5,7 @@ import { store } from '../store.js'
 import { categories, getCategory } from '../data/categories.js'
 import { studioCategories } from '../data/rooms.js'
 import { t } from '../i18n.js'
-import { hasCode } from '../format.js'
+import { hasCode, codeOf } from '../format.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -40,7 +40,7 @@ const filtered = computed(() => {
   const q = query.value.trim().toLowerCase()
   return items.value.filter(s =>
     (thickness.value == null || thicknessesOf(s).includes(thickness.value)) &&
-    (!q || `${s.name ?? ''} ${s.code}`.toLowerCase().includes(q)))
+    (!q || `${s.name ?? ''} ${codeOf(s)}`.toLowerCase().includes(q)))
 })
 
 // Countertops are identified by code only; everything else has a name + code
@@ -180,7 +180,7 @@ onUnmounted(() => {
           <a href="mailto:interwoodd@gmail.com" class="btn">{{ t('categories.requestOffer') }}</a>
         </div>
 
-        <p v-if="hasPages && filtered.length" class="hover-hint">{{ t('panel.exampleHint') }}</p>
+        <p v-if="hasPages && filtered.length && items.some(i => i.examples[0])" class="hover-hint">{{ t('panel.exampleHint') }}</p>
 
         <!-- Categories with their own product pages (MDF): colour, interior on hover -->
         <div v-if="hasPages && filtered.length" class="grid panels">
@@ -194,9 +194,9 @@ onUnmounted(() => {
               <span v-if="item.examples[0]" class="card-example" :style="imgStyle({ image: item.examples[0] })"></span>
             </div>
             <div class="card-info">
-              <span class="card-name">{{ item.name }}</span>
-              <span class="card-row">
-                <span class="card-code">{{ hasCode(item) ? item.code : `${item.dimensions.thickness} mm` }}</span>
+              <span class="card-name">{{ itemTitle(item) }}</span>
+              <span v-if="item.name || !hasCode(item)" class="card-row">
+                <span class="card-code">{{ hasCode(item) ? codeOf(item) : `${item.dimensions.thickness} mm` }}</span>
               </span>
             </div>
           </RouterLink>
@@ -219,7 +219,7 @@ onUnmounted(() => {
             </div>
             <div class="card-info">
               <span class="card-name">{{ itemTitle(item) }}</span>
-              <span v-if="showName && item.name" class="card-code">{{ item.code }}</span>
+              <span v-if="showName && item.name" class="card-code">{{ codeOf(item) }}</span>
             </div>
           </button>
         </div>
@@ -243,7 +243,7 @@ onUnmounted(() => {
           <div class="modal-info">
             <span class="modal-category">{{ t(`categories.${key}`) }}</span>
             <h3 class="modal-name">{{ itemTitle(popup) }}</h3>
-            <span v-if="showName && popup.name" class="modal-code">{{ popup.code }}</span>
+            <span v-if="showName && popup.name" class="modal-code">{{ codeOf(popup) }}</span>
 
             <div class="modal-divider"></div>
 

@@ -15,7 +15,7 @@ export const categories = [
   },
   {
     key: 'countertop', kind: 'material', data: countertops,
-    covers: ['/materials/countertop/6624.webp'],
+    covers: ['/materials/countertop/trimmed/6624 mat.webp'],
   },
   {
     key: 'laminate', kind: 'material', data: laminates,

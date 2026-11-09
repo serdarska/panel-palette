@@ -5,7 +5,7 @@ import { store } from '../store.js'
 import { getCategory } from '../data/categories.js'
 import { studioCategories } from '../data/rooms.js'
 import { t } from '../i18n.js'
-import { hasCode } from '../format.js'
+import { hasCode, codeOf } from '../format.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -17,6 +17,8 @@ const panel = computed(() => list.value[index.value])
 const prev = computed(() => list.value[(index.value - 1 + list.value.length) % list.value.length])
 const next = computed(() => list.value[(index.value + 1) % list.value.length])
 
+// worktops have no name, only a code
+const title = p => p.name ?? p.code
 const finish = p => (p.gloss ? 'finishHG' : /soft touch/i.test(p.name) ? 'finishSoft' : 'finishDecor')
 // boards are grouped by finish, flooring by thickness
 const group = p => (p.dimensions.length ? finish(p) : p.dimensions.thickness)
@@ -29,7 +31,7 @@ const related = computed(() => {
 
 const size = ({ dimensions: d }) => (d.length ? `${d.length} × ${d.width} × ${d.thickness} mm` : `${d.thickness} mm`)
 // code or (for laminate) thickness under each related tile
-const meta = p => (hasCode(p) ? p.code : size(p))
+const meta = p => (!hasCode(p) ? size(p) : p.name ? codeOf(p) : size(p))
 
 // categories with a surface in the design studio
 const canTry = computed(() => studioCategories.has(categoryKey.value))
@@ -57,8 +59,9 @@ function tryInStudio() {
 }
 
 const offerLink = computed(() => {
-  const code = hasCode(panel.value) ? ` (${panel.value.code})` : ''
-  const subject = `${t('categories.requestOffer')}: ${t(`categories.${categoryKey.value}`)} ${panel.value.name}${code}`
+  const p = panel.value
+  const code = hasCode(p) && p.name ? ` (${codeOf(p)})` : ''
+  const subject = `${t('categories.requestOffer')}: ${t(`categories.${categoryKey.value}`)} ${title(p)}${code}`
   return `mailto:interwoodd@gmail.com?subject=${encodeURIComponent(subject)}`
 })
 
@@ -87,13 +90,13 @@ onUnmounted(() => {
         <span>/</span>
         <RouterLink :to="{ name: 'category', params: { category: categoryKey } }">{{ t(`categories.${categoryKey}`) }}</RouterLink>
         <span>/</span>
-        <span class="current">{{ panel.name }}</span>
+        <span class="current">{{ title(panel) }}</span>
       </nav>
 
       <header class="head">
         <div>
           <span class="finish">{{ t(`categories.${categoryKey}`) }} · {{ panel.dimensions.length ? t(`panel.${finish(panel)}`) : size(panel) }}</span>
-          <h1>{{ panel.name }}</h1>
+          <h1>{{ title(panel) }}</h1>
         </div>
         <div class="pager">
           <RouterLink :to="{ name: 'panel', params: { category: categoryKey, code: prev.code } }" class="pager-btn" :title="t('panel.prev')">
@@ -117,9 +120,9 @@ onUnmounted(() => {
 
           <div class="figure-info">
             <span class="figure-label">{{ t(fig.kind === 'example' ? 'panel.example' : panel.dimensions.length ? 'panel.colour' : 'panel.decor') }}</span>
-            <h2>{{ panel.name }}</h2>
+            <h2>{{ title(panel) }}</h2>
             <dl class="specs">
-              <div v-if="hasCode(panel)"><dt>{{ t('panel.code') }}</dt><dd>{{ panel.code }}</dd></div>
+              <div v-if="hasCode(panel)"><dt>{{ t('panel.code') }}</dt><dd>{{ codeOf(panel) }}</dd></div>
               <div><dt>{{ t(panel.dimensions.length ? 'panel.dimensions' : 'panel.thickness') }}</dt><dd>{{ size(panel) }}</dd></div>
             </dl>
             <div v-if="i === 0" class="actions">
@@ -151,7 +154,7 @@ onUnmounted(() => {
             <span class="rel-img" :style="bg(p.image)">
               <span v-if="p.examples[0]" class="rel-example" :style="bg(p.examples[0])"></span>
             </span>
-            <span class="rel-name">{{ p.name }}</span>
+            <span class="rel-name">{{ title(p) }}</span>
             <span class="rel-meta">{{ meta(p) }}</span>
           </RouterLink>
         </div>
@@ -162,7 +165,7 @@ onUnmounted(() => {
   <Teleport to="body">
     <Transition name="zoom">
       <div v-if="zoomed" class="lightbox" @click="closeZoom">
-        <img :src="zoomed" :alt="panel.name" />
+        <img :src="zoomed" :alt="title(panel)" />
         <button class="lb-close" :aria-label="t('catalog.close')">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 2l14 14M16 2L2 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </button>

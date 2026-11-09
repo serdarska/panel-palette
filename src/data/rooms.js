@@ -5,7 +5,9 @@
 // marker (Room3D's anchors). `tile` is how many metres one copy of the decor
 // photo covers (its height); `grain` ('h' or 'v') is the way the wood grain
 // should run on that surface. Floors are laid as planks, wall panels at
-// their real 600 mm width.
+// their real 600 mm width. `only` names a flag a decor must have to be
+// offered on that surface (e.g. 'wall' for the kitchen backsplash). `slab`
+// = a long panel of that many metres: the photo is laid once along its length.
 
 export const rooms = [
   {
@@ -16,8 +18,9 @@ export const rooms = [
       { id: 2, key: 'upper',      label: 'Горни фронтови',  category: 'mdf',        default: '734',         tile: 0.8, grain: 'v' },
       { id: 3, key: 'tall',       label: 'Високи елементи', category: 'mdf',        default: '732',         tile: 0.8, grain: 'v' },
       { id: 4, key: 'island',     label: 'Остров',          category: 'chipboard',  default: '7787',        tile: 1.0, grain: 'h' },
-      { id: 5, key: 'worktop',    label: 'Плотна',          category: 'countertop', default: '6624',        tile: 1.4 },
-      { id: 6, key: 'backsplash', label: 'Заштитен ѕид',    category: 'countertop', default: '6624',        tile: 1.4 },
+      { id: 5, key: 'worktop',    label: 'Плотна',          category: 'countertop', default: '6624',    tile: 1.4 },
+      // only the worktop decors that also come as wall panels; chosen apart from the worktop
+      { id: 6, key: 'backsplash', label: 'Ѕидна облога',    category: 'countertop', default: '6624',    slab: 4.1, only: 'wall' },
       { id: 7, key: 'floor',      label: 'Под',             category: 'laminate',   default: 'termessos-8' },
       { id: 8, key: 'shelves',    label: 'Полици',          category: 'chipboard',  default: '7787',        tile: 1.0, grain: 'h' },
     ],

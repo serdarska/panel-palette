@@ -34,10 +34,10 @@ const kitchens = [
   {
     name: 'Antrasit Elegance',
     style: 'Contemporary',
-    desc: 'Антрацит фронтови · Сив мермерен заштитен ѕид · Топли дабови детали',
+    desc: 'Антрацит фронтови · Сива мермерна ѕидна облога · Топли дабови детали',
     image: '/gallery/kitchen-antrasit.webp',
     materials: [
-      { category: 'Countertop',  name: '6626',               code: '6626',     image: '/materials/countertop/6626.webp' },
+      { category: 'Countertop',  name: '6626',               code: '6626',     image: '/materials/countertop/trimmed/6626.webp' },
       mdf('6022'),
       { category: 'Chipboard',   name: 'Supermat Beylerbeyi',code: '155',       image: '/materials/chipboard/155 Supermat Beylerbeyi.png' },
     ],
@@ -48,7 +48,7 @@ const kitchens = [
     desc: 'Жалфија зелен медијапан · Дабова иверка · Бела плотна',
     image: '/gallery/kitchen-green.webp',
     materials: [
-      { category: 'Countertop',  name: '6624',            code: '6624',     image: '/materials/countertop/6624.webp' },
+      { category: 'Countertop',  name: '6624',            code: '6624',     image: '/materials/countertop/trimmed/6624 mat.webp' },
       mdf('735'),
       { category: 'Chipboard',   name: 'Safir Meşe',          code: '102',      image: '/materials/chipboard/102 Safir Mese.jpg' },
     ],
@@ -56,10 +56,10 @@ const kitchens = [
   {
     name: 'Luxury White',
     style: 'Luxury',
-    desc: 'Крем медијапан · Калаката заштитен ѕид · Камен остров',
+    desc: 'Крем медијапан · Калаката ѕидна облога · Камен остров',
     image: '/gallery/kitchen-white.webp',
     materials: [
-      { category: 'Countertop',  name: '6681',                code: '6681',     image: '/materials/countertop/6681.webp' },
+      { category: 'Countertop',  name: '6681',                code: '6681',     image: '/materials/countertop/trimmed/6681.webp' },
       mdf('605'),
       { category: 'Chipboard',   name: 'Senkron Dolunay',     code: '161',      image: '/materials/chipboard/161 Senkron Dolunay.jpg' },
     ],
@@ -70,9 +70,9 @@ const kitchens = [
     desc: 'Антрацит медијапан · Темни орев детали · Мермерна плотна на островот',
     image: '/gallery/kitchen-antrasit-wood.jpg',
     materials: [
-      { category: 'Countertop',  name: '6633',          code: '6633',     image: '/materials/countertop/6633.webp' },
+      { category: 'Countertop',  name: '6633',          code: '6633',     image: '/materials/countertop/trimmed/6633 sjaj.webp' },
       mdf('6022'),
-      { category: 'Chipboard',   name: 'Tamni Orah Premium',  code: '6676',      image: '/materials/countertop/6676.webp' },
+      { category: 'Chipboard',   name: 'Tamni Orah Premium',  code: '6676',      image: '/materials/countertop/trimmed/6676.webp' },
     ],
   },
   {
@@ -81,7 +81,7 @@ const kitchens = [
     desc: 'Крем soft-touch медијапан · Природна дабова иверка · Камена плотна',
     image: '/gallery/kitchen-beige.webp',
     materials: [
-      { category: 'Countertop',  name: '6618',                code: '6618',     image: '/materials/countertop/6618.webp' },
+      { category: 'Countertop',  name: '6618',                code: '6618',     image: '/materials/countertop/trimmed/6618.webp' },
       mdf('730'),
       { category: 'Chipboard',   name: 'Safir Meşe',          code: '102',      image: '/materials/chipboard/102 Safir Mese.jpg' },
     ],
@@ -92,7 +92,7 @@ const kitchens = [
     desc: 'Soft touch Siena медијапан и иверка · Бела кварцна плотна · Дизајн без рачки',
     image: '/gallery/kitchen-wood.jpg',
     materials: [
-      { category: 'Countertop',  name: '6624',            code: '6624',     image: '/materials/countertop/6624.webp' },
+      { category: 'Countertop',  name: '6624',            code: '6624',     image: '/materials/countertop/trimmed/6624 mat.webp' },
       mdf('737'),
       { category: 'Chipboard',   name: 'Supermat Beylerbeyi',  code: '155',      image: '/materials/chipboard/155 Supermat Beylerbeyi.png' },
     ],

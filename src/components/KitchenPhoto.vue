@@ -88,8 +88,11 @@ async function init() {
 // ── material helpers ─────────────────────────────────────────────────────────
 function glossOf(swatch, baseGloss) {
   const s = `${swatch.name || ''} ${swatch.code || ''} ${swatch.image || ''}`.toUpperCase()
-  if (/SOFT ?TOUCH|SUPERMAT|\bMATT?\b|NATUREL/.test(s)) return baseGloss * 0.35
-  if (/\bHG\b|SJAJ|GLOSS|PARLAK/.test(s))               return baseGloss * 1.55
+  // `matt` / `gloss` flags win; a matte board may reuse its glossy twin's photo,
+  // so gloss words are read from the name and code only, never the image path
+  const nameCode = `${swatch.name || ''} ${swatch.code || ''}`.toUpperCase()
+  if (swatch.matt || /SOFT ?TOUCH|SUPERMAT|\bMATT?\b|NATUREL|(^|\s)МАТ(\s|$)/.test(s)) return baseGloss * 0.35
+  if (swatch.gloss || /\bHG\b|SJAJ|СЈАЈ|GLOSS|PARLAK/.test(nameCode))               return baseGloss * 1.55
   return baseGloss
 }
 

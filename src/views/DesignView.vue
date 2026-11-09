@@ -5,7 +5,7 @@ import { rooms } from '../data/rooms.js'
 import { materialMeta } from '../data/materials.js'
 import { store } from '../store.js'
 import { t } from '../i18n.js'
-import { hasCode } from '../format.js'
+import { hasCode, codeOf } from '../format.js'
 
 const STORAGE_KEY = 'iw-design-v1'
 const FAV_KEY = 'iw-favourites-v1'
@@ -29,7 +29,11 @@ const onlyFavourites = ref(false)
 const query = ref('')
 const filter = ref(null)
 
-const findSwatch = (category, code) => materialMeta[category].data.find(s => s.code === code)
+// decors a surface offers: its whole category, or only those with its `only` flag
+// (the kitchen backsplash takes just the worktops that also come as wall panels)
+const optionsFor = surf => materialMeta[surf.category].data.filter(s => !surf.only || s[surf.only])
+const accepts = (surf, swatch) => !surf.only || !!swatch[surf.only]
+const findSwatch = (surf, code) => optionsFor(surf).find(s => s.code === code)
 
 // room id → surface id → swatch, restored from the last visit when possible
 const load = key => { try { return JSON.parse(localStorage.getItem(key)) } catch { return null } }
@@ -37,7 +41,7 @@ const save = (key, value) => { try { localStorage.setItem(key, JSON.stringify(va
 const saved = load(STORAGE_KEY) || {}
 const selections = reactive(Object.fromEntries(rooms.map(r => [r.id, Object.fromEntries(r.surfaces.map(s => [
   s.id,
-  findSwatch(s.category, saved[r.id]?.[s.id]) ?? findSwatch(s.category, s.default) ?? materialMeta[s.category].data[0],
+  findSwatch(s, saved[r.id]?.[s.id]) ?? findSwatch(s, s.default) ?? optionsFor(s)[0],
 ]))])))
 
 watch(selections, () => {
@@ -56,7 +60,7 @@ function toggleFav(sw) {
 
 // filters per category: thickness for floors and chipboard, finish for MDF
 const filters = computed(() => {
-  const list = materialMeta[surface.value.category].data
+  const list = optionsFor(surface.value)
   if (surface.value.category === 'laminate') {
     return [...new Set(list.map(s => s.dimensions.thickness))].sort((a, b) => a - b)
       .map(mm => ({ key: mm, label: `${mm} mm`, test: s => s.dimensions.thickness === mm }))
@@ -77,17 +81,17 @@ const filters = computed(() => {
 const swatches = computed(() => {
   const q = query.value.trim().toLowerCase()
   const f = filters.value.find(x => x.key === filter.value)
-  return materialMeta[surface.value.category].data.filter(s =>
+  return optionsFor(surface.value).filter(s =>
     (!onlyFavourites.value || isFav(s)) &&
     (!f || f.test(s)) &&
-    (!q || `${s.name ?? ''} ${s.code}`.toLowerCase().includes(q)))
+    (!q || `${s.name ?? ''} ${codeOf(s)}`.toLowerCase().includes(q)))
 })
 
 // new surface → fresh list
-watch(() => surface.value.category, () => { query.value = ''; filter.value = null; showFilter.value = false })
+watch(surface, () => { query.value = ''; filter.value = null; showFilter.value = false })
 
 const swatchTitle = (category, s) => (category === 'countertop' ? s.code : (s.name || s.code))
-const swatchSub = s => (!hasCode(s) ? `${s.dimensions.thickness} mm` : s.name ? s.code : '')
+const swatchSub = s => (!hasCode(s) ? `${s.dimensions.thickness} mm` : s.name ? codeOf(s) : '')
 const bg = s => (s.image ? { backgroundImage: `url("${encodeURI(s.image)}")` } : { background: s.color })
 
 function selectRoom(id) {
@@ -120,7 +124,7 @@ function download() {
 const mailto = computed(() => {
   const lines = room.value.surfaces.map(s => {
     const sw = selections[roomId.value][s.id]
-    const detail = !hasCode(sw) ? `${sw.dimensions.thickness} mm` : sw.name && s.category !== 'countertop' ? sw.code : ''
+    const detail = !hasCode(sw) ? `${sw.dimensions.thickness} mm` : sw.name && s.category !== 'countertop' ? codeOf(sw) : ''
     return `${s.label}: ${t(`categories.${s.category}`)} ${swatchTitle(s.category, sw)}${detail ? ` (${detail})` : ''}`
   })
   const body = `${t('design.mailIntro')} — ${room.value.name}\n\n${lines.join('\n')}\n`
@@ -137,9 +141,12 @@ onMounted(() => {
       const r = rooms.find(r => r.surfaces.some(s => s.category === category))
       if (r) selectRoom(r.id)
     }
-    const target = room.value.surfaces.filter(s => s.category === category)
-    target.forEach(s => { selections[roomId.value][s.id] = swatch })
-    if (target[0]) selectedId.value = target[0].id
+    // one surface only: a worktop goes on the worktop, the backsplash keeps its own decor
+    const target = room.value.surfaces.find(s => s.category === category && accepts(s, swatch))
+    if (target) {
+      selections[roomId.value][target.id] = swatch
+      selectedId.value = target.id
+    }
   }
 })
 </script>
