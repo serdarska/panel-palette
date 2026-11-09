@@ -62,6 +62,12 @@ export const mdfColors = [
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
+    name: 'HG Bordeaux', code: '615', gloss: true, color: '#550810', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Bordeaux 615 2100x2800x18.jpg',
+    examples: ['/materials/mdf/Hg Bordeaux 615 example.webp'],
+    dimensions: { width: 2100, length: 2800, thickness: 18 },
+  },
+  {
     name: 'HG Cool Gri', code: '6017', gloss: true, color: '#515357', textColor: '#f0f0f0',
     image: '/materials/mdf/HG Cool Gri 6017 1220x2800x18mm 6250den..webp',
     examples: ['/materials/mdf/HG Cool Gri example.webp'],
@@ -80,9 +86,21 @@ export const mdfColors = [
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
+    name: 'HG Damson', code: '622', gloss: true, color: '#3d0134', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Damson 622 1220x2800x18.jpg',
+    examples: ['/materials/mdf/HG Damson 622 example.jpeg'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
     name: 'HG Efes Beyaz', code: '6007', gloss: true, asIs: true, color: '#f3f2ed', textColor: '#3a3a3a',
     image: '/materials/mdf/HG EfescBeyaz 6007 1220x2800x18mm 6700den.webp',
     examples: ['/materials/mdf/HG EfescBeyaz 6007 1220x2800x18mm example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
+    name: 'HG Emperador', code: '651', gloss: true, color: '#463d30', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Emperador 651 1220x2800x18.jpg',
+    examples: ['/materials/mdf/HG Emperador 651 example.webp'],
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
@@ -92,15 +110,33 @@ export const mdfColors = [
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
-    name: 'HG Krom Gri', code: '6021', gloss: true, color: '#77817e', textColor: '#f0f0f0',
-    image: '/materials/mdf/HG Krom Gri 6021 1220x2800x18mm 6250den..webp',
+    name: 'HG Krom Gri', code: '6021', gloss: true, color: '#9b9893', textColor: '#3a3a3a',
+    image: '/materials/mdf/HG Krom Gri 6021 1220x2800x18.jpg',
     examples: ['/materials/mdf/HG Krom Gri example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
+    name: 'HG Metalic Elm', code: '603', gloss: true, color: '#1a1f18', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Metalic Elm 603 1220x2800x18.jpeg',
+    examples: ['/materials/mdf/HG Metalic Elm 603 example.jpg'],
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
     name: 'HG Metalik Antrasit', code: '608', color: '#494e4f', textColor: '#f0f0f0',
     image: '/materials/mdf/HG Metalik Antrasit 608 1220x2800x18mm 6700den..webp',
     examples: ['/materials/mdf/HG Metalik Antrasit example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
+    name: 'HG Rain Black', code: '624', gloss: true, color: '#4c4c4c', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Rain Black 624 1220x2800x18.jpg',
+    examples: ['/materials/mdf/HG Rain Black 624 example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
+    name: 'HG Terra Brown', code: '653', gloss: true, color: '#4f3120', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Teraa Brown 653 1220x2800x18.webp',
+    examples: ['/materials/mdf/HG Terra Brown 653 example.webp'],
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
@@ -134,14 +170,14 @@ export const mdfColors = [
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
-    name: 'Soft Touch Firtina Gri', code: '726', color: '#4b544c', textColor: '#f0f0f0',
-    image: '/materials/mdf/Soft Touch Firtina Gri 726 1220x2800x18mm 5300den..webp',
+    name: 'Soft Touch Firtina Gri', code: '726', color: '#545d64', textColor: '#f0f0f0',
+    image: '/materials/mdf/Soft Touch Firtina Gri 726 1220x2800x18.jpeg',
     examples: ['/materials/mdf/soft touch firtina gri example.webp'],
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
-    name: 'Soft Touch Kaya Gri', code: '728', color: '#858673', textColor: '#f0f0f0',
-    image: '/materials/mdf/Soft Touch Kaya Gri 728 1220x2800x18mm 5300den..webp',
+    name: 'Soft Touch Kaya Gri', code: '728', color: '#82807e', textColor: '#f0f0f0',
+    image: '/materials/mdf/Soft Touch Kaya Gri 728 1220x2800x18.png',
     examples: ['/materials/mdf/Soft Touch Kaya Gri example.webp'],
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
@@ -194,6 +230,12 @@ export const mdfColors = [
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
+    name: 'Akra Oak', code: '3042', color: '#666259', textColor: '#f0f0f0',
+    image: '/materials/mdf/Akra Oak 3042 1220x2800x18.webp',
+    examples: ['/materials/mdf/Akra Oak 3042 example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
     name: 'Natural Touch Oak', code: '397', color: '#bd9366', textColor: '#3a3a3a',
     image: '/materials/mdf/Natural touch oak 397 1220x2800x18mm 6700den..webp',
     examples: ['/materials/mdf/Natural touch Oak example.webp'],
@@ -209,6 +251,13 @@ export const mdfColors = [
     name: 'Peru Oak', code: '3041', color: '#896a46', textColor: '#f0f0f0',
     image: '/materials/mdf/Peru Oak 3041 1220x2800x18mm 6700den..webp',
     examples: ['/materials/mdf/Peru Oak example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
+    name: 'Picasso Bronze', code: '396', color: '#5f584b', textColor: '#f0f0f0',
+    image: '/materials/mdf/Picasso Bronze 396 1220x2800x18.jpg',
+    // no example supplied — the colour photo stands in, as for chipboard
+    examples: ['/materials/mdf/Picasso Bronze 396 1220x2800x18.jpg'],
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
