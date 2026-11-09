@@ -30,7 +30,7 @@ export const countertops = [
   { code: '6670', color: '#bda980', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6670.webp', examples: [], dimensions: WORKTOP, wall: true },
   { code: '6671 Сјај', color: '#dcdcdb', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6671 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true },
   { code: '6672 Сјај', color: '#202021', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6672.webp', examples: [], dimensions: WORKTOP, gloss: true, wall: true },
-  { code: '6674', color: '#726357', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6674.webp', examples: [], dimensions: WORKTOP },
+  { code: '6674', color: '#695c52', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6674.webp', examples: [], dimensions: WORKTOP },
   { code: '6675', color: '#aa9167', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6675.webp', examples: [], dimensions: WORKTOP, wall: true },
   { code: '6676', color: '#706149', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6676.webp', examples: [], dimensions: WORKTOP },
   { code: '6677', color: '#a28c5b', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6677.webp', examples: [], dimensions: WORKTOP },

@@ -83,6 +83,8 @@ const translations = {
       otherCategories:'Other collections',
       search:         'Search by name or code…',
       allThickness:   'All',
+      finishMatt:     'Matt',
+      finishGloss:    'Gloss',
       noResults:      'No materials match your search.',
     },
     design: {
@@ -286,7 +288,7 @@ const translations = {
     categories: {
       label:          'Каталог на Материјали',
       title:          'Истражи ги Материјалите',
-      subtitle:       'Плочи, плотни, подови и ѕидни панели за мебел и ентериер. Избери категорија и разгледај ја целата понуда.',
+      subtitle:       'Медијапан, иверка, плотни, ламинати и ѕидни панели за мебел и ентериер. Избери категорија и разгледај ја целата понуда.',
       mdf:            'Медијапан',
       mdfDesc:        'Мат, сјај и soft-touch медијапан за фронтови на кујни, плакари и мебел.',
       chipboard:      'Иверка',
@@ -312,6 +314,8 @@ const translations = {
       otherCategories:'Други колекции',
       search:         'Пребарај по име или шифра…',
       allThickness:   'Сите',
+      finishMatt:     'Мат',
+      finishGloss:    'Сјај',
       noResults:      'Нема материјали што одговараат на пребарувањето.',
     },
     design: {
@@ -365,7 +369,7 @@ const translations = {
     accessories: {
       label:          'Додатоци',
       title:          'Садопери и Чешми',
-      subtitle:       'Гранитни садопери и чешми во соодветни бои — за да ја заокружиш кујната.',
+      subtitle:       '',
       sinkTitle:      'Колекција Садопери',
       sinkSubtitle:   'Премиум гранитни садопери од San Donna — достапни во повеќе модели. Кликни за детали.',
       faucetTitle:    'Колекција Чешми',
@@ -411,7 +415,7 @@ const translations = {
     },
     partners: {
       label: 'Наши партнери',
-      text:  'Соработуваме со доверливи производители на плочи, панели и кујнска опрема.',
+      text:  '',
     },
     about: {
       label:               'За Нас',

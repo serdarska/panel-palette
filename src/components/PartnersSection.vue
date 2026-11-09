@@ -11,6 +11,7 @@ const logos = [
   { name: 'AGT', src: '/firms/web/agt.webp', scale: 0.72 },
   { name: 'San Donna', src: '/firms/web/sandonna.webp', scale: 1.15 },
   { name: 'Starwood', src: '/firms/web/starwood.webp', scale: 1 },
+  { name: 'Rosi', src: '/firms/web/rosi.webp', scale: 0.85 },
 ]
 const strip = Array.from({ length: 4 }, () => logos).flat()
 </script>

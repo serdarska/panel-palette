@@ -178,7 +178,8 @@ onUnmounted(() => {
   color: var(--accent);
   margin-top: 5px;
 }
-.links { display: flex; gap: 32px; }
+/* links sit on the right, just before the "design now" button */
+.links { display: flex; gap: 32px; margin-left: auto; margin-right: 32px; }
 .links a {
   font-size: 14px;
   color: var(--text-secondary);

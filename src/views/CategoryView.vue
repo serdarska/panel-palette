@@ -24,7 +24,11 @@ const thicknessesOf = i => i.thicknesses ?? [i.dimensions?.thickness]
 const thicknesses = computed(() => key.value === 'laminate'
   ? [...new Set(items.value.map(i => i.dimensions.thickness))].sort((a, b) => a - b)
   : key.value === 'chipboard' ? [16, 18, 25] : [])
-watch(key, () => { query.value = ''; thickness.value = null; closePopup(); revealActive() })
+// countertops are filtered by finish (null = all): matt, or high gloss (`gloss`)
+const finish = ref(null)
+const finishes = computed(() => key.value === 'countertop' ? ['matt', 'gloss'] : [])
+const finishOf = i => (i.gloss ? 'gloss' : 'matt')
+watch(key, () => { query.value = ''; thickness.value = null; finish.value = null; closePopup(); revealActive() })
 
 // on phones the sidebar is a horizontal strip — keep the current category visible
 function revealActive() {
@@ -40,6 +44,7 @@ const filtered = computed(() => {
   const q = query.value.trim().toLowerCase()
   return items.value.filter(s =>
     (thickness.value == null || thicknessesOf(s).includes(thickness.value)) &&
+    (finish.value == null || finishOf(s) === finish.value) &&
     (!q || `${s.name ?? ''} ${codeOf(s)}`.toLowerCase().includes(q)))
 })
 
@@ -151,7 +156,7 @@ onUnmounted(() => {
               <p class="lead">{{ t(`categories.${key}Desc`) }}</p>
             </div>
             <div v-if="items.length" class="count">
-              <!-- follows the thickness filter and search, so it matches the cards shown -->
+              <!-- follows the filters and search, so it matches the cards shown -->
               <span class="count-n">{{ filtered.length }}</span>
               <span class="count-l">{{ unit(category) }}</span>
             </div>
@@ -171,6 +176,15 @@ onUnmounted(() => {
               :class="['chip', { active: thickness === mm }]"
               @click="thickness = mm"
             >{{ mm }} mm</button>
+          </div>
+          <div v-if="finishes.length" class="chips">
+            <button :class="['chip', { active: finish == null }]" @click="finish = null">{{ t('categories.allThickness') }}</button>
+            <button
+              v-for="f in finishes"
+              :key="f"
+              :class="['chip', { active: finish === f }]"
+              @click="finish = f"
+            >{{ t(f === 'gloss' ? 'categories.finishGloss' : 'categories.finishMatt') }}</button>
           </div>
         </header>
 
