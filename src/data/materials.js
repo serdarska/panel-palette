@@ -314,7 +314,7 @@ export const chipboardColors = [
   {
     name: 'Antik Beyaz', code: '144', color: '#e2dfdb', textColor: '#3a3a3a',
     image: '/materials/chipboard/Antik Beyaz 144 2100x2800x16.jpeg',
-    examples: ['/materials/chipboard/Antik Beyaz 144 2100x2800x16.jpeg'],
+    examples: ['/materials/chipboard/Antik Beyaz 144 example.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -326,7 +326,7 @@ export const chipboardColors = [
   {
     name: 'Barok', code: '427', color: '#6b4428', textColor: '#f0f0f0',
     image: '/materials/chipboard/Barok 427 2100x2800x16.jpeg',
-    examples: ['/materials/chipboard/Barok 427 2100x2800x16.jpeg'],
+    examples: ['/materials/chipboard/Barok 427 example.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -339,13 +339,14 @@ export const chipboardColors = [
   {
     name: 'Black МАТ', code: '2', color: '#000000', textColor: '#f0f0f0',
     image: '/materials/chipboard/Black 2 2100x2800x16.png',
-    examples: ['/materials/chipboard/Black 2 2100x2800x16.png'],
+    // tall kitchen photo: fill the frame, trimmed a little top and bottom
+    examples: ['/materials/chipboard/Black Mat 2 example.jpeg'], exampleFill: true,
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
     name: 'Black Сјај', code: '2-hg', shownCode: '2', gloss: true, color: '#000000', textColor: '#f0f0f0',
     image: '/materials/chipboard/Black 2 2100x2800x16.png',
-    examples: ['/materials/chipboard/Black 2 2100x2800x16.png'],
+    examples: ['/materials/chipboard/Black Sjaj 2 example.jpeg'], exampleFill: true,
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -364,13 +365,13 @@ export const chipboardColors = [
   {
     name: 'Cream МАТ', code: '7', color: '#eae1d2', textColor: '#3a3a3a',
     image: '/materials/chipboard/Krem 7 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Krem 7 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Cream Mat 7 example.webp'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
     name: 'Cream Сјај', code: '7-hg', shownCode: '7', gloss: true, color: '#eae1d2', textColor: '#3a3a3a',
     image: '/materials/chipboard/Krem 7 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Krem 7 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Cream Sjaj 7 example.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -380,15 +381,9 @@ export const chipboardColors = [
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
-    name: 'Delta', code: '554', color: '#a68864', textColor: '#3a3a3a',
-    image: '/materials/chipboard/Delta 554 2100x2800x26.jpg',
-    examples: ['/materials/chipboard/Delta 554 2100x2800x26.jpg'],
-    dimensions: { width: 2100, length: 2800, thickness: 26 }, thicknesses: [26],
-  },
-  {
     name: 'Delta', code: 'A554', color: '#8c7453', textColor: '#f0f0f0',
     image: '/materials/chipboard/Delta A554 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Delta A554 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Delta 554 example.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -479,13 +474,13 @@ export const chipboardColors = [
   {
     name: 'Fuji Scratch', code: '7776', color: '#574937', textColor: '#f0f0f0',
     image: '/materials/chipboard/Fuji Scratch 7776 2070x2800x18.webp',
-    examples: ['/materials/chipboard/Fuji Scratch 7776 2070x2800x18.webp'],
+    examples: ['/materials/chipboard/Fuji Scratch example.jpeg'], exampleFill: true,
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
     name: 'Gri 3414', code: '11', color: '#bebbb2', textColor: '#3a3a3a',
     image: '/materials/chipboard/Gri 11 2100x2800x16 .jpg',
-    examples: ['/materials/chipboard/Gri 11 2100x2800x16 .jpg'],
+    examples: ['/materials/chipboard/Gri 3414 example.jpeg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -503,7 +498,7 @@ export const chipboardColors = [
   {
     name: 'Kumtasi', code: '139', color: '#cecabe', textColor: '#3a3a3a',
     image: '/materials/chipboard/Kumtasi 139 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Kumtasi 139 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Kumtasi 139 example.webp'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -515,7 +510,7 @@ export const chipboardColors = [
   {
     name: 'Lizbon', code: '143', color: '#c1bdb2', textColor: '#3a3a3a',
     image: '/materials/chipboard/Lizbon 143 2100x2800x16.png',
-    examples: ['/materials/chipboard/Lizbon 143 2100x2800x16.png'],
+    examples: ['/materials/chipboard/Lizbon 143 example.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -545,7 +540,7 @@ export const chipboardColors = [
   {
     name: 'Supermat Modena', code: '140', color: '#9c7a59', textColor: '#f0f0f0',
     image: '/materials/chipboard/Modena 140 2100x2800x16.png',
-    examples: ['/materials/chipboard/Modena 140 2100x2800x16.png'],
+    examples: ['/materials/chipboard/Modena 140 example.jpeg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -557,19 +552,19 @@ export const chipboardColors = [
   {
     name: 'Peach Pink', code: 'D274', color: '#eba492', textColor: '#3a3a3a',
     image: '/materials/chipboard/Peach Pink D274 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Peach Pink D274 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Peach Pink D274 example.webp'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
     name: 'Royal Oak', code: '7789', color: '#b7a37c', textColor: '#3a3a3a',
     image: '/materials/chipboard/Royal Oak 7789 2070x2800x18.webp',
-    examples: ['/materials/chipboard/Royal Oak 7789 2070x2800x18.webp'],
+    examples: ['/materials/chipboard/Royal Oak 7789 example.jpg'], exampleFill: true,
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
     name: 'Safir Mese', code: '102', color: '#c5a47d', textColor: '#3a3a3a',
     image: '/materials/chipboard/Safir Mese 102 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Safir Mese 102 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Safir Mese 102 example.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: '16 / 25' }, thicknesses: [16, 25],
   },
   {
@@ -624,13 +619,13 @@ export const chipboardColors = [
   {
     name: 'Supermat Sonomo', code: '17', color: '#c3a790', textColor: '#3a3a3a',
     image: '/materials/chipboard/Sonomo 17 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Sonomo 17 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Sonomo 17 eexample.webp'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
     name: 'Sonomo Сјај', code: '17-hg', shownCode: '17', gloss: true, color: '#c3a790', textColor: '#3a3a3a',
     image: '/materials/chipboard/Sonomo 17 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Sonomo 17 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/sonomo sjaj 17 example.jpg'],
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -642,7 +637,7 @@ export const chipboardColors = [
   {
     name: 'Vizon Bej', code: '170', color: '#ece2d9', textColor: '#3a3a3a',
     image: '/materials/chipboard/Vizon Bej 170 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Vizon Bej 170 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Vizon Bej 170 example.jpeg'], exampleFill: true,
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   // the same white board in two finishes; `gloss` makes the studio render it glossy
@@ -792,7 +787,7 @@ export const laminates = [
   laminate(12, 'Pamir', '#8c7361', 'PAMIR 12mm.webp', 'PAMIR 12mm example.webp'),
   laminate(12, 'Rosso', '#442b1a', 'ROSSO 12mm.webp', 'ROSSO 12mm example.webp'),
   laminate(12, 'Solaro', '#97826a', 'SOLARO 12mm.webp', 'SOLARO 12mm example.webp'),
-  laminate(12, 'Tibet', '#b29e89', 'TIBET 12mm.webp', 'TIBET 12mm example.webp'),
+  laminate(12, 'Tibet', '#b29e89', 'TIBET 12mm rotated.webp', 'TIBET 12mm example.webp'),
   laminate(12, 'Toros', '#625b5a', 'TOROS 12mm.webp', 'TOROS 12mm example.webp'),
 ]
 

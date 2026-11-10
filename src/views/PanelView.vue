@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { store } from '../store.js'
 import { getCategory } from '../data/categories.js'
@@ -84,6 +84,34 @@ const offerLink = computed(() => {
 const go = p => router.push({ name: 'panel', params: { category: categoryKey.value, code: p.code } })
 const bg = src => ({ backgroundImage: `url("${encodeURI(src)}")` })
 
+// photos much narrower than the wide frame (upright or square shots, collages)
+// would lose a lot when cropped to fill it — measure each one and show those
+// whole instead. `tall[src]` is the photo's width/height ratio, or 0 to crop
+const tall = ref({})
+function measure(src) {
+  if (src in tall.value) return
+  tall.value[src] = 0
+  const img = new Image()
+  img.onload = () => {
+    const ratio = img.naturalWidth / img.naturalHeight
+    tall.value[src] = ratio < 1.4 ? ratio : 0
+  }
+  img.src = src
+}
+// only interior examples — a board's colour photo is a texture and can be cropped
+watch(figures, list => list.filter(f => f.kind === 'example').forEach(f => measure(f.src)), { immediate: true })
+// An item with `exampleFill` fills the frame edge to edge instead (no blurred
+// sides): the frame takes the photo's shape, trimmed a little at top and bottom
+const FILL_TRIM = 0.85
+const isExample = fig => fig.kind === 'example' && !!tall.value[fig.src]
+const showWhole = fig => isExample(fig) && !panel.value.exampleFill
+const showFilled = fig => isExample(fig) && !!panel.value.exampleFill
+const figStyle = fig => ({
+  ...bg(fig.src),
+  ...(showWhole(fig) && { '--ratio': tall.value[fig.src] }),
+  ...(showFilled(fig) && { aspectRatio: String(tall.value[fig.src] / FILL_TRIM) }),
+})
+
 function onKey(e) {
   if (e.key === 'Escape') closeZoom()
   if (zoomed.value) return
@@ -128,7 +156,11 @@ onUnmounted(() => {
       <!-- One row per picture, details next to it -->
       <div class="figures">
         <article v-for="(fig, i) in figures" :key="fig.src" :class="['figure', { flip: i % 2 }]">
-          <button :class="['figure-img', { product: isProduct }]" :style="bg(fig.src)" :title="t('panel.zoom')" @click="openZoom(fig.src)">
+          <button :class="['figure-img', { product: isProduct, whole: showWhole(fig), filled: showFilled(fig) }]" :style="figStyle(fig)" :title="t('panel.zoom')" @click="openZoom(fig.src)">
+            <template v-if="showWhole(fig)">
+              <span class="whole-backdrop" :style="bg(fig.src)"></span>
+              <span class="whole-photo" :style="bg(fig.src)"></span>
+            </template>
             <span class="zoom-chip">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14M7 5v4M5 7h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
             </span>
@@ -289,6 +321,14 @@ h1 {
   background-origin: content-box;
 }
 .figure-img.product { min-height: 420px; padding: 32px; }
+/* a tall photo shown whole: blurred copy fills the frame, the photo sits on top */
+.figure-img.whole { min-height: 560px; overflow: hidden; background-image: none !important; }
+.whole-backdrop, .whole-photo { position: absolute; inset: 0; background-position: center; background-repeat: no-repeat; }
+.whole-backdrop { background-size: cover; filter: blur(24px) brightness(0.9); transform: scale(1.15); }
+.whole-photo { background-size: contain; }
+.figure-img.whole .zoom-chip { z-index: 1; }
+/* `exampleFill`: the frame's shape comes from the photo (set inline) */
+.figure-img.filled { min-height: 0; }
 .rel-img.product { padding: 12px; }
 
 .figure-info {
@@ -408,6 +448,8 @@ dd { font-size: 14px; font-weight: 600; color: var(--text-primary); text-align: 
   .figure, .figure.flip { grid-template-columns: 1fr; }
   .figure.flip .figure-img { order: 0; }
   .figure-img { min-height: 0; aspect-ratio: 2.19 / 1; }
+  /* on phones the frame takes the photo's own shape, so nothing is cut off */
+  .figure-img.whole { min-height: 0; aspect-ratio: var(--ratio, 1); }
   .figure-info { padding: 22px 20px 24px; }
   h2 { font-size: 21px; }
   .related { margin-top: 48px; }
