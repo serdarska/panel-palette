@@ -39,8 +39,8 @@ import { t } from '../i18n.js'
 .teaser-bg {
   position: absolute;
   inset: 0;
-  /* a render of the studio's own 3-D kitchen */
-  background: url('/studio/kitchen-3d.webp') center / cover no-repeat;
+  /* warm minimalist kitchen with a marble island */
+  background: url('/studio/warm-kitchen.webp') center / cover no-repeat;
 }
 .teaser-shade {
   position: absolute;

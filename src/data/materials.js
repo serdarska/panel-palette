@@ -104,6 +104,13 @@ export const mdfColors = [
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
+    name: 'HG Flowered Black', code: '629', gloss: true, color: '#232323', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Flowered Black 629.webp',
+    // no example supplied — the colour photo stands in
+    examples: ['/materials/mdf/HG Flowered Black 629.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
     name: 'HG Galaksi Beyaz', code: '670', gloss: true, color: '#f7fbfc', textColor: '#3a3a3a',
     image: '/materials/mdf/HG Galaksi Beyaz 670 1220x2800x18mm 6700den..webp',
     examples: ['/materials/mdf/HG Galaksi Beyaz example.webp'],
@@ -128,9 +135,42 @@ export const mdfColors = [
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
+    name: 'HG Orange', code: '612', gloss: true, color: '#f16033', textColor: '#3a3a3a',
+    image: '/materials/mdf/HG Orange 612 1220x2800x18.jpg',
+    // no example supplied — the colour photo stands in
+    examples: ['/materials/mdf/HG Orange 612 1220x2800x18.jpg'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
+    name: 'HG Oreon Ceviz', code: '617', gloss: true, color: '#483022', textColor: '#f0f0f0',
+    image: '/materials/mdf/Oreon Ceviz 617 1220x2800x18mm 5200den.jpg',
+    examples: ['/materials/mdf/Oreon Ceviz 617 1220x2800x18mm example.jpg'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
     name: 'HG Rain Black', code: '624', gloss: true, color: '#4c4c4c', textColor: '#f0f0f0',
     image: '/materials/mdf/HG Rain Black 624 1220x2800x18.jpg',
     examples: ['/materials/mdf/HG Rain Black 624 example.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
+    name: 'HG Rain Cream', code: '646', gloss: true, color: '#9e8a78', textColor: '#3a3a3a',
+    image: '/materials/mdf/HG Rain Cream 646 1220x2800x18.webp',
+    // no example supplied — the colour photo stands in
+    examples: ['/materials/mdf/HG Rain Cream 646 1220x2800x18.webp'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
+    name: 'HG Rain Red', code: '630', gloss: true, color: '#c63936', textColor: '#f0f0f0',
+    image: '/materials/mdf/HG Rain Red 630 1200x2800x18.jpg',
+    // no example supplied — the colour photo stands in
+    examples: ['/materials/mdf/HG Rain Red 630 1200x2800x18.jpg'],
+    dimensions: { width: 1220, length: 2800, thickness: 18 },
+  },
+  {
+    name: 'HG Sahara Siyah', code: '661', gloss: true, asIs: true, color: '#232d33', textColor: '#f0f0f0',
+    image: '/materials/mdf/Sahara Siyah 1220x2800x18mm 6700den.jpeg',
+    examples: ['/materials/mdf/Sahara Siyah 1220x2800x18mm example.webp'],
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
@@ -242,12 +282,6 @@ export const mdfColors = [
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
-    name: 'Oreon Ceviz', code: '617', gloss: true, color: '#483022', textColor: '#f0f0f0',
-    image: '/materials/mdf/Oreon Ceviz 617 1220x2800x18mm 5200den.jpg',
-    examples: ['/materials/mdf/Oreon Ceviz 617 1220x2800x18mm example.jpg'],
-    dimensions: { width: 1220, length: 2800, thickness: 18 },
-  },
-  {
     name: 'Peru Oak', code: '3041', color: '#896a46', textColor: '#f0f0f0',
     image: '/materials/mdf/Peru Oak 3041 1220x2800x18mm 6700den..webp',
     examples: ['/materials/mdf/Peru Oak example.webp'],
@@ -258,12 +292,6 @@ export const mdfColors = [
     image: '/materials/mdf/Picasso Bronze 396 1220x2800x18.jpg',
     // no example supplied — the colour photo stands in, as for chipboard
     examples: ['/materials/mdf/Picasso Bronze 396 1220x2800x18.jpg'],
-    dimensions: { width: 1220, length: 2800, thickness: 18 },
-  },
-  {
-    name: 'Sahara Siyah', code: '661', gloss: true, asIs: true, color: '#232d33', textColor: '#f0f0f0',
-    image: '/materials/mdf/Sahara Siyah 1220x2800x18mm 6700den.jpeg',
-    examples: ['/materials/mdf/Sahara Siyah 1220x2800x18mm example.webp'],
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
@@ -655,10 +683,10 @@ export const sinks = [
   { name: 'Ines Dark Beige',     code: 'INES-DB',    color: '#8c7860', image: '/materials/sinks/ines dark beige.avif',    dimensions: { length: 780, width: 500, depth: 201 } },
   { name: 'Ines Gray Granit',    code: 'INES-GG',    color: '#706868', image: '/materials/sinks/ines gray granit.avif',   dimensions: { length: 780, width: 500, depth: 201 } },
   { name: 'Joanna Black Matt',   code: 'JOAN-BM',    color: '#1c1a1a', image: '/materials/sinks/joanna black matt.avif',  dimensions: { length: 550, width: 460, depth: 196 } },
-  { name: 'Lena Black Matt',     code: 'LENA-BM',    color: '#1c1a1a', image: '/materials/sinks/lena black matt.avif',    dimensions: { diameter: 50, depth: 194 } },
-  { name: 'Lena Dark Beige',     code: 'LENA-DB',    color: '#8c7860', image: '/materials/sinks/lena dark beige.avif',    dimensions: { diameter: 50, depth: 194 } },
-  { name: 'Lena Gray Granit',    code: 'LENA-GG',    color: '#706868', image: '/materials/sinks/lena gray granit.avif',   dimensions: { diameter: 50, depth: 194 } },
-  { name: 'Lena White',          code: 'LENA-W',     color: '#f4f0ec', image: '/materials/sinks/lena white.avif',         dimensions: { diameter: 50, depth: 194 } },
+  { name: 'Lena Black Matt',     code: 'LENA-BM',    color: '#1c1a1a', image: '/materials/sinks/lena black matt.avif',    dimensions: { diameter: 500, depth: 194 } },
+  { name: 'Lena Dark Beige',     code: 'LENA-DB',    color: '#8c7860', image: '/materials/sinks/lena dark beige.avif',    dimensions: { diameter: 500, depth: 194 } },
+  { name: 'Lena Gray Granit',    code: 'LENA-GG',    color: '#706868', image: '/materials/sinks/lena gray granit.avif',   dimensions: { diameter: 500, depth: 194 } },
+  { name: 'Lena White',          code: 'LENA-W',     color: '#f4f0ec', image: '/materials/sinks/lena white.avif',         dimensions: { diameter: 500, depth: 194 } },
   { name: 'Selena Black Matt',   code: 'SEL-BM',     color: '#1c1a1a', image: '/materials/sinks/selena black matt.avif',  dimensions: { length: 530, width: 500, depth: 204 } },
   { name: 'Selena Gray Granit',  code: 'SEL-GG',     color: '#706868', image: '/materials/sinks/selena gray granit.avif', dimensions: { length: 530, width: 500, depth: 204 } },
   { name: 'Selena White',        code: 'SEL-W',      color: '#f4f0ec', image: '/materials/sinks/selena white.avif',       dimensions: { length: 530, width: 500, depth: 204 } },

@@ -12,6 +12,8 @@ const router = useRouter()
 
 const categoryKey = computed(() => route.params.category)
 const list = computed(() => getCategory(categoryKey.value).data)
+// sinks and faucets: a cut-out product photo, measurements instead of a board size
+const isProduct = computed(() => getCategory(categoryKey.value).kind === 'product')
 const index = computed(() => list.value.findIndex(i => i.code === route.params.code))
 const panel = computed(() => list.value[index.value])
 const prev = computed(() => list.value[(index.value - 1 + list.value.length) % list.value.length])
@@ -20,8 +22,8 @@ const next = computed(() => list.value[(index.value + 1) % list.value.length])
 // worktops have no name, only a code
 const title = p => p.name ?? p.code
 const finish = p => (p.gloss ? 'finishHG' : /soft touch/i.test(p.name) ? 'finishSoft' : 'finishDecor')
-// boards are grouped by finish, flooring by thickness
-const group = p => (p.dimensions.length ? finish(p) : p.dimensions.thickness)
+// products are grouped by model (Lena, Ines…), boards by finish, flooring by thickness
+const group = p => (isProduct.value ? p.name.split(' ')[0] : p.dimensions.length ? finish(p) : p.dimensions.thickness)
 // other colours from the same group first
 const related = computed(() => {
   const g = group(panel.value)
@@ -33,13 +35,26 @@ const size = ({ dimensions: d }) => (d.length ? `${d.length} × ${d.width} × ${
 // code or (for laminate) thickness under each related tile
 const meta = p => (!hasCode(p) ? size(p) : p.name ? codeOf(p) : size(p))
 
+// a product's measurements, one row each; faucets have none listed yet
+const productSpecs = computed(() => {
+  const d = panel.value.dimensions ?? {}
+  const mm = v => `${v} mm`
+  return [
+    d.diameter != null && ['accessories.diameter', `Ф${mm(d.diameter)}`],
+    d.length != null && ['accessories.length', mm(d.length)],
+    d.width != null && ['accessories.width', mm(d.width)],
+    d.depth != null && ['accessories.depth', mm(d.depth)],
+  ].filter(Boolean)
+})
+
 // categories with a surface in the design studio
 const canTry = computed(() => studioCategories.has(categoryKey.value))
 
 // one row per picture: the colour, then each interior example
 const figures = computed(() => [
   { kind: 'colour', src: panel.value.image },
-  ...panel.value.examples.map(src => ({ kind: 'example', src })),
+  // where no example was supplied the colour photo stands in — don't show it twice
+  ...(panel.value.examples ?? []).filter(src => src !== panel.value.image).map(src => ({ kind: 'example', src })),
 ])
 
 const zoomed = ref(null)
@@ -96,7 +111,7 @@ onUnmounted(() => {
 
       <header class="head">
         <div>
-          <span class="finish">{{ t(`categories.${categoryKey}`) }} · {{ panel.dimensions.length ? t(`panel.${finish(panel)}`) : size(panel) }}</span>
+          <span class="finish">{{ t(`categories.${categoryKey}`) }}<template v-if="!isProduct"> · {{ panel.dimensions.length ? t(`panel.${finish(panel)}`) : size(panel) }}</template></span>
           <h1>{{ title(panel) }}</h1>
         </div>
         <div class="pager">
@@ -113,18 +128,21 @@ onUnmounted(() => {
       <!-- One row per picture, details next to it -->
       <div class="figures">
         <article v-for="(fig, i) in figures" :key="fig.src" :class="['figure', { flip: i % 2 }]">
-          <button class="figure-img" :style="bg(fig.src)" :title="t('panel.zoom')" @click="openZoom(fig.src)">
+          <button :class="['figure-img', { product: isProduct }]" :style="bg(fig.src)" :title="t('panel.zoom')" @click="openZoom(fig.src)">
             <span class="zoom-chip">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14M7 5v4M5 7h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
             </span>
           </button>
 
           <div class="figure-info">
-            <span class="figure-label">{{ t(fig.kind === 'example' ? 'panel.example' : panel.dimensions.length ? 'panel.colour' : 'panel.decor') }}</span>
+            <span class="figure-label">{{ t(fig.kind === 'example' ? 'panel.example' : isProduct ? 'panel.product' : panel.dimensions.length ? 'panel.colour' : 'panel.decor') }}</span>
             <h2>{{ title(panel) }}</h2>
             <dl class="specs">
               <div v-if="hasCode(panel)"><dt>{{ t('panel.code') }}</dt><dd>{{ codeOf(panel) }}</dd></div>
-              <div><dt>{{ t(panel.dimensions.length ? 'panel.dimensions' : 'panel.thickness') }}</dt><dd>{{ size(panel) }}</dd></div>
+              <template v-if="isProduct">
+                <div v-for="[label, val] in productSpecs" :key="label"><dt>{{ t(label) }}</dt><dd>{{ val }}</dd></div>
+              </template>
+              <div v-else><dt>{{ t(panel.dimensions.length ? 'panel.dimensions' : 'panel.thickness') }}</dt><dd>{{ size(panel) }}</dd></div>
             </dl>
             <div v-if="i === 0" class="actions">
               <button v-if="canTry" class="btn-primary" @click="tryInStudio">
@@ -140,7 +158,7 @@ onUnmounted(() => {
       <!-- More colours -->
       <div class="related">
         <div class="related-head">
-          <h3>{{ t('panel.more') }}</h3>
+          <h3>{{ t(isProduct ? 'panel.moreModels' : 'panel.more') }}</h3>
           <RouterLink :to="{ name: 'category', params: { category: categoryKey } }" class="all-link">
             {{ t('categories.back') }} →
           </RouterLink>
@@ -152,8 +170,8 @@ onUnmounted(() => {
             :to="{ name: 'panel', params: { category: categoryKey, code: p.code } }"
             class="rel"
           >
-            <span class="rel-img" :style="bg(p.image)">
-              <span v-if="p.examples[0]" class="rel-example" :style="bg(p.examples[0])"></span>
+            <span :class="['rel-img', { product: isProduct }]" :style="bg(p.image)">
+              <span v-if="p.examples?.[0]" class="rel-example" :style="bg(p.examples[0])"></span>
             </span>
             <span class="rel-name">{{ title(p) }}</span>
             <span class="rel-meta">{{ meta(p) }}</span>
@@ -263,6 +281,15 @@ h1 {
   transition: opacity var(--transition), transform var(--transition);
 }
 .figure-img:hover .zoom-chip { opacity: 1; transform: none; }
+/* product cut-outs are shown whole on white, not cropped to fill */
+.figure-img.product, .rel-img.product {
+  background-color: #fff;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-origin: content-box;
+}
+.figure-img.product { min-height: 420px; padding: 32px; }
+.rel-img.product { padding: 12px; }
 
 .figure-info {
   padding: 36px 36px 32px;

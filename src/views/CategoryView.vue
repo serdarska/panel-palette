@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { store } from '../store.js'
 import { categories, getCategory } from '../data/categories.js'
 import { studioCategories } from '../data/rooms.js'
@@ -8,7 +8,6 @@ import { t } from '../i18n.js'
 import { hasCode, codeOf } from '../format.js'
 
 const route = useRoute()
-const router = useRouter()
 
 const key = computed(() => route.params.category)
 const category = computed(() => getCategory(key.value))
@@ -29,7 +28,7 @@ const thicknesses = computed(() => key.value === 'laminate'
 const finish = ref(null)
 const finishes = computed(() => ['countertop', 'mdf'].includes(key.value) ? ['matt', 'gloss'] : [])
 const finishOf = i => ((key.value === 'mdf' ? /^HG\b/i.test(i.name ?? '') : i.gloss) ? 'gloss' : 'matt')
-watch(key, () => { query.value = ''; thickness.value = null; finish.value = null; closePopup(); revealActive() })
+watch(key, () => { query.value = ''; thickness.value = null; finish.value = null; revealActive() })
 
 // on phones the sidebar is a horizontal strip — keep the current category visible
 function revealActive() {
@@ -54,69 +53,19 @@ const showName = computed(() => key.value !== 'countertop')
 const itemTitle = s => (showName.value ? (s.name || s.code) : s.code)
 const imgStyle = s => (s.image ? { backgroundImage: `url("${encodeURI(s.image)}")` } : { background: s.color })
 
-// Items with interior examples get their own page instead of the popup
+// every item opens its own page. Decors (with interior examples) use the big
+// colour cards; products (sinks, faucets) keep their cut-out photo cards
 const hasPages = computed(() => items.value.some(i => i.examples))
 
 // Decors with a surface in the design studio can be tried on there
 const canApply = computed(() => studioCategories.has(key.value))
-
-const popup = ref(null)
-
-function openPopup(item) {
-  popup.value = item
-  document.body.style.overflow = 'hidden'
-}
-
-function closePopup() {
-  popup.value = null
-  document.body.style.overflow = ''
-}
-
-function apply(swatch) {
-  store[key.value] = swatch
-  store.picked[key.value] = true
-  store.activeMaterial = key.value
-  store.pendingApply = { category: key.value, swatch }
-  closePopup()
-  router.push({ name: 'design' })
-}
-
-const dims = computed(() => {
-  const d = popup.value?.dimensions
-  if (!d) return []
-  const mm = v => `${v} mm`
-  return [
-    d.diameter != null && [t('accessories.diameter'), `Ф${mm(d.diameter)}`],
-    d.length != null && [t('accessories.length'), mm(d.length)],
-    d.width != null && [t('accessories.width'), mm(d.width)],
-    d.depth != null && [t('accessories.depth'), mm(d.depth)],
-    d.thickness != null && [t('panel.thickness'), mm(d.thickness)],
-  ].filter(Boolean)
-})
-
-const offerLink = computed(() => {
-  const item = popup.value
-  const subject = `${t('categories.requestOffer')}: ${t(`categories.${key.value}`)} ${item ? itemTitle(item) : ''}`.trim()
-  return `mailto:interwoodd@gmail.com?subject=${encodeURIComponent(subject)}`
-})
 
 function isSelected(item) {
   // a studio default isn't a choice, so nothing is outlined until one is made
   return !!store.picked[key.value] && store[key.value]?.code === item.code
 }
 
-function onKey(e) {
-  if (e.key === 'Escape') closePopup()
-}
-
-onMounted(() => {
-  window.addEventListener('keydown', onKey)
-  revealActive()
-})
-onUnmounted(() => {
-  window.removeEventListener('keydown', onKey)
-  document.body.style.overflow = ''
-})
+onMounted(revealActive)
 </script>
 
 <template>
@@ -220,11 +169,11 @@ onUnmounted(() => {
         </div>
 
         <div v-else-if="filtered.length" :class="['grid', { products: isProduct }]">
-          <button
+          <RouterLink
             v-for="item in filtered"
             :key="item.code"
+            :to="{ name: 'panel', params: { category: key, code: item.code } }"
             :class="['card', { selected: canApply && isSelected(item) }]"
-            @click="openPopup(item)"
           >
             <div class="card-img" :style="imgStyle(item)">
               <span class="preview-hint">{{ t('catalog.preview') }}</span>
@@ -238,55 +187,12 @@ onUnmounted(() => {
               <span class="card-name">{{ itemTitle(item) }}</span>
               <span v-if="showName && item.name" class="card-code">{{ codeOf(item) }}</span>
             </div>
-          </button>
+          </RouterLink>
         </div>
         <p v-else-if="items.length" class="empty">{{ t('categories.noResults') }}</p>
       </div>
     </div>
   </section>
-
-  <Teleport to="body">
-    <Transition name="modal">
-      <div v-if="popup" class="modal-overlay" @click.self="closePopup">
-        <div class="modal">
-          <button class="modal-close" @click="closePopup" :aria-label="t('catalog.close')">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-          </button>
-
-          <div :class="['modal-image', { product: isProduct }]" :style="imgStyle(popup)"></div>
-
-          <div class="modal-info">
-            <span class="modal-category">{{ t(`categories.${key}`) }}</span>
-            <h3 class="modal-name">{{ itemTitle(popup) }}</h3>
-            <span v-if="showName && popup.name" class="modal-code">{{ codeOf(popup) }}</span>
-
-            <div class="modal-divider"></div>
-
-            <div v-if="dims.length" class="dims">
-              <span class="dims-title">{{ t('accessories.dimensions') }}</span>
-              <div v-for="[label, val] in dims" :key="label" class="dim">
-                <span>{{ label }}</span><strong>{{ val }}</strong>
-              </div>
-            </div>
-            <p v-else class="modal-desc">{{ t(`categories.${key}Desc`) }}</p>
-
-            <div class="modal-actions">
-              <button v-if="canApply" class="modal-apply" @click="apply(popup)">
-                {{ t('catalog.apply') }}
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <a v-else :href="offerLink" class="modal-apply">{{ t('categories.requestOffer') }}</a>
-              <button class="modal-cancel" @click="closePopup">{{ t('catalog.close') }}</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
 </template>
 
 <style scoped>
@@ -544,121 +450,6 @@ h1 {
 }
 .btn:hover { background: var(--accent-light); }
 
-/* ===== MODAL ===== */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(43, 39, 36, 0.5);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-.modal {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  width: 100%;
-  max-width: 880px;
-  max-height: 90vh;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 32px 80px rgba(43, 39, 36, 0.2);
-}
-.modal-close {
-  position: absolute;
-  top: 16px; right: 16px;
-  width: 36px; height: 36px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid var(--border);
-  border-radius: 0;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-}
-.modal-close:hover { color: var(--text-primary); }
-.modal-image { min-height: 440px; background-size: cover; background-position: center; }
-.modal-image.product { background-color: #fff; background-size: 80%; background-repeat: no-repeat; border-right: 1px solid var(--border); }
-.modal-info {
-  padding: 44px 36px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow-y: auto;
-}
-.modal-category {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 14px;
-}
-.modal-name { font-family: var(--font-display); font-size: 27px; font-weight: 500; line-height: 1.1; margin-bottom: 8px; }
-.modal-code { font-size: 13px; color: var(--text-muted); letter-spacing: 0.08em; }
-.modal-divider { height: 1px; background: var(--border); margin: 20px 0 24px; }
-.modal-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 36px; }
-.dims { margin-bottom: 32px; }
-.dims-title {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 10px;
-}
-.dim {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-secondary);
-}
-.dim strong { color: var(--text-primary); font-weight: 600; }
-.modal-actions { display: flex; flex-direction: column; gap: 10px; }
-.modal-apply {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: var(--accent);
-  color: var(--on-accent);
-  border: none;
-  padding: 14px 24px;
-  border-radius: var(--radius);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-.modal-apply:hover { background: var(--accent-light); }
-.modal-cancel {
-  background: transparent;
-  border: 1px solid var(--border-light);
-  color: var(--text-secondary);
-  padding: 12px 24px;
-  border-radius: var(--radius);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-}
-.modal-cancel:hover { color: var(--text-primary); border-color: var(--text-muted); }
-
-.modal-enter-active, .modal-leave-active { transition: opacity 0.25s ease; }
-.modal-enter-active .modal, .modal-leave-active .modal { transition: opacity 0.25s ease, transform 0.25s ease; }
-.modal-enter-from, .modal-leave-to { opacity: 0; }
-.modal-enter-from .modal, .modal-leave-to .modal { opacity: 0; transform: scale(0.95) translateY(16px); }
-
 /* ===== MOBILE: sidebar becomes a scrolling strip under the navbar ===== */
 @media (max-width: 900px) {
   .category { padding: var(--nav-height) 0 72px; }
@@ -688,16 +479,5 @@ h1 {
   .count-n { font-size: 29px; }
   .search { width: 100%; }
   .grid, .grid.products { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-
-  .modal-overlay { padding: 0; align-items: flex-end; }
-  .modal {
-    grid-template-columns: 1fr;
-    grid-template-rows: 260px 1fr;
-    max-height: 92vh;
-    border-radius: 0;
-  }
-  .modal-image { min-height: unset; height: 260px; }
-  .modal-info { padding: 24px 20px; }
-  .modal-name { font-size: 22px; }
 }
 </style>

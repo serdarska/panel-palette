@@ -45,6 +45,7 @@ function go(id) {
             <a href="mailto:interwoodd@gmail.com">interwoodd@gmail.com</a>
             <span class="contact-item">+381 11 000 0000</span>
             <span class="contact-item">{{ t('footer.hours') }}</span>
+            <span class="contact-item">{{ t('footer.hoursSat') }}</span>
             <span class="contact-item">{{ t('footer.location') }}</span>
           </div>
         </div>

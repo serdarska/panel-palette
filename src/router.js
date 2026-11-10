@@ -19,8 +19,12 @@ export default createRouter({
       path: '/materials/:category/:code',
       name: 'panel',
       component: PanelView,
-      beforeEnter: to => getCategory(to.params.category)?.data.some(i => i.code === to.params.code && i.examples)
-        || { name: 'category', params: { category: to.params.category } },
+      // decors with interior examples, and every product (sinks, faucets), have a page
+      beforeEnter: to => {
+        const c = getCategory(to.params.category)
+        return c?.data.some(i => i.code === to.params.code && (i.examples || c.kind === 'product'))
+          || { name: 'category', params: { category: to.params.category } }
+      },
     },
     { path: '/design', name: 'design', component: DesignView },
     { path: '/:pathMatch(.*)*', redirect: '/' },
