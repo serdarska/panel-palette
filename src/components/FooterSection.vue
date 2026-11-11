@@ -43,20 +43,21 @@ function go(id) {
           <div class="footer-col">
             <span class="col-title">{{ t('footer.contact') }}</span>
             <a href="mailto:interwoodd@gmail.com">interwoodd@gmail.com</a>
-            <span class="contact-item">+381 11 000 0000</span>
+            <!-- tap to call on phones -->
+            <a href="tel:+38978424682">+389 78 424 682</a>
+            <a href="tel:+38978424463">+389 78 424 463</a>
             <span class="contact-item">{{ t('footer.hours') }}</span>
             <span class="contact-item">{{ t('footer.hoursSat') }}</span>
             <span class="contact-item">{{ t('footer.location') }}</span>
+            <span class="contact-item">{{ t('footer.location2') }}</span>
+            <span class="contact-item">{{ t('footer.location3') }}</span>
+            <span class="contact-item">{{ t('footer.location4') }}</span>
           </div>
         </div>
       </div>
 
       <div class="footer-bottom">
         <span>{{ t('footer.copyright').replace(/\d{4}/, new Date().getFullYear()) }}</span>
-        <div class="footer-links">
-          <a href="#">{{ t('footer.privacy') }}</a>
-          <a href="#">{{ t('footer.terms') }}</a>
-        </div>
       </div>
     </div>
   </footer>
@@ -131,16 +132,6 @@ function go(id) {
   font-size: 13px;
   color: var(--text-muted);
 }
-.footer-links {
-  display: flex;
-  gap: 24px;
-}
-.footer-links a {
-  color: var(--text-muted);
-  transition: color var(--transition);
-  text-decoration: none;
-}
-.footer-links a:hover { color: var(--text-secondary); }
 
 @media (max-width: 900px) {
   .footer-top { grid-template-columns: 1fr; }
@@ -156,6 +147,5 @@ function go(id) {
   .footer-col, .footer-col + .footer-col { padding: 28px 0; border-left: none; }
   .footer-col + .footer-col { border-top: 1px solid var(--border); }
   .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
-  .footer-links { justify-content: center; }
 }
 </style>
