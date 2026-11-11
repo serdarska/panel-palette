@@ -308,7 +308,7 @@ export const chipboardColors = [
   {
     name: 'Natural Antracit', code: '275', color: '#2a2c2b', textColor: '#f0f0f0',
     image: '/materials/chipboard/Antracite 275 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Antracite 275 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Natural Antracit 275 example.jpg'], exampleFill: true,
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -320,7 +320,7 @@ export const chipboardColors = [
   {
     name: 'Antracit Сјај', code: '159', gloss: true, color: '#76736c', textColor: '#f0f0f0',
     image: '/materials/chipboard/Antracit Glossy 159 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Antracit Glossy 159 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Antracit Sjaj 159 example.jpg'], exampleFill: true,
     dimensions: { width: 2100, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
@@ -352,13 +352,13 @@ export const chipboardColors = [
   {
     name: 'Cashmere Scratch', code: '7782', color: '#d5cfc9', textColor: '#3a3a3a',
     image: '/materials/chipboard/Cashmere Scratch 7782 2070x2800x18.webp',
-    examples: ['/materials/chipboard/Cashmere Scratch 7782 2070x2800x18.webp'],
+    examples: ['/materials/chipboard/Cashmere Scratch 7782 example.webp'], exampleFill: true,
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
     name: 'Country Copper', code: '7749', color: '#8e7e63', textColor: '#f0f0f0',
     image: '/materials/chipboard/Country Copper 7749 2070x2800x18.webp',
-    examples: ['/materials/chipboard/Country Copper 7749 2070x2800x18.webp'],
+    examples: ['/materials/chipboard/Country Copper 7749 example.webp'], exampleFill: true,
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   // the same cream board in two finishes; `gloss` makes the studio render it glossy
@@ -377,7 +377,7 @@ export const chipboardColors = [
   {
     name: 'Delano Oak', code: '7787', color: '#c1b084', textColor: '#3a3a3a',
     image: '/materials/chipboard/Delano Oak 7787 2070x2800x18.webp',
-    examples: ['/materials/chipboard/Delano Oak 7787 2070x2800x18.webp'],
+    examples: ['/materials/chipboard/Delano Oak 7787 example.webp'], exampleFill: true,
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
@@ -480,7 +480,7 @@ export const chipboardColors = [
   {
     name: 'Gri 3414', code: '11', color: '#bebbb2', textColor: '#3a3a3a',
     image: '/materials/chipboard/Gri 11 2100x2800x16 .jpg',
-    examples: ['/materials/chipboard/Gri 3414 example.jpeg'],
+    examples: ['/materials/chipboard/Gri 3414 example.webp'], exampleFill: true,
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -516,19 +516,19 @@ export const chipboardColors = [
   {
     name: 'Lucky Oak', code: '7791', color: '#b8a482', textColor: '#3a3a3a',
     image: '/materials/chipboard/Lucky Oak 7791 2070x2800x18.webp',
-    examples: ['/materials/chipboard/Lucky Oak 7791 2070x2800x18.webp'],
+    examples: ['/materials/chipboard/Lucky Oak 7791 example.webp'], exampleFill: true,
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
     name: 'Luminata', code: '7754', color: '#dcd9cf', textColor: '#3a3a3a',
     image: '/materials/chipboard/Luminata 7754 2070x2800x18.webp',
-    examples: ['/materials/chipboard/Luminata 7754 2070x2800x18.webp'],
+    examples: ['/materials/chipboard/Luminata 7754 example.webp'], exampleFill: true,
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
     name: 'Melange Scratch', code: '7761', color: '#dbd2c9', textColor: '#3a3a3a',
     image: '/materials/chipboard/Melange Scratch 7761 2070x2800x18.webp',
-    examples: ['/materials/chipboard/Melange Scratch 7761 2070x2800x18.webp'],
+    examples: ['/materials/chipboard/Melange Scratch 7761 example.webp'], exampleFill: true,
     dimensions: { width: 2070, length: 2800, thickness: 18 }, thicknesses: [18],
   },
   {
@@ -582,7 +582,7 @@ export const chipboardColors = [
   {
     name: 'Senkron Dolunay', code: '161', color: '#e4d9cd', textColor: '#3a3a3a',
     image: '/materials/chipboard/Senkron Dolunay 161 2100x2800x16 .jpg',
-    examples: ['/materials/chipboard/Senkron Dolunay 161 2100x2800x16 .jpg'],
+    examples: ['/materials/chipboard/Senkron Dolunay 161 example.webp'], exampleFill: true,
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -594,13 +594,13 @@ export const chipboardColors = [
   {
     name: 'Senkron Kumsal', code: '40', color: '#bbb3a9', textColor: '#3a3a3a',
     image: '/materials/chipboard/Senkron Kumsal 40 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Senkron Kumsal 40 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Senkron Kumsal 40 example.webp'], exampleFill: true,
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
-    name: 'Senkron Siyah', code: '160', color: '#77787a', textColor: '#f0f0f0',
+    name: 'Senkron Siyah', code: '160', color: '#343435', textColor: '#f0f0f0',
     image: '/materials/chipboard/Senkron Siyah 160 2100x2800x16.jpg',
-    examples: ['/materials/chipboard/Senkron Siyah 160 2100x2800x16.jpg'],
+    examples: ['/materials/chipboard/Senkron Siyah 160 example.webp'], exampleFill: true,
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
   {
@@ -644,13 +644,13 @@ export const chipboardColors = [
   {
     name: 'White МАТ', code: '66', color: '#ecf2f0', textColor: '#3a3a3a',
     image: '/materials/chipboard/Beyaz 66 2100x2800x16:25.jpg',
-    examples: ['/materials/chipboard/Beyaz 66 2100x2800x16:25.jpg'],
+    examples: ['/materials/chipboard/Beyaz 66 mat example.jpg'], exampleFill: true,
     dimensions: { width: 2100, length: 2800, thickness: '16 / 18 / 25' }, thicknesses: [16, 18, 25],
   },
   {
     name: 'White Сјај', code: '66-hg', shownCode: '66', gloss: true, color: '#ecf2f0', textColor: '#3a3a3a',
     image: '/materials/chipboard/Beyaz 66 2100x2800x16:25.jpg',
-    examples: ['/materials/chipboard/Beyaz 66 2100x2800x16:25.jpg'],
+    examples: ['/materials/chipboard/Beyaz 66 Sjaj example.jpg'], exampleFill: true,
     dimensions: { width: 2100, length: 2800, thickness: 16 }, thicknesses: [16],
   },
 ]
