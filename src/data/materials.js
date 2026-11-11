@@ -1,43 +1,45 @@
 // Worktops are named by their code (the photo's file name). Photos in
 // countertop/trimmed/ are the originals with their white margins cut off.
-// `wall: true` = the same decor also comes as a wall panel, so the kitchen's
+// `wall: WALL` = the same decor also comes as a wall panel, so the kitchen's
 // backsplash in the design studio offers only these. `gloss` = high gloss (SJAJ).
 // `examples` (none yet) gives each worktop its own page, like the MDF fronts.
 const WORKTOP = { length: 4100, width: 600, thickness: 38 }
+// decors that also come as wall cladding carry its size in `wall`
+const WALL = { length: 4100, width: 650, thickness: 12 }
 
 export const countertops = [
   { code: '3054', color: '#c08e5a', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/3054.webp', examples: [], dimensions: WORKTOP },
   { code: '3117 Сјај', color: '#a57350', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/3117 SJAJ.webp', examples: [], dimensions: WORKTOP, gloss: true },
   { code: '3151 Сјај', color: '#9e784b', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/3151 SJAJ.webp', examples: [], dimensions: WORKTOP, gloss: true },
-  { code: '3155', color: '#c8b094', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/3155.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '3155', color: '#c8b094', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/3155.webp', examples: [], dimensions: WORKTOP, wall: WALL },
   { code: '6605', color: '#b9a37f', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6605.webp', examples: [], dimensions: WORKTOP },
-  { code: '6607', color: '#9d886d', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6607.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6607', color: '#9d886d', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6607.webp', examples: [], dimensions: WORKTOP, wall: WALL },
   { code: '6608', color: '#6e5b44', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6608.webp', examples: [], dimensions: WORKTOP },
   { code: '6618', color: '#c0b7a3', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6618.webp', examples: [], dimensions: WORKTOP },
-  { code: '6624', color: '#eeedeb', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6624 sjaj.webp', examples: [], dimensions: WORKTOP, matt: true, wall: true },
-  { code: '6624 Сјај', color: '#f1f0ef', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6624 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true, wall: true },
-  { code: '6626', color: '#5d5f59', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6626.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6624', color: '#eeedeb', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6624 sjaj.webp', examples: [], dimensions: WORKTOP, matt: true, wall: WALL },
+  { code: '6624 Сјај', color: '#f1f0ef', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6624 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true },
+  { code: '6626', color: '#5d5f59', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6626.webp', examples: [], dimensions: WORKTOP, wall: WALL },
   { code: '6630', color: '#000000', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6630.webp', examples: [], dimensions: WORKTOP },
   { code: '6633 Сјај', color: '#333939', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6633 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true },
-  { code: '6645 Сјај', color: '#afada8', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6645.webp', examples: [], dimensions: WORKTOP, gloss: true, wall: true },
+  { code: '6645 Сјај', color: '#afada8', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6645.webp', examples: [], dimensions: WORKTOP, gloss: true, wall: WALL },
   { code: '6648', color: '#dfdbce', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6648.webp', examples: [], dimensions: WORKTOP },
   { code: '6650', color: '#a39880', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6650.webp', examples: [], dimensions: WORKTOP },
   { code: '6652', color: '#927959', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6652.webp', examples: [], dimensions: WORKTOP },
   { code: '6654 Сјај', color: '#33281e', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6654.webp', examples: [], dimensions: WORKTOP, gloss: true },
-  { code: '6660', color: '#b4a378', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6660.webp', examples: [], dimensions: WORKTOP, wall: true },
-  { code: '6661', color: '#080809', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6661.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6660', color: '#b4a378', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6660.webp', examples: [], dimensions: WORKTOP, wall: WALL },
+  { code: '6661', color: '#080809', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6661.webp', examples: [], dimensions: WORKTOP, wall: WALL },
   { code: '6664', color: '#71797b', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6664.webp', examples: [], dimensions: WORKTOP },
-  { code: '6670', color: '#bda980', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6670.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6670', color: '#bda980', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6670.webp', examples: [], dimensions: WORKTOP, wall: WALL },
   { code: '6671 Сјај', color: '#dcdcdb', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6671 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true },
-  { code: '6672 Сјај', color: '#202021', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6672.webp', examples: [], dimensions: WORKTOP, gloss: true, wall: true },
+  { code: '6672 Сјај', color: '#202021', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6672.webp', examples: [], dimensions: WORKTOP, gloss: true, wall: WALL },
   { code: '6674', color: '#695c52', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6674.webp', examples: [], dimensions: WORKTOP },
-  { code: '6675', color: '#aa9167', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6675.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6675', color: '#aa9167', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6675.webp', examples: [], dimensions: WORKTOP, wall: WALL },
   { code: '6676', color: '#706149', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6676.webp', examples: [], dimensions: WORKTOP },
   { code: '6677', color: '#a28c5b', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6677.webp', examples: [], dimensions: WORKTOP },
   { code: '6679', color: '#b4b1ac', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6679.webp', examples: [], dimensions: WORKTOP },
   { code: '6680', color: '#bbbab2', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6680.webp', examples: [], dimensions: WORKTOP },
   { code: '6681', color: '#bab4ab', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6681.webp', examples: [], dimensions: WORKTOP },
-  { code: '6685', color: '#b9a583', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6685.webp', examples: [], dimensions: WORKTOP, wall: true },
+  { code: '6685', color: '#b9a583', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6685.webp', examples: [], dimensions: WORKTOP, wall: WALL },
 ]
 
 // MDF panels: colour photo + interior example(s), size in mm; `gloss` = high-gloss finish,

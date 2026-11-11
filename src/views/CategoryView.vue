@@ -11,7 +11,13 @@ const route = useRoute()
 
 const key = computed(() => route.params.category)
 const category = computed(() => getCategory(key.value))
-const items = computed(() => category.value.data)
+// an optional subcategory (?sub=wall) narrows the category's decors
+const sub = computed(() => category.value.subs?.find(s => s.key === route.query.sub) ?? null)
+const subItems = (c, s) => c.data.filter(s.filter)
+const items = computed(() => (sub.value ? subItems(category.value, sub.value) : category.value.data))
+// title/description keys, e.g. categories.countertop or categories.countertopWall
+const subName = s => s.key[0].toUpperCase() + s.key.slice(1)
+const titleKey = computed(() => `categories.${key.value}${sub.value ? subName(sub.value) : ''}`)
 const isProduct = computed(() => category.value.kind === 'product')
 const unit = c => t(c.kind === 'product' ? 'categories.models' : 'categories.decors')
 
@@ -28,7 +34,7 @@ const thicknesses = computed(() => key.value === 'laminate'
 const finish = ref(null)
 const finishes = computed(() => ['countertop', 'mdf'].includes(key.value) ? ['matt', 'gloss'] : [])
 const finishOf = i => ((key.value === 'mdf' ? /^HG\b/i.test(i.name ?? '') : i.gloss) ? 'gloss' : 'matt')
-watch(key, () => { query.value = ''; thickness.value = null; finish.value = null; revealActive() })
+watch([key, sub], () => { query.value = ''; thickness.value = null; finish.value = null; revealActive() })
 
 // on phones the sidebar is a horizontal strip — keep the current category visible
 function revealActive() {
@@ -75,17 +81,28 @@ onMounted(revealActive)
       <aside class="sidebar">
         <span class="side-title">{{ t('categories.sidebarTitle') }}</span>
         <nav class="side-nav">
+          <template v-for="c in categories" :key="c.key">
           <RouterLink
-            v-for="c in categories"
-            :key="c.key"
             :to="{ name: 'category', params: { category: c.key } }"
-            :class="['side-link', { active: c.key === key }]"
+            :class="['side-link', { active: c.key === key && !sub }]"
           >
             <span class="side-text">
               <span class="side-name">{{ t(`categories.${c.key}`) }}</span>
               <span class="side-count">{{ c.data.length ? `${c.data.length} ${unit(c)}` : t('categories.soon') }}</span>
             </span>
           </RouterLink>
+          <RouterLink
+            v-for="s in c.subs ?? []"
+            :key="`${c.key}-${s.key}`"
+            :to="{ name: 'category', params: { category: c.key }, query: { sub: s.key } }"
+            :class="['side-link', 'side-sub', { active: c.key === key && sub?.key === s.key }]"
+          >
+            <span class="side-text">
+              <span class="side-name">{{ t(`categories.${c.key}${subName(s)}`) }}</span>
+              <span class="side-count">{{ subItems(c, s).length }} {{ unit(c) }}</span>
+            </span>
+          </RouterLink>
+          </template>
         </nav>
         <RouterLink :to="{ name: 'design' }" class="side-studio">
           <span>{{ t('nav.designStudio') }}</span>
@@ -100,12 +117,16 @@ onMounted(revealActive)
             <span>/</span>
             <RouterLink :to="{ name: 'home', hash: '#catalog' }">{{ t('nav.materials') }}</RouterLink>
             <span>/</span>
-            <span class="current">{{ t(`categories.${key}`) }}</span>
+            <template v-if="sub">
+              <RouterLink :to="{ name: 'category', params: { category: key } }">{{ t(`categories.${key}`) }}</RouterLink>
+              <span>/</span>
+            </template>
+            <span class="current">{{ t(titleKey) }}</span>
           </nav>
           <div class="head-row">
             <div>
-              <h1>{{ t(`categories.${key}`) }}</h1>
-              <p class="lead">{{ t(`categories.${key}Desc`) }}</p>
+              <h1>{{ t(titleKey) }}</h1>
+              <p class="lead">{{ t(`${titleKey}Desc`) }}</p>
             </div>
             <div v-if="items.length" class="count">
               <!-- follows the filters and search, so it matches the cards shown -->
@@ -252,6 +273,9 @@ onMounted(revealActive)
 .side-name { font-size: 17px; font-weight: 600; color: var(--text-primary); }
 .side-link.active .side-name { color: var(--accent); }
 .side-count { font-size: 13px; color: var(--text-muted); }
+/* a subcategory sits indented under its category */
+.side-sub { padding-left: 30px; }
+.side-sub .side-name { font-size: 15px; font-weight: 500; }
 
 .side-studio {
   display: flex;

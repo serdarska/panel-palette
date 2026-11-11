@@ -15,6 +15,8 @@ export const categories = [
   },
   {
     key: 'countertop', kind: 'material', data: countertops,
+    // subcategories: a filtered view at /materials/countertop?sub=<key>
+    subs: [{ key: 'wall', filter: i => i.wall }],
     covers: ['/materials/countertop/trimmed/6624 mat.webp'],
   },
   {

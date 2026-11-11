@@ -174,6 +174,11 @@ onUnmounted(() => {
               <template v-if="isProduct">
                 <div v-for="[label, val] in productSpecs" :key="label"><dt>{{ t(label) }}</dt><dd>{{ val }}</dd></div>
               </template>
+              <template v-else-if="panel.wall">
+                <!-- a worktop decor that also comes as wall cladding: both sizes -->
+                <div><dt>{{ t('panel.worktopSize') }}</dt><dd>{{ size(panel) }}</dd></div>
+                <div><dt>{{ t('panel.wallSize') }}</dt><dd>{{ size({ dimensions: panel.wall }) }}</dd></div>
+              </template>
               <div v-else><dt>{{ t(panel.dimensions.length ? 'panel.dimensions' : 'panel.thickness') }}</dt><dd>{{ size(panel) }}</dd></div>
             </dl>
             <div v-if="i === 0" class="actions">
