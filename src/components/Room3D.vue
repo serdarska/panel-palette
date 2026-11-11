@@ -849,13 +849,10 @@ function grainIsVertical(img) {
 // floor planks cut from a single-board photo: 1.38 × 0.193 m, staggered rows,
 // each plank a different piece of the photo, a slightly different tone and a
 // fine bevelled groove all round. Tiles seamlessly over 2.76 × 2.316 m.
-// An XL decor brings its own size (`plank`), its tiles laid in as many rows
-// as make about the same 2.3 m repeat.
-const PLANK_STD = { l: 1.38, w: 0.193 }
+const PLANK = { l: 1.38, w: 0.193, cols: 2, rows: 12 }
 const plankCache = new Map()
-function plankTexture(img, key, size = PLANK_STD) {
+function plankTexture(img, key) {
   if (plankCache.has(key)) return plankCache.get(key)
-  const PLANK = { ...size, cols: 2, rows: Math.max(2, Math.round(2.316 / size.w)) }
   const pxm = 740
   const W = Math.round(PLANK.l * PLANK.cols * pxm), H = Math.round(PLANK.w * PLANK.rows * pxm)
   const pl = PLANK.l * pxm, pw = H / PLANK.rows
@@ -943,7 +940,7 @@ async function applySelections() {
     if (token !== applyToken) return
     let tex
     mat.bumpMap = null
-    if (s.category === 'laminate') tex = plankTexture(img, swatch.texture ?? swatch.image, swatch.plank)
+    if (s.category === 'laminate') tex = plankTexture(img, swatch.texture ?? swatch.image)
     else if (s.category === 'panels') {
       // a decorative wall panel photo is one whole 600 mm panel: repeat it
       // side by side at its real size, and let its dark gaps sit deeper (bump)

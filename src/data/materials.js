@@ -711,9 +711,7 @@ export const faucets = [
 // Laminate flooring, one folder per thickness (public/materials/flooring/laminat <mm>mm).
 // No product codes yet, so `code` is just the URL key (name + thickness).
 // File names are kept exactly as delivered (some have stray spaces).
-// `xl` = the XL range: large stone-look tiles (size in `plank`, metres) instead
-// of the usual 1.38 × 0.193 m wood planks; the flooring page has an XL filter.
-const XL = { l: 1.2, w: 0.6 }
+// `xl` = the XL range (large stone-look planks); the flooring page has an XL filter.
 const laminate = (mm, name, color, file, example, extra = {}) => {
   const dir = `/materials/flooring/laminat ${mm}mm`
   return {
@@ -769,10 +767,10 @@ export const laminates = [
   laminate(8, 'Volga', '#c9c1b7', 'VOLGA 8mm .webp', 'VOLGA 8mm example.webp'),
   // 10 mm
   laminate(10, 'Casella', '#e3e3e0', 'CASELLA 10mm.webp', 'CASELLA 10mm example.webp'),
-  laminate(10, 'Malta', '#868782', 'Malta 10mm.webp', 'MALTA 10mm example.webp', { xl: true, plank: XL }),
-  laminate(10, 'Mare', '#e1dfda', 'MARE 10mm.webp', 'MARE 10mm example.webp', { xl: true, plank: XL }),
-  laminate(10, 'Marine', '#c6c4c2', 'MARINE 10mm.webp', 'MARINE 10mm example .webp', { xl: true, plank: XL }),
-  laminate(10, 'Marvel', '#6d6b66', 'MARVEL 10mm .webp', 'MARVEL 10mm example.webp', { xl: true, plank: XL }),
+  laminate(10, 'Malta', '#868782', 'Malta 10mm.webp', 'MALTA 10mm example.webp', { xl: true }),
+  laminate(10, 'Mare', '#e1dfda', 'MARE 10mm.webp', 'MARE 10mm example.webp', { xl: true }),
+  laminate(10, 'Marine', '#c6c4c2', 'MARINE 10mm.webp', 'MARINE 10mm example .webp', { xl: true }),
+  laminate(10, 'Marvel', '#6d6b66', 'MARVEL 10mm .webp', 'MARVEL 10mm example.webp', { xl: true }),
   laminate(10, 'Mimoza', '#be9563', 'MIMOZA 10mm.webp', 'MIMOZA 10mm example.webp'),
   laminate(10, 'Moderna', '#b1906d', 'MODERNA 100mm.webp', 'MODERNA 10mm example.webp'),
   laminate(10, 'Pelemir', '#826345', 'PELEMIR 10mm.webp', 'PELEMI 10mm example.webp'),
