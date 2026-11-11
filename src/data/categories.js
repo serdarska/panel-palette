@@ -25,7 +25,7 @@ export const categories = [
   },
   {
     key: 'panels', kind: 'material', data: wallPanels,
-    covers: ['/materials/dekorativni dzidni paneli/329_Seul.jpg'],
+    covers: ['/materials/dekorativni dzidni paneli/249_Anti_Walnut.jpg'],
   },
   {
     key: 'sinks', kind: 'product', data: sinks,

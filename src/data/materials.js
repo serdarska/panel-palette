@@ -660,13 +660,13 @@ export const chipboardColors = [
 // Decorative slatted wall panels: panel photo + interior example, all one size, 2800 × 600 × 9 mm
 const PANEL = { length: 2800, width: 600, thickness: 9 }
 export const wallPanels = [
-  { name: 'Anti Walnut',             code: '249',  color: '#48352b', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/249_Anti_Walnut.jpg', examples: ['/materials/dekorativni dzidni paneli/249_Anti_Walnut_example.jpg'], dimensions: PANEL },
-  { name: 'Natural',                 code: '265',  color: '#917b65', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/265_Natural.jpg', examples: ['/materials/dekorativni dzidni paneli/265_Natural_example.jpg'], dimensions: PANEL },
-  { name: 'Amalfi',                  code: '323',  color: '#5e4b41', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/323_Amalfi.jpg', examples: ['/materials/dekorativni dzidni paneli/323_Amalfi_example.jpg'], dimensions: PANEL },
-  { name: 'Seul',                    code: '329',  color: '#754523', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/329_Seul.jpg', examples: ['/materials/dekorativni dzidni paneli/329_Seul_example.jpg'], dimensions: PANEL },
-  { name: 'Asos',                    code: '334',  color: '#92806e', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/334_Asos.jpg', examples: ['/materials/dekorativni dzidni paneli/334_Asos_example.jpg'], dimensions: PANEL },
-  { name: 'Bianco',                  code: '336',  color: '#949492', textColor: '#3a3a3a', image: '/materials/dekorativni dzidni paneli/336_Bianco.jpg', examples: ['/materials/dekorativni dzidni paneli/336_Bianco_example.jpg'], dimensions: PANEL },
-  { name: 'Soft Touch Firtina Gri',  code: '733',  color: '#2b2b2b', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/733_Soft_Touch_Firtina_Gri.jpg', examples: ['/materials/dekorativni dzidni paneli/733_Soft_Touch_Firtina_Gri_example.jpg'], dimensions: PANEL },
+  { name: 'Anti Walnut',             code: '249',  color: '#48352b', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/249_Anti_Walnut.jpg', examples: ['/materials/dekorativni dzidni paneli/Anti Walnut 249 example.webp'], exampleFill: true, dimensions: PANEL },
+  { name: 'Natural',                 code: '265',  color: '#917b65', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/265_Natural.jpg', examples: ['/materials/dekorativni dzidni paneli/Natural 265 example.jpg'], exampleFill: true, dimensions: PANEL },
+  { name: 'Amalfi',                  code: '323',  color: '#5e4b41', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/323_Amalfi.jpg', examples: ['/materials/dekorativni dzidni paneli/Amalfi 323 example.jpg'], exampleFill: true, dimensions: PANEL },
+  { name: 'Seul',                    code: '329',  color: '#754523', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/329_Seul.jpg', examples: ['/materials/dekorativni dzidni paneli/Seul 329 example.jpg'], exampleFill: true, dimensions: PANEL },
+  { name: 'Asos',                    code: '334',  color: '#92806e', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/334_Asos.jpg', examples: ['/materials/dekorativni dzidni paneli/Asos 334 example.webp'], exampleFill: true, dimensions: PANEL },
+  { name: 'Bianco',                  code: '336',  color: '#949492', textColor: '#3a3a3a', image: '/materials/dekorativni dzidni paneli/336_Bianco.jpg', examples: ['/materials/dekorativni dzidni paneli/Bianco 336 example.webp'], exampleFill: true, dimensions: PANEL },
+  { name: 'Soft Touch Firtina Gri',  code: '733',  color: '#2b2b2b', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/733_Soft_Touch_Firtina_Gri.jpg', examples: ['/materials/dekorativni dzidni paneli/Soft touch firtina gri 776 example.jpeg'], exampleFill: true, dimensions: PANEL },
 ]
 
 export const sinks = [
