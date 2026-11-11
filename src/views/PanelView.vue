@@ -5,7 +5,7 @@ import { store } from '../store.js'
 import { getCategory } from '../data/categories.js'
 import { studioCategories } from '../data/rooms.js'
 import { t } from '../i18n.js'
-import { hasCode, codeOf } from '../format.js'
+import { hasCode, codeOf, formatPrice } from '../format.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -171,6 +171,7 @@ onUnmounted(() => {
             <h2>{{ title(panel) }}</h2>
             <dl class="specs">
               <div v-if="hasCode(panel)"><dt>{{ t('panel.code') }}</dt><dd>{{ codeOf(panel) }}</dd></div>
+              <div v-if="panel.price"><dt>{{ t('panel.price') }}</dt><dd>{{ formatPrice(panel.price) }}</dd></div>
               <template v-if="isProduct">
                 <div v-for="[label, val] in productSpecs" :key="label"><dt>{{ t(label) }}</dt><dd>{{ val }}</dd></div>
               </template>

@@ -675,9 +675,11 @@ export const sinks = [
   { name: 'Arona Black Matt',    code: 'ARONA-BM',   color: '#1c1a1a', image: '/materials/sinks/arona black matt.avif',   dimensions: { length: 760, width: 440, depth: 178 } },
   { name: 'Arona White',         code: 'ARONA-W',    color: '#f4f0ec', image: '/materials/sinks/arona white.avif',         dimensions: { length: 760, width: 440, depth: 178 } },
   { name: 'Edyta Black Matt',    code: 'EDYTA-BM',   color: '#1c1a1a', image: '/materials/sinks/edyta black matt.avif',   dimensions: { length: 790, width: 510, depth: 214 } },
+  { name: 'Edyta Dark Beige',    code: 'EDYTA-DB',   color: '#8c7860', image: '/materials/sinks/edyta dark beige.webp',   dimensions: { length: 790, width: 510, depth: 214 } },
   { name: 'Ewelina Black Matt',  code: 'EWEL-BM',    color: '#1c1a1a', image: '/materials/sinks/ewelina black matt.avif', dimensions: { length: 780, width: 500, depth: 203 } },
   { name: 'Ewelina Gray',        code: 'EWEL-GR',    color: '#7a7878', image: '/materials/sinks/ewelina gray.avif',       dimensions: { length: 780, width: 500, depth: 203 } },
   { name: 'Ewelina White',       code: 'EWEL-W',     color: '#f4f0ec', image: '/materials/sinks/ewelina white.avif',      dimensions: { length: 780, width: 500, depth: 203 } },
+  { name: 'HD 7550R',            code: 'HD-7550R',   color: '#c9a04a', image: '/materials/sinks/hd 7550r.webp',          dimensions: { length: 750, width: 500, depth: 230 } },
   { name: 'Ines Black Matt',     code: 'INES-BM',    color: '#1c1a1a', image: '/materials/sinks/ines black matt.avif',    dimensions: { length: 780, width: 500, depth: 201 } },
   { name: 'Ines Dark Beige',     code: 'INES-DB',    color: '#8c7860', image: '/materials/sinks/ines dark beige.avif',    dimensions: { length: 780, width: 500, depth: 201 } },
   { name: 'Ines Gray Granit',    code: 'INES-GG',    color: '#706868', image: '/materials/sinks/ines gray granit.avif',   dimensions: { length: 780, width: 500, depth: 201 } },
@@ -693,6 +695,9 @@ export const sinks = [
   { name: 'Vesta Dark Beige',    code: 'VEST-DB',    color: '#8c7860', image: '/materials/sinks/vesta dark beige.avif',   dimensions: { length: 400, width: 500, depth: 192 } },
   { name: 'Vesta White',         code: 'VEST-W',     color: '#f4f0ec', image: '/materials/sinks/vesta white.avif',        dimensions: { length: 400, width: 500, depth: 192 } },
 ]
+// price in denars per model, the same for every colour of it
+const SINK_PRICES = { Selena: 7490, Edyta: 13800, Ewelina: 10990, HD: 34000, Ines: 9200, Lena: 6850, Vesta: 7490 }
+for (const s of sinks) s.price = SINK_PRICES[s.name.split(' ')[0]]
 
 export const faucets = [
   { name: 'Andra Black',  code: 'ANDRA-B',  color: '#1c1a1a', image: '/materials/faucets/andra black.avif',  dimensions: { length: null, width: null, height: null } },

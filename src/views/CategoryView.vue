@@ -5,7 +5,7 @@ import { store } from '../store.js'
 import { categories, getCategory } from '../data/categories.js'
 import { studioCategories } from '../data/rooms.js'
 import { t } from '../i18n.js'
-import { hasCode, codeOf } from '../format.js'
+import { hasCode, codeOf, formatPrice } from '../format.js'
 
 const route = useRoute()
 
@@ -210,6 +210,7 @@ onMounted(revealActive)
             <div class="card-info">
               <span class="card-name">{{ itemTitle(item) }}</span>
               <span v-if="showName && item.name" class="card-code">{{ codeOf(item) }}</span>
+              <span v-if="item.price" class="card-price">{{ formatPrice(item.price) }}</span>
             </div>
           </RouterLink>
         </div>
@@ -428,6 +429,11 @@ h1 {
   text-overflow: ellipsis;
 }
 .card-code { font-size: 11px; color: var(--text-muted); letter-spacing: 0.06em; }
+/* price in the card's bottom-right corner: the name keeps the full width,
+   the code and the price share the last line */
+.card-info:has(.card-price) { display: grid; grid-template-columns: 1fr auto; column-gap: 10px; align-items: baseline; }
+.card-info:has(.card-price) .card-name { grid-column: 1 / -1; }
+.card-price { grid-column: 2; justify-self: end; font-size: 14px; font-weight: 600; color: var(--text-primary); white-space: nowrap; }
 
 /* MDF panels: wide colour photo, interior example fades in on hover */
 .hover-hint { font-size: 12px; color: var(--text-muted); margin: -16px 0 16px; }
