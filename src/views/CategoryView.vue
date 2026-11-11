@@ -23,8 +23,10 @@ const unit = c => t(c.kind === 'product' ? 'categories.models' : 'categories.dec
 
 const query = ref('')
 // flooring and chipboard are chosen by thickness (null = all): flooring gets
-// one chip per thickness in the data, chipboard the board thicknesses on offer
+// one chip per thickness in the data, chipboard the board thicknesses on offer.
+// Flooring also has an 'XL' chip in that row: the large-format tiles (`xl`)
 const thickness = ref(null)
+const hasXl = computed(() => key.value === 'laminate' && items.value.some(i => i.xl))
 const thicknessesOf = i => i.thicknesses ?? [i.dimensions?.thickness]
 const thicknesses = computed(() => key.value === 'laminate'
   ? [...new Set(items.value.map(i => i.dimensions.thickness))].sort((a, b) => a - b)
@@ -49,7 +51,7 @@ function revealActive() {
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase()
   return items.value.filter(s =>
-    (thickness.value == null || thicknessesOf(s).includes(thickness.value)) &&
+    (thickness.value == null || (thickness.value === 'xl' ? s.xl : thicknessesOf(s).includes(thickness.value))) &&
     (finish.value == null || finishOf(s) === finish.value) &&
     (!q || `${s.name ?? ''} ${codeOf(s)}`.toLowerCase().includes(q)))
 })
@@ -149,6 +151,7 @@ onMounted(revealActive)
               :class="['chip', { active: thickness === mm }]"
               @click="thickness = mm"
             >{{ mm }} mm</button>
+            <button v-if="hasXl" :class="['chip', { active: thickness === 'xl' }]" @click="thickness = 'xl'">XL</button>
           </div>
           <div v-if="finishes.length" class="chips">
             <button :class="['chip', { active: finish == null }]" @click="finish = null">{{ t('categories.allThickness') }}</button>
