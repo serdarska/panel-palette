@@ -236,8 +236,10 @@ function fronts(id, faces, plane, from, cols, rows) {
   for (const [i, w] of cols.entries()) {
     for (const [y0, y1] of rows(i)) {
       const b0 = a + GAP / 2, b1 = a + w - GAP / 2
-      if (faces === 'z') box(b0, y0 + GAP / 2, plane, b1, y1 - GAP / 2, plane + DOOR_T, id, { r: 0.0025 })
-      else box(plane, y0 + GAP / 2, b0, plane + DOOR_T, y1 - GAP / 2, b1, id, { r: 0.0025 })
+      // each door's texture starts at its own lower corner, so every front
+      // shows the same part of the decor (a marble reads alike on all doors)
+      if (faces === 'z') box(b0, y0 + GAP / 2, plane, b1, y1 - GAP / 2, plane + DOOR_T, id, { r: 0.0025, origin: [b0, y0 + GAP / 2, plane] })
+      else box(plane, y0 + GAP / 2, b0, plane + DOOR_T, y1 - GAP / 2, b1, id, { r: 0.0025, origin: [plane, y0 + GAP / 2, b0] })
     }
     a += w
   }
@@ -934,11 +936,11 @@ async function applySelections() {
       mat.map = null; mat.color.set(swatch.color); mat.needsUpdate = true
       return
     }
-    const img = await loadImage(swatch.image)
+    const img = await loadImage(swatch.texture ?? swatch.image)
     if (token !== applyToken) return
     let tex
     mat.bumpMap = null
-    if (s.category === 'laminate') tex = plankTexture(img, swatch.image)
+    if (s.category === 'laminate') tex = plankTexture(img, swatch.texture ?? swatch.image)
     else if (s.category === 'panels') {
       // a decorative wall panel photo is one whole 600 mm panel: repeat it
       // side by side at its real size, and let its dark gaps sit deeper (bump)
@@ -965,7 +967,10 @@ async function applySelections() {
       tex.colorSpace = THREE.SRGBColorSpace
       tex.wrapS = tex.wrapT = THREE.MirroredRepeatWrapping
       tex.anisotropy = renderer.capabilities.getMaxAnisotropy()
-      const asp = img.width / img.height, tile = s.tile ?? 0.8
+      // a pattern shown as photographed is laid at the board's real size (its
+      // photo spans the board's width), so a door shows one calm piece of it
+      const asp = img.width / img.height
+      const tile = swatch.asIs && swatch.dimensions ? swatch.dimensions.width / 1000 : s.tile ?? 0.8
       // turned to follow the surface's grain, unless the decor is a pattern to show as photographed
       const rotate = !swatch.asIs && s.grain && (s.grain === 'h') === grainIsVertical(img)
       // rotated by 90° the photo's width runs up the face instead of across;

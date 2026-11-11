@@ -3,6 +3,8 @@
 // `wall: WALL` = the same decor also comes as a wall panel, so the kitchen's
 // backsplash in the design studio offers only these. `gloss` = high gloss (SJAJ).
 // `examples` (none yet) gives each worktop its own page, like the MDF fronts.
+// `texture` = a full-slab image the design studio uses instead of `image`, for
+// decors whose photo is only a small close-up sample (countertop/studio/).
 const WORKTOP = { length: 4100, width: 600, thickness: 38 }
 // decors that also come as wall cladding carry its size in `wall`
 const WALL = { length: 4100, width: 650, thickness: 12 }
@@ -38,7 +40,7 @@ export const countertops = [
   { code: '6677', color: '#a28c5b', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6677.webp', examples: [], dimensions: WORKTOP },
   { code: '6679', color: '#b4b1ac', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6679.webp', examples: [], dimensions: WORKTOP },
   { code: '6680', color: '#bbbab2', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6680.webp', examples: [], dimensions: WORKTOP },
-  { code: '6681', color: '#bab4ab', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6681.webp', examples: [], dimensions: WORKTOP },
+  { code: '6681', color: '#bab4ab', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6681.webp', texture: '/materials/countertop/studio/6681.webp', examples: [], dimensions: WORKTOP },
   { code: '6685', color: '#b9a583', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6685.webp', examples: [], dimensions: WORKTOP, wall: WALL },
 ]
 
@@ -137,10 +139,10 @@ export const mdfColors = [
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
-    name: 'HG Orange', code: '612', gloss: true, color: '#f16033', textColor: '#3a3a3a',
-    image: '/materials/mdf/HG Orange 612 1220x2800x18.jpg',
+    name: 'HG Orange', code: '612', gloss: true, color: '#de6037', textColor: '#3a3a3a',
+    image: '/materials/mdf/HG Orange 612 1220x2800x18.jpeg',
     // no example supplied — the colour photo stands in
-    examples: ['/materials/mdf/HG Orange 612 1220x2800x18.jpg'],
+    examples: ['/materials/mdf/HG Orange 612 1220x2800x18.jpeg'],
     dimensions: { width: 1220, length: 2800, thickness: 18 },
   },
   {
