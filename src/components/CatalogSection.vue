@@ -16,9 +16,8 @@ const head = computed(() => (product.value
   ? { id: 'accessories', label: t('accessories.label'), title: t('accessories.title'), subtitle: t('accessories.subtitle') }
   : { id: 'catalog', label: t('categories.label'), title: t('categories.title'), subtitle: t('categories.subtitle') }))
 
-const cards = computed(() => categories.filter(c => c.kind === props.kind).map((c, i) => ({
+const cards = computed(() => categories.filter(c => c.kind === props.kind).map(c => ({
   key: c.key,
-  num: String(i + 1).padStart(2, '0'),
   title: t(`categories.${c.key}`),
   desc: t(`categories.${c.key}Desc`),
   count: c.data.length,
@@ -65,7 +64,6 @@ const cards = computed(() => categories.filter(c => c.kind === props.kind).map((
           </span>
 
           <div class="tile-body">
-            <span class="tile-num">{{ cat.num }}</span>
             <h3 class="tile-title">{{ cat.title }}</h3>
             <p class="tile-desc">{{ cat.desc }}</p>
             <span class="tile-link">
@@ -162,14 +160,6 @@ const cards = computed(() => categories.filter(c => c.kind === props.kind).map((
   padding: 28px;
   width: 100%;
 }
-.tile-num {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--accent-dim);
-  margin-bottom: 8px;
-}
 .tile-title {
   font-family: var(--font-display);
   font-size: 24px;
@@ -227,7 +217,6 @@ const cards = computed(() => categories.filter(c => c.kind === props.kind).map((
 }
 .tile.product:hover .tile-product { transform: translateY(-6px); }
 .tile.product .tile-count { background: #fff; color: var(--text-primary); }
-.tile.product .tile-num { color: var(--accent); }
 .tile.product .tile-desc { color: var(--text-secondary); }
 .tile.product .tile-link { border-top-color: var(--border-light); color: var(--accent); }
 
