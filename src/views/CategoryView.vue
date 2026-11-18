@@ -5,7 +5,7 @@ import { store } from '../store.js'
 import { categories, getCategory } from '../data/categories.js'
 import { studioCategories } from '../data/rooms.js'
 import { t } from '../i18n.js'
-import { hasCode, codeOf, formatPrice } from '../format.js'
+import { hasCode, codeOf, formatPrice, priceOf } from '../format.js'
 
 const route = useRoute()
 
@@ -19,7 +19,7 @@ const items = computed(() => (sub.value ? subItems(category.value, sub.value) : 
 const subName = s => s.key[0].toUpperCase() + s.key.slice(1)
 const titleKey = computed(() => `categories.${key.value}${sub.value ? subName(sub.value) : ''}`)
 const isProduct = computed(() => category.value.kind === 'product')
-const unit = c => t(c.kind === 'product' ? 'categories.models' : 'categories.decors')
+const unit = c => t(`categories.${c.unit ?? (c.kind === 'product' ? 'models' : 'decors')}`)
 
 const query = ref('')
 // flooring and chipboard are chosen by thickness (null = all): flooring gets
@@ -34,7 +34,7 @@ const thicknesses = computed(() => key.value === 'laminate'
 // countertops and MDF are filtered by finish (null = all): matt or high gloss.
 // Countertops go by their `gloss` flag; MDF by name — "HG …" is high gloss
 const finish = ref(null)
-const finishes = computed(() => ['countertop', 'mdf'].includes(key.value) ? ['matt', 'gloss'] : [])
+const finishes = computed(() => ['countertop', 'countertopWall', 'mdf'].includes(key.value) ? ['matt', 'gloss'] : [])
 const finishOf = i => ((key.value === 'mdf' ? /^HG\b/i.test(i.name ?? '') : i.gloss) ? 'gloss' : 'matt')
 watch([key, sub], () => { query.value = ''; thickness.value = null; finish.value = null; revealActive() })
 
@@ -180,12 +180,14 @@ onMounted(revealActive)
             :to="{ name: 'panel', params: { category: key, code: item.code } }"
             :class="['card', { selected: isSelected(item) }]"
           >
-            <div class="card-img" :style="imgStyle(item)">
+            <div :class="['card-img', { square: item.glass }]" :style="imgStyle(item)">
               <span v-if="item.examples[0]" class="card-example" :style="imgStyle({ image: item.examples[0] })"></span>
             </div>
             <div class="card-info">
               <span class="card-name">{{ itemTitle(item) }}</span>
-              <span v-if="item.name || !hasCode(item)" class="card-row">
+              <!-- glass: its price in the card's bottom-right corner, like the sinks -->
+              <span v-if="item.glass" class="card-price">{{ priceOf(item) }}</span>
+              <span v-else-if="item.name || !hasCode(item)" class="card-row">
                 <span class="card-code">{{ hasCode(item) ? codeOf(item) : `${item.dimensions.thickness} mm` }}</span>
               </span>
             </div>
@@ -443,6 +445,8 @@ h1 {
 .panels .card-name { font-size: 16px; }
 .panels .card { display: block; }
 .panels .card-img { aspect-ratio: 3 / 2; overflow: hidden; }
+/* glass: square scene photos, shown whole so the frame is seen */
+.panels .card-img.square { aspect-ratio: 1 / 1; }
 .card-example {
   position: absolute;
   inset: 0;

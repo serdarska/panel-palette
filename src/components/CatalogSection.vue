@@ -22,7 +22,7 @@ const cards = computed(() => categories.filter(c => c.kind === props.kind).map((
   title: t(`categories.${c.key}`),
   desc: t(`categories.${c.key}Desc`),
   count: c.data.length,
-  unit: t(c.kind === 'product' ? 'categories.models' : 'categories.decors'),
+  unit: t(`categories.${c.unit ?? (c.kind === 'product' ? 'models' : 'decors')}`),
   covers: c.covers,
   product: c.kind === 'product',
 })))
@@ -95,16 +95,19 @@ const cards = computed(() => categories.filter(c => c.kind === props.kind).map((
 .grid-materials {
   gap: 24px;
   grid-template-columns: 1fr 1fr 1fr 0.8fr;
-  grid-template-rows: 330px 370px;
+  grid-template-rows: 330px 370px 330px;
   grid-template-areas:
     'mdf        mdf      chipboard panels'
-    'countertop laminate laminate  panels';
+    'countertop laminate laminate  panels'
+    'wall       glass    glass     panels';
 }
 .tile-mdf        { grid-area: mdf; }
 .tile-chipboard  { grid-area: chipboard; }
 .tile-countertop { grid-area: countertop; }
 .tile-laminate   { grid-area: laminate; }
 .tile-panels     { grid-area: panels; }
+.tile-countertopWall { grid-area: wall; }
+.tile-glass      { grid-area: glass; }
 .tile-mdf .tile-title { font-size: 30px; }
 .tile-mdf .tile-body { padding: 32px; }
 .tile-laminate .tile-title { font-size: 22px; }
@@ -232,8 +235,8 @@ const cards = computed(() => categories.filter(c => c.kind === props.kind).map((
   .grid-materials {
     gap: 20px;
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: 300px 300px 300px 300px;
-    grid-template-areas: 'mdf mdf' 'chipboard panels' 'countertop panels' 'laminate laminate';
+    grid-template-rows: 300px 300px 300px 300px 300px;
+    grid-template-areas: 'mdf mdf' 'chipboard panels' 'countertop panels' 'laminate laminate' 'wall glass';
   }
   .grid-products .tile { height: 360px; }
 }
@@ -242,8 +245,8 @@ const cards = computed(() => categories.filter(c => c.kind === props.kind).map((
   .grid-materials {
     gap: 14px;
     grid-template-columns: 1fr;
-    grid-template-rows: 260px 320px 320px 260px 400px;
-    grid-template-areas: 'mdf' 'chipboard' 'countertop' 'laminate' 'panels';
+    grid-template-rows: 260px 320px 320px 320px 260px 320px 400px;
+    grid-template-areas: 'mdf' 'chipboard' 'countertop' 'wall' 'laminate' 'glass' 'panels';
   }
   .grid-products { grid-template-columns: 1fr; }
   .grid-products .tile { height: 340px; }

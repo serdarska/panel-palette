@@ -135,14 +135,14 @@ onMounted(() => {
   document.addEventListener('fullscreenchange', () => { isFullscreen.value = !!document.fullscreenElement })
   // "Try in the studio" from a category or product page
   if (store.pendingApply) {
-    const { category, swatch } = store.pendingApply
+    const { category, only, swatch } = store.pendingApply
     store.pendingApply = null
     if (!room.value.surfaces.some(s => s.category === category)) {
       const r = rooms.find(r => r.surfaces.some(s => s.category === category))
       if (r) selectRoom(r.id)
     }
     // one surface only: a worktop goes on the worktop, the backsplash keeps its own decor
-    const target = room.value.surfaces.find(s => s.category === category && accepts(s, swatch))
+    const target = room.value.surfaces.find(s => s.category === category && (!only || s.only === only) && accepts(s, swatch))
     if (target) {
       selections[roomId.value][target.id] = swatch
       selectedId.value = target.id

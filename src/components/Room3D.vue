@@ -104,15 +104,17 @@ const startFov = () => (wrapRef.value && wrapRef.value.clientWidth < wrapRef.val
 let walkTo = null, pulse = 0
 
 // ── texture coordinates in metres ───────────────────────────────────────────
-// u, v run along the face: x/z across, y up on walls and fronts; x, z on tops
-function metricUV(geo, offset = [0, 0, 0]) {
+// u, v run along the face: x/z across, y up on walls and fronts; x, z on tops.
+// `flipU` runs u the other way (-u), e.g. so a panel on a side wall reads left
+// to right like the one on the back wall and its pattern carries on round the corner
+function metricUV(geo, offset = [0, 0, 0], flipU = false) {
   const p = geo.attributes.position, n = geo.attributes.normal
   const uv = new Float32Array(p.count * 2)
   for (let i = 0; i < p.count; i++) {
     const x = p.getX(i) + offset[0], y = p.getY(i) + offset[1], z = p.getZ(i) + offset[2]
     const ax = Math.abs(n.getX(i)), ay = Math.abs(n.getY(i)), az = Math.abs(n.getZ(i))
     const [u, v] = ay >= ax && ay >= az ? [x, z] : ax >= az ? [z, y] : [x, y]
-    uv[i * 2] = u; uv[i * 2 + 1] = v
+    uv[i * 2] = flipU ? -u : u; uv[i * 2 + 1] = v
   }
   geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2))
   return geo
@@ -120,12 +122,12 @@ function metricUV(geo, offset = [0, 0, 0]) {
 
 // a box from its min/max corners, rounded a little so its edges catch light
 // `origin` moves the texture's (0, 0) to that world point, e.g. a panel's corner
-function box(x0, y0, z0, x1, y1, z1, mat, { r = 0.003, id = 0, shadow = true, origin = null } = {}) {
+function box(x0, y0, z0, x1, y1, z1, mat, { r = 0.003, id = 0, shadow = true, origin = null, flipU = false } = {}) {
   const w = x1 - x0, h = y1 - y0, d = z1 - z0
   const rr = Math.min(r, w / 2.01, h / 2.01, d / 2.01)
   const c = [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2]
   const geo = rr > 0.0005 ? new RoundedBoxGeometry(w, h, d, 2, rr) : new THREE.BoxGeometry(w, h, d)
-  metricUV(geo, origin ? c.map((v, i) => v - origin[i]) : c)
+  metricUV(geo, origin ? c.map((v, i) => v - origin[i]) : c, flipU)
   const m = new THREE.Mesh(geo, typeof mat === 'number' ? surfaceMat(mat) : mat)
   m.position.set(...c)
   m.castShadow = shadow; m.receiveShadow = true
@@ -277,7 +279,7 @@ function buildKitchen() {
   // smaller than on the worktop so the low panel shows more of its pattern
   const corner = [x0, wt, z0]
   box(x0, wt, z0, 1.0, 1.45, z0 + 0.012, 6, { r: 0.001, origin: corner })
-  box(x0, wt, z0 + 0.012, x0 + 0.012, 1.45, 0.6, 6, { r: 0.001, origin: corner })
+  box(x0, wt, z0 + 0.012, x0 + 0.012, 1.45, 0.6, 6, { r: 0.001, origin: corner, flipU: true })
 
   // hob with its cooking zones, sink and tap
   box(-1.42, wt, -2.3, -0.78, wt + 0.006, -1.82, M.black, { r: 0.002 })
@@ -957,12 +959,17 @@ async function applySelections() {
     } else {
       tex = new THREE.Texture(img)
       tex.colorSpace = THREE.SRGBColorSpace
-      tex.wrapS = tex.wrapT = THREE.MirroredRepeatWrapping
+      // mirrored copies hide the seams, but flip a directional pattern every other copy
+      tex.wrapS = tex.wrapT = swatch.oneWay ? THREE.RepeatWrapping : THREE.MirroredRepeatWrapping
       tex.anisotropy = renderer.capabilities.getMaxAnisotropy()
       // a pattern shown as photographed is laid at the board's real size (its
       // photo spans the board's width), so a door shows one calm piece of it
       const asp = img.width / img.height
-      const tile = swatch.asIs && swatch.dimensions ? swatch.dimensions.width / 1000 : s.tile ?? 0.8
+      // wood on a surface with a `woodTile` is laid at that size instead: on the
+      // backsplash it is the panel's height, so each wall shows the whole photo once top to bottom
+      const woodTile = swatch.wood && s.woodTile
+      // `studioTile` = a decor's own scale, used on every surface (6624: few, large veins)
+      const tile = swatch.asIs && swatch.dimensions ? swatch.dimensions.width / 1000 : swatch.studioTile || woodTile || (s.tile ?? 0.8)
       // turned to follow the surface's grain, unless the decor is a pattern to show as photographed
       const rotate = !swatch.asIs && s.grain && (s.grain === 'h') === grainIsVertical(img)
       // rotated by 90° the photo's width runs up the face instead of across;

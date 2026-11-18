@@ -5,3 +5,5 @@ export const hasCode = item => !item.urlKeyOnly
 export const codeOf = item => item.shownCode ?? item.code
 // a price in denars, e.g. 10990 → "10.990 ден."
 export const formatPrice = den => `${String(den).replace(/\B(?=(\d{3})+(?!\d))/g, '.')} ден.`
+// an item's price as shown: glass is priced per m²
+export const priceOf = item => `${formatPrice(item.price)}${item.glass ? '/m²' : ''}`

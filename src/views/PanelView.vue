@@ -5,7 +5,7 @@ import { store } from '../store.js'
 import { getCategory } from '../data/categories.js'
 import { studioCategories } from '../data/rooms.js'
 import { t } from '../i18n.js'
-import { hasCode, codeOf, formatPrice } from '../format.js'
+import { hasCode, codeOf, formatPrice, priceOf } from '../format.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -23,7 +23,7 @@ const next = computed(() => list.value[(index.value + 1) % list.value.length])
 const title = p => p.name ?? p.code
 const finish = p => (p.gloss ? 'finishHG' : /soft touch/i.test(p.name) ? 'finishSoft' : 'finishDecor')
 // products are grouped by model (Lena, Ines…), boards by finish, flooring by thickness
-const group = p => (isProduct.value ? p.name.split(' ')[0] : p.dimensions.length ? finish(p) : p.dimensions.thickness)
+const group = p => (isProduct.value || p.glass ? p.name.split(' ')[0] : p.dimensions.length ? finish(p) : p.dimensions.thickness)
 // other colours from the same group first
 const related = computed(() => {
   const g = group(panel.value)
@@ -37,7 +37,7 @@ const size = ({ dimensions: d, prices }) => {
   return d.length ? `${d.length} × ${d.width} × ${th} mm` : `${th} mm`
 }
 // code or (for laminate) thickness under each related tile
-const meta = p => (!hasCode(p) ? size(p) : p.name ? codeOf(p) : size(p))
+const meta = p => (p.glass ? priceOf(p) : !hasCode(p) ? size(p) : p.name ? codeOf(p) : size(p))
 
 // a product's measurements, one row each; faucets have none listed yet
 const productSpecs = computed(() => {
@@ -52,7 +52,9 @@ const productSpecs = computed(() => {
 })
 
 // categories with a surface in the design studio
-const canTry = computed(() => studioCategories.has(categoryKey.value))
+// (wall cladding goes to the studio as a countertop decor, see categories.js)
+const studio = computed(() => getCategory(categoryKey.value).studio ?? { category: categoryKey.value })
+const canTry = computed(() => studioCategories.has(studio.value.category))
 
 // one row per picture: the colour, then each interior example
 const figures = computed(() => [
@@ -72,9 +74,10 @@ function closeZoom() {
 }
 
 function tryInStudio() {
+  const { category, only } = studio.value
   store[categoryKey.value] = panel.value
   store.picked[categoryKey.value] = true
-  store.pendingApply = { category: categoryKey.value, swatch: panel.value }
+  store.pendingApply = { category, only, swatch: panel.value }
   router.push({ name: 'design' })
 }
 
@@ -103,11 +106,12 @@ function measure(src) {
   img.src = src
 }
 // only interior examples — a board's colour photo is a texture and can be cropped
-watch(figures, list => list.filter(f => f.kind === 'example').forEach(f => measure(f.src)), { immediate: true })
+const isScene = fig => fig.kind === 'example'
+watch(figures, list => list.filter(isScene).forEach(f => measure(f.src)), { immediate: true })
 // An item with `exampleFill` fills the frame edge to edge instead (no blurred
 // sides): the frame takes the photo's shape, trimmed a little at top and bottom
 const FILL_TRIM = 0.85
-const isExample = fig => fig.kind === 'example' && !!tall.value[fig.src]
+const isExample = fig => isScene(fig) && !!tall.value[fig.src]
 const showWhole = fig => isExample(fig) && !panel.value.exampleFill
 const showFilled = fig => isExample(fig) && !!panel.value.exampleFill
 const figStyle = fig => ({
@@ -143,7 +147,7 @@ onUnmounted(() => {
 
       <header class="head">
         <div>
-          <span class="finish">{{ t(`categories.${categoryKey}`) }}<template v-if="!isProduct"> · {{ panel.dimensions.length ? t(`panel.${finish(panel)}`) : size(panel) }}</template></span>
+          <span class="finish">{{ t(`categories.${categoryKey}`) }}<template v-if="!isProduct && !panel.glass"> · {{ panel.dimensions.length ? t(`panel.${finish(panel)}`) : size(panel) }}</template></span>
           <h1>{{ title(panel) }}</h1>
         </div>
         <div class="pager">
@@ -160,7 +164,8 @@ onUnmounted(() => {
       <!-- One row per picture, details next to it -->
       <div class="figures">
         <article v-for="(fig, i) in figures" :key="fig.src" :class="['figure', { flip: i % 2 }]">
-          <button :class="['figure-img', { product: isProduct, whole: showWhole(fig), filled: showFilled(fig) }]" :style="figStyle(fig)" :title="t('panel.zoom')" @click="openZoom(fig.src)">
+          <!-- a glass photo is a product shot on white: shown whole, like the sinks -->
+          <button :class="['figure-img', { product: isProduct || (panel.glass && fig.kind === 'colour'), whole: showWhole(fig), filled: showFilled(fig) }]" :style="figStyle(fig)" :title="t('panel.zoom')" @click="openZoom(fig.src)">
             <template v-if="showWhole(fig)">
               <span class="whole-backdrop" :style="bg(fig.src)"></span>
               <span class="whole-photo" :style="bg(fig.src)"></span>
@@ -171,15 +176,22 @@ onUnmounted(() => {
           </button>
 
           <div class="figure-info">
-            <span class="figure-label">{{ t(fig.kind === 'example' ? 'panel.example' : isProduct ? 'panel.product' : panel.dimensions.length ? 'panel.colour' : 'panel.decor') }}</span>
+            <span class="figure-label">{{ t(fig.kind === 'example' ? 'panel.example' : isProduct ? 'panel.product' : panel.glass ? 'panel.glass' : panel.dimensions.length ? 'panel.colour' : 'panel.decor') }}</span>
             <h2>{{ title(panel) }}</h2>
             <dl class="specs">
               <div v-if="hasCode(panel)"><dt>{{ t('panel.code') }}</dt><dd>{{ codeOf(panel) }}</dd></div>
-              <div v-if="panel.price"><dt>{{ t('panel.price') }}</dt><dd>{{ formatPrice(panel.price) }}</dd></div>
+              <template v-if="panel.glass">
+                <div><dt>{{ t('panel.frame') }}</dt><dd>{{ t('panel.frames') }}</dd></div>
+                <div><dt>{{ t('panel.priceM2') }}</dt><dd>{{ formatPrice(panel.price) }}</dd></div>
+                <div><dt></dt><dd>{{ t('panel.set') }}</dd></div>
+              </template>
+              <div v-else-if="panel.price"><dt>{{ t('panel.price') }}</dt><dd>{{ formatPrice(panel.price) }}</dd></div>
               <div v-for="v in panel.prices ?? []" :key="v.thickness"><dt>{{ t('panel.price') }} {{ v.thickness }} mm</dt><dd>{{ formatPrice(v.price) }}</dd></div>
-              <template v-if="isProduct">
+              <template v-if="panel.glass"></template>
+              <template v-else-if="isProduct">
                 <div v-for="[label, val] in productSpecs" :key="label"><dt>{{ t(label) }}</dt><dd>{{ val }}</dd></div>
               </template>
+              <div v-else-if="studio.only"><dt>{{ t('panel.dimensions') }}</dt><dd>{{ size({ dimensions: panel[studio.only] }) }}</dd></div>
               <template v-else-if="panel.wall">
                 <!-- a worktop decor that also comes as wall cladding: both sizes -->
                 <div><dt>{{ t('panel.worktopSize') }}</dt><dd>{{ size(panel) }}</dd></div>

@@ -2,6 +2,10 @@
 // countertop/trimmed/ are the originals with their white margins cut off.
 // `wall: WALL` = the same decor also comes as a wall panel, so the kitchen's
 // backsplash in the design studio offers only these. `gloss` = high gloss (SJAJ).
+// `wood` = a wood decor, laid smaller on the backsplash so more of its grain shows.
+// `oneWay` = repeated in the studio without mirroring, so a directional
+// pattern (6624's diagonal veins) keeps running the same way. `studioTile` = the
+// metres one copy of the photo covers in the studio, on every surface.
 // `examples` (none yet) gives each worktop its own page, like the MDF fronts.
 // `texture` = a full-slab image the design studio uses instead of `image`, for
 // decors whose photo is only a small close-up sample (countertop/studio/).
@@ -13,13 +17,13 @@ export const countertops = [
   { code: '3054', color: '#c08e5a', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/3054.webp', examples: [], dimensions: WORKTOP },
   { code: '3117 Сјај', color: '#a57350', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/3117 SJAJ.webp', examples: [], dimensions: WORKTOP, gloss: true },
   { code: '3151 Сјај', color: '#9e784b', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/3151 SJAJ.webp', examples: [], dimensions: WORKTOP, gloss: true },
-  { code: '3155', color: '#c8b094', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/3155.webp', examples: [], dimensions: WORKTOP, wall: WALL },
+  { code: '3155', color: '#c8b094', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/3155.webp', examples: [], dimensions: WORKTOP, wall: WALL, wood: true },
   { code: '6605', color: '#b9a37f', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6605.webp', examples: [], dimensions: WORKTOP },
-  { code: '6607', color: '#9d886d', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6607.webp', examples: [], dimensions: WORKTOP, wall: WALL },
+  { code: '6607', color: '#9d886d', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6607.webp', examples: [], dimensions: WORKTOP, wall: WALL, wood: true },
   { code: '6608', color: '#6e5b44', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6608.webp', examples: [], dimensions: WORKTOP },
   { code: '6618', color: '#c0b7a3', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6618.webp', examples: [], dimensions: WORKTOP },
-  { code: '6624', color: '#eeedeb', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6624 sjaj.webp', examples: [], dimensions: WORKTOP, matt: true, wall: WALL },
-  { code: '6624 Сјај', color: '#f1f0ef', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6624 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true },
+  { code: '6624', color: '#eeedeb', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6624 sjaj.webp', examples: [], dimensions: WORKTOP, matt: true, wall: WALL , oneWay: true, studioTile: 1.4 },
+  { code: '6624 Сјај', color: '#f1f0ef', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6624 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true , oneWay: true, studioTile: 1.4 },
   { code: '6626', color: '#5d5f59', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6626.webp', examples: [], dimensions: WORKTOP, wall: WALL },
   { code: '6630', color: '#000000', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6630.webp', examples: [], dimensions: WORKTOP },
   { code: '6633 Сјај', color: '#333939', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6633 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true },
@@ -28,20 +32,20 @@ export const countertops = [
   { code: '6650', color: '#a39880', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6650.webp', examples: [], dimensions: WORKTOP },
   { code: '6652', color: '#927959', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6652.webp', examples: [], dimensions: WORKTOP },
   { code: '6654 Сјај', color: '#33281e', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6654.webp', examples: [], dimensions: WORKTOP, gloss: true },
-  { code: '6660', color: '#b4a378', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6660.webp', examples: [], dimensions: WORKTOP, wall: WALL },
+  { code: '6660', color: '#b4a378', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6660.webp', examples: [], dimensions: WORKTOP, wall: WALL, wood: true },
   { code: '6661', color: '#080809', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6661.webp', examples: [], dimensions: WORKTOP, wall: WALL },
   { code: '6664', color: '#71797b', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6664.webp', examples: [], dimensions: WORKTOP },
-  { code: '6670', color: '#bda980', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6670.webp', examples: [], dimensions: WORKTOP, wall: WALL },
+  { code: '6670', color: '#bda980', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6670.webp', examples: [], dimensions: WORKTOP, wall: WALL, wood: true },
   { code: '6671 Сјај', color: '#dcdcdb', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6671 sjaj.webp', examples: [], dimensions: WORKTOP, gloss: true },
   { code: '6672 Сјај', color: '#202021', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6672.webp', examples: [], dimensions: WORKTOP, gloss: true, wall: WALL },
   { code: '6674', color: '#695c52', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6674.webp', examples: [], dimensions: WORKTOP },
-  { code: '6675', color: '#aa9167', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6675.webp', examples: [], dimensions: WORKTOP, wall: WALL },
+  { code: '6675', color: '#aa9167', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6675.webp', examples: [], dimensions: WORKTOP, wall: WALL, wood: true },
   { code: '6676', color: '#706149', textColor: '#f0f0f0', image: '/materials/countertop/trimmed/6676.webp', examples: [], dimensions: WORKTOP },
   { code: '6677', color: '#a28c5b', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6677.webp', examples: [], dimensions: WORKTOP },
   { code: '6679', color: '#b4b1ac', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6679.webp', examples: [], dimensions: WORKTOP },
   { code: '6680', color: '#bbbab2', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6680.webp', examples: [], dimensions: WORKTOP },
   { code: '6681', color: '#bab4ab', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6681.webp', texture: '/materials/countertop/studio/6681.webp', examples: [], dimensions: WORKTOP },
-  { code: '6685', color: '#b9a583', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6685.webp', examples: [], dimensions: WORKTOP, wall: WALL },
+  { code: '6685', color: '#b9a583', textColor: '#3a3a3a', image: '/materials/countertop/trimmed/6685.webp', examples: [], dimensions: WORKTOP, wall: WALL, wood: true },
 ]
 
 // MDF panels: colour photo + interior example(s), size in mm; `gloss` = high-gloss finish,
@@ -671,6 +675,18 @@ export const wallPanels = [
   { name: 'Asos',                    code: '334',  color: '#92806e', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/334_Asos.jpg', examples: ['/materials/dekorativni dzidni paneli/Asos 334 example.webp'], exampleFill: true, dimensions: PANEL, prices: PANEL_PRICES },
   { name: 'Bianco',                  code: '336',  color: '#949492', textColor: '#3a3a3a', image: '/materials/dekorativni dzidni paneli/336_Bianco.jpg', examples: ['/materials/dekorativni dzidni paneli/Bianco 336 example.webp'], exampleFill: true, dimensions: PANEL, prices: PANEL_PRICES },
   { name: 'Soft Touch Firtina Gri',  code: '733',  color: '#2b2b2b', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/733_Soft_Touch_Firtina_Gri.jpg', examples: ['/materials/dekorativni dzidni paneli/Soft touch firtina gri 776 example.jpeg'], exampleFill: true, dimensions: PANEL, prices: PANEL_PRICES },
+]
+
+// Glass in an aluminium frame: three glass colours, each made with a black,
+// anthracite or white frame. `price` is per m² for the set (glass and frame).
+// No product codes, so `code` is only the URL key. The photos show a black frame.
+const glass = (name, key, color, file, example) => ({
+  name, code: key, urlKeyOnly: true, color, image: `/materials/glass/${file}`, examples: [`/materials/glass/${example}`], exampleFill: true, glass: true, price: 3800,
+})
+export const glassFronts = [
+  glass('Кафено стакло',   'kafeno',   '#5a4334', 'kafeno staklo.webp',   'стакло рамка brown exampe.jpeg'),
+  glass('Црно стакло',     'crno',     '#1e1f21', 'crno staklo.webp',     'стакло рамка black example.jpeg'),
+  glass('Проѕирно стакло', 'prozirno', '#cfd9de', 'prozirno staklo.webp', 'стакло рамка transparent example.jpeg'),
 ]
 
 export const sinks = [
