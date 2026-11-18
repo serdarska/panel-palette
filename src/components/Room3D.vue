@@ -273,7 +273,8 @@ function buildKitchen() {
   box(x0, top, backFront + DOOR_T + 0.025, leftFront + DOOR_T + 0.025, wt, 0.6 + DOOR_T + 0.01, 5, { r: 0.004 })
 
   // backsplash on both walls, up to the wall cabinets: one panel per wall,
-  // both starting in the corner and sitting on the worktop (see `slab`)
+  // both starting in the corner and sitting on the worktop, the decor laid
+  // smaller than on the worktop so the low panel shows more of its pattern
   const corner = [x0, wt, z0]
   box(x0, wt, z0, 1.0, 1.45, z0 + 0.012, 6, { r: 0.001, origin: corner })
   box(x0, wt, z0 + 0.012, x0 + 0.012, 1.45, 0.6, 6, { r: 0.001, origin: corner })
@@ -953,15 +954,6 @@ async function applySelections() {
       tex.needsUpdate = true
       mat.bumpMap = tex
       mat.bumpScale = 4
-    } else if (s.slab) {
-      // a long panel (the backsplash): the photo spans the panel's full
-      // length once, unmirrored, so no vein is folded back on itself
-      tex = new THREE.Texture(img)
-      tex.colorSpace = THREE.SRGBColorSpace
-      tex.wrapS = tex.wrapT = THREE.RepeatWrapping
-      tex.anisotropy = renderer.capabilities.getMaxAnisotropy()
-      tex.repeat.set(1 / s.slab, img.width / (img.height * s.slab))
-      tex.needsUpdate = true
     } else {
       tex = new THREE.Texture(img)
       tex.colorSpace = THREE.SRGBColorSpace

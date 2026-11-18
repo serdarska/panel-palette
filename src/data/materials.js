@@ -661,14 +661,16 @@ export const chipboardColors = [
 
 // Decorative slatted wall panels: panel photo + interior example, all one size, 2800 × 600 × 9 mm
 const PANEL = { length: 2800, width: 600, thickness: 9 }
+// every wall panel comes in two thicknesses, priced per panel in denars
+const PANEL_PRICES = [{ thickness: 9, price: 2000 }, { thickness: 16, price: 3000 }]
 export const wallPanels = [
-  { name: 'Anti Walnut',             code: '249',  color: '#48352b', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/249_Anti_Walnut.jpg', examples: ['/materials/dekorativni dzidni paneli/Anti Walnut 249 example.webp'], exampleFill: true, dimensions: PANEL },
-  { name: 'Natural',                 code: '265',  color: '#917b65', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/265_Natural.jpg', examples: ['/materials/dekorativni dzidni paneli/Natural 265 example.jpg'], exampleFill: true, dimensions: PANEL },
-  { name: 'Amalfi',                  code: '323',  color: '#5e4b41', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/323_Amalfi.jpg', examples: ['/materials/dekorativni dzidni paneli/Amalfi 323 example.jpg'], exampleFill: true, dimensions: PANEL },
-  { name: 'Seul',                    code: '329',  color: '#754523', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/329_Seul.jpg', examples: ['/materials/dekorativni dzidni paneli/Seul 329 example.jpg'], exampleFill: true, dimensions: PANEL },
-  { name: 'Asos',                    code: '334',  color: '#92806e', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/334_Asos.jpg', examples: ['/materials/dekorativni dzidni paneli/Asos 334 example.webp'], exampleFill: true, dimensions: PANEL },
-  { name: 'Bianco',                  code: '336',  color: '#949492', textColor: '#3a3a3a', image: '/materials/dekorativni dzidni paneli/336_Bianco.jpg', examples: ['/materials/dekorativni dzidni paneli/Bianco 336 example.webp'], exampleFill: true, dimensions: PANEL },
-  { name: 'Soft Touch Firtina Gri',  code: '733',  color: '#2b2b2b', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/733_Soft_Touch_Firtina_Gri.jpg', examples: ['/materials/dekorativni dzidni paneli/Soft touch firtina gri 776 example.jpeg'], exampleFill: true, dimensions: PANEL },
+  { name: 'Anti Walnut',             code: '249',  color: '#48352b', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/249_Anti_Walnut.jpg', examples: ['/materials/dekorativni dzidni paneli/Anti Walnut 249 example.webp'], exampleFill: true, dimensions: PANEL, prices: PANEL_PRICES },
+  { name: 'Natural',                 code: '265',  color: '#917b65', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/265_Natural.jpg', examples: ['/materials/dekorativni dzidni paneli/Natural 265 example.jpg'], exampleFill: true, dimensions: PANEL, prices: PANEL_PRICES },
+  { name: 'Amalfi',                  code: '323',  color: '#5e4b41', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/323_Amalfi.jpg', examples: ['/materials/dekorativni dzidni paneli/Amalfi 323 example.jpg'], exampleFill: true, dimensions: PANEL, prices: PANEL_PRICES },
+  { name: 'Seul',                    code: '329',  color: '#754523', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/329_Seul.jpg', examples: ['/materials/dekorativni dzidni paneli/Seul 329 example.jpg'], exampleFill: true, dimensions: PANEL, prices: PANEL_PRICES },
+  { name: 'Asos',                    code: '334',  color: '#92806e', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/334_Asos.jpg', examples: ['/materials/dekorativni dzidni paneli/Asos 334 example.webp'], exampleFill: true, dimensions: PANEL, prices: PANEL_PRICES },
+  { name: 'Bianco',                  code: '336',  color: '#949492', textColor: '#3a3a3a', image: '/materials/dekorativni dzidni paneli/336_Bianco.jpg', examples: ['/materials/dekorativni dzidni paneli/Bianco 336 example.webp'], exampleFill: true, dimensions: PANEL, prices: PANEL_PRICES },
+  { name: 'Soft Touch Firtina Gri',  code: '733',  color: '#2b2b2b', textColor: '#f0f0f0', image: '/materials/dekorativni dzidni paneli/733_Soft_Touch_Firtina_Gri.jpg', examples: ['/materials/dekorativni dzidni paneli/Soft touch firtina gri 776 example.jpeg'], exampleFill: true, dimensions: PANEL, prices: PANEL_PRICES },
 ]
 
 export const sinks = [
@@ -680,37 +682,41 @@ export const sinks = [
   { name: 'Ewelina Gray',        code: 'EWEL-GR',    color: '#7a7878', image: '/materials/sinks/ewelina gray.avif',       dimensions: { length: 780, width: 500, depth: 203 } },
   { name: 'Ewelina White',       code: 'EWEL-W',     color: '#f4f0ec', image: '/materials/sinks/ewelina white.avif',      dimensions: { length: 780, width: 500, depth: 203 } },
   { name: 'HD 7550R',            code: 'HD-7550R',   color: '#c9a04a', image: '/materials/sinks/hd 7550r.webp',          dimensions: { length: 750, width: 500, depth: 230 } },
+  { name: 'HD 7550R Black',      code: 'HD-7550R-B', color: '#2a2828', image: '/materials/sinks/hd 7550r black.webp',    dimensions: { length: 750, width: 500, depth: 230 } },
   { name: 'Ines Black Matt',     code: 'INES-BM',    color: '#1c1a1a', image: '/materials/sinks/ines black matt.avif',    dimensions: { length: 780, width: 500, depth: 201 } },
   { name: 'Ines Dark Beige',     code: 'INES-DB',    color: '#8c7860', image: '/materials/sinks/ines dark beige.avif',    dimensions: { length: 780, width: 500, depth: 201 } },
   { name: 'Ines Gray Granit',    code: 'INES-GG',    color: '#706868', image: '/materials/sinks/ines gray granit.avif',   dimensions: { length: 780, width: 500, depth: 201 } },
   { name: 'Joanna Black Matt',   code: 'JOAN-BM',    color: '#1c1a1a', image: '/materials/sinks/joanna black matt.avif',  dimensions: { length: 550, width: 460, depth: 196 } },
   { name: 'Lena Black Matt',     code: 'LENA-BM',    color: '#1c1a1a', image: '/materials/sinks/lena black matt.avif',    dimensions: { diameter: 500, depth: 194 } },
   { name: 'Lena Dark Beige',     code: 'LENA-DB',    color: '#8c7860', image: '/materials/sinks/lena dark beige.avif',    dimensions: { diameter: 500, depth: 194 } },
-  { name: 'Lena Gray Granit',    code: 'LENA-GG',    color: '#706868', image: '/materials/sinks/lena gray granit.avif',   dimensions: { diameter: 500, depth: 194 } },
-  { name: 'Lena White',          code: 'LENA-W',     color: '#f4f0ec', image: '/materials/sinks/lena white.avif',         dimensions: { diameter: 500, depth: 194 } },
   { name: 'Selena Black Matt',   code: 'SEL-BM',     color: '#1c1a1a', image: '/materials/sinks/selena black matt.avif',  dimensions: { length: 530, width: 500, depth: 204 } },
   { name: 'Selena Gray Granit',  code: 'SEL-GG',     color: '#706868', image: '/materials/sinks/selena gray granit.avif', dimensions: { length: 530, width: 500, depth: 204 } },
   { name: 'Selena White',        code: 'SEL-W',      color: '#f4f0ec', image: '/materials/sinks/selena white.avif',       dimensions: { length: 530, width: 500, depth: 204 } },
-  { name: 'Vesta Black Matt',    code: 'VEST-BM',    color: '#1c1a1a', image: '/materials/sinks/vesta black matt.avif',   dimensions: { length: 400, width: 500, depth: 192 } },
+  { name: 'Vesta Gray',          code: 'VEST-GR',    color: '#7a7878', image: '/materials/sinks/vesta black matt.avif',   dimensions: { length: 400, width: 500, depth: 192 } },
   { name: 'Vesta Dark Beige',    code: 'VEST-DB',    color: '#8c7860', image: '/materials/sinks/vesta dark beige.avif',   dimensions: { length: 400, width: 500, depth: 192 } },
   { name: 'Vesta White',         code: 'VEST-W',     color: '#f4f0ec', image: '/materials/sinks/vesta white.avif',        dimensions: { length: 400, width: 500, depth: 192 } },
 ]
 // price in denars per model, the same for every colour of it
-const SINK_PRICES = { Selena: 7490, Edyta: 13800, Ewelina: 10990, HD: 34000, Ines: 9200, Lena: 6850, Vesta: 7490 }
+const SINK_PRICES = { Arona: 8000, Selena: 7490, Edyta: 13800, Ewelina: 10990, HD: 34000, Ines: 9200, Joanna: 10880, Lena: 6850, Vesta: 7490 }
 for (const s of sinks) s.price = SINK_PRICES[s.name.split(' ')[0]]
 
 export const faucets = [
   { name: 'Andra Black',  code: 'ANDRA-B',  color: '#1c1a1a', image: '/materials/faucets/andra black.avif',  dimensions: { length: null, width: null, height: null } },
   { name: 'Cami Black',   code: 'CAMI-B',   color: '#1c1a1a', image: '/materials/faucets/cami black.avif',   dimensions: { length: null, width: null, height: null } },
-  { name: 'Lola Beige',   code: 'LOLA-BE',  color: '#c8b898', image: '/materials/faucets/lola beige.avif',   dimensions: { length: null, width: null, height: null } },
   { name: 'Lola Black',   code: 'LOLA-B',   color: '#1c1a1a', image: '/materials/faucets/lola black.avif',   dimensions: { length: null, width: null, height: null } },
   { name: 'Lola Gray',    code: 'LOLA-GR',  color: '#7a7878', image: '/materials/faucets/lola gray.avif',    dimensions: { length: null, width: null, height: null } },
   { name: 'Lola White',   code: 'LOLA-W',   color: '#f4f0ec', image: '/materials/faucets/lola white.avif',   dimensions: { length: null, width: null, height: null } },
+  { name: 'Nemezija Black', code: 'NEMEZIJA-B', color: '#2a2424', image: '/materials/faucets/nemezija black.avif', dimensions: { length: null, width: null, height: null } },
+  { name: 'Nemezija Gray',  code: 'NEMEZIJA-GR', color: '#7a7878', image: '/materials/faucets/nemezija gray.avif',  dimensions: { length: null, width: null, height: null } },
+  { name: 'Nemezija White', code: 'NEMEZIJA-W',  color: '#f4f0ec', image: '/materials/faucets/nemezija white.avif', dimensions: { length: null, width: null, height: null } },
   { name: 'Solo Beige',   code: 'SOLO-BE',  color: '#c8b898', image: '/materials/faucets/solo beige.avif',   dimensions: { length: null, width: null, height: null } },
-  { name: 'Solo Black',   code: 'SOLO-B',   color: '#1c1a1a', image: '/materials/faucets/solo black.avif',   dimensions: { length: null, width: null, height: null } },
   { name: 'Solo Gray',    code: 'SOLO-GR',  color: '#7a7878', image: '/materials/faucets/solo gray.avif',    dimensions: { length: null, width: null, height: null } },
   { name: 'Solo White',   code: 'SOLO-W',   color: '#f4f0ec', image: '/materials/faucets/solo white.avif',   dimensions: { length: null, width: null, height: null } },
 ]
+
+// price in denars per model, the same for every colour of it
+const FAUCET_PRICES = { Andra: 5450, Cami: 4900, Lola: 4150, Nemezija: 4700, Solo: 4150 }
+for (const f of faucets) f.price = FAUCET_PRICES[f.name.split(' ')[0]]
 
 
 // Laminate flooring, one folder per thickness (public/materials/flooring/laminat <mm>mm).

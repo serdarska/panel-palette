@@ -31,7 +31,11 @@ const related = computed(() => {
   return [...others.filter(p => group(p) === g), ...others.filter(p => group(p) !== g)].slice(0, 8)
 })
 
-const size = ({ dimensions: d }) => (d.length ? `${d.length} × ${d.width} × ${d.thickness} mm` : `${d.thickness} mm`)
+// wall panels come in several thicknesses (one price each): list them all, e.g. "9 / 16"
+const size = ({ dimensions: d, prices }) => {
+  const th = prices ? prices.map(v => v.thickness).join(' / ') : d.thickness
+  return d.length ? `${d.length} × ${d.width} × ${th} mm` : `${th} mm`
+}
 // code or (for laminate) thickness under each related tile
 const meta = p => (!hasCode(p) ? size(p) : p.name ? codeOf(p) : size(p))
 
@@ -172,6 +176,7 @@ onUnmounted(() => {
             <dl class="specs">
               <div v-if="hasCode(panel)"><dt>{{ t('panel.code') }}</dt><dd>{{ codeOf(panel) }}</dd></div>
               <div v-if="panel.price"><dt>{{ t('panel.price') }}</dt><dd>{{ formatPrice(panel.price) }}</dd></div>
+              <div v-for="v in panel.prices ?? []" :key="v.thickness"><dt>{{ t('panel.price') }} {{ v.thickness }} mm</dt><dd>{{ formatPrice(v.price) }}</dd></div>
               <template v-if="isProduct">
                 <div v-for="[label, val] in productSpecs" :key="label"><dt>{{ t(label) }}</dt><dd>{{ val }}</dd></div>
               </template>

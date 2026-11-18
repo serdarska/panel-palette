@@ -6,6 +6,13 @@ import logo from '../assets/logo.png'
 const route = useRoute()
 const router = useRouter()
 
+const locations = [
+  { key: 'location2', phones: ['+389 78 213 085'] }, // Kočani
+  { key: 'location',  phones: ['+389 78 424 682'] }, // Shtip
+  { key: 'location4', phones: ['+389 70 755 982'] }, // Bitola
+  { key: 'location3', phones: ['+389 78 424 463'] }, // Skopje
+]
+
 function go(id) {
   if (route.name !== 'home') return router.push({ name: 'home', hash: `#${id}` })
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
@@ -43,15 +50,17 @@ function go(id) {
           <div class="footer-col">
             <span class="col-title">{{ t('footer.contact') }}</span>
             <a href="mailto:interwoodd@gmail.com">interwoodd@gmail.com</a>
-            <!-- tap to call on phones -->
-            <a href="tel:+38978424682">+389 78 424 682</a>
-            <a href="tel:+38978424463">+389 78 424 463</a>
             <span class="contact-item">{{ t('footer.hours') }}</span>
             <span class="contact-item">{{ t('footer.hoursSat') }}</span>
-            <span class="contact-item">{{ t('footer.location') }}</span>
-            <span class="contact-item">{{ t('footer.location2') }}</span>
-            <span class="contact-item">{{ t('footer.location3') }}</span>
-            <span class="contact-item">{{ t('footer.location4') }}</span>
+            <!-- each city with its own phone numbers (tap to call on phones) -->
+            <div class="locations-wrap">
+              <div class="locations">
+                <template v-for="loc in locations" :key="loc.key">
+                  <span class="contact-item city">{{ t(`footer.${loc.key}`) }}</span>
+                  <a v-for="tel in loc.phones" :key="tel" class="phone" :href="`tel:${tel.replace(/\s/g, '')}`">{{ tel }}</a>
+                </template>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -68,6 +77,8 @@ function go(id) {
   background: var(--bg-primary);
   padding: 0 0 28px;
 }
+/* the footer runs side to side, not inside the centred page width */
+.footer .section-container { max-width: none; }
 
 .footer-top {
   display: grid;
@@ -92,7 +103,8 @@ function go(id) {
 
 .footer-cols {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* contact is widest so each city and its number fit on one row */
+  grid-template-columns: 1fr 0.8fr 1.4fr;
 }
 
 .footer-col {
@@ -123,6 +135,23 @@ function go(id) {
 .contact-item {
   font-size: 14px;
   color: var(--text-secondary);
+}
+
+/* city | number on one row, numbers lined up; when the column is too narrow
+   for that, the number goes under its city */
+.locations-wrap { container-type: inline-size; }
+.locations {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  justify-content: start;
+  column-gap: 14px;
+  row-gap: 12px;
+  align-items: baseline;
+}
+.locations .phone { white-space: nowrap; }
+@container (max-width: 340px) {
+  .locations { grid-template-columns: 1fr; row-gap: 2px; }
+  .locations .phone { margin-bottom: 10px; }
 }
 
 .footer-bottom {

@@ -29,11 +29,11 @@ export const categories = [
   },
   {
     key: 'sinks', kind: 'product', data: sinks,
-    covers: ['/materials/sinks/ines dark beige.avif', '/materials/sinks/lena white.avif', '/materials/sinks/arona black matt.avif'],
+    covers: ['/materials/sinks/ines dark beige.avif', '/materials/sinks/ewelina white.avif', '/materials/sinks/selena black matt.avif'],
   },
   {
     key: 'faucets', kind: 'product', data: faucets,
-    covers: ['/materials/faucets/lola beige.avif', '/materials/faucets/solo black.avif', '/materials/faucets/lola white.avif'],
+    covers: ['/materials/faucets/lola gray.avif', '/materials/faucets/solo gray.avif', '/materials/faucets/lola white.avif'],
   },
 ]
 
